@@ -18,6 +18,15 @@ Parts of code written in 2011.
 
 
 
+## dependencies
+
+* C++ compiler ([**gcc**](http://gcc.gnu.org/) or [**clang**](http://clang.llvm.org/))
+* [**Simple Directmedia Layer**](https://www.libsdl.org/)
+* [**GNU Make**](http://www.gnu.org/software/make/)
+
+
+
+
 ## license
 
 **machina** is released under the Simplified BSD license. See the
