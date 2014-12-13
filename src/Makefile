@@ -1,0 +1,34 @@
+#
+#  machina
+#  Copyright (c) 2014, drmats
+#  All rights reserved.
+#  https://github.com/drmats/machina
+#
+
+PNAME               =  machina
+PLIBS               =  messages.o m3d.o m3d_concrete.o main.o
+GNUCPP              =  g++
+GNUCOMPILEFLAGS     =  -std=c++11 -Wall -Wpedantic -O2 -D_GNU_SOURCE=1
+GNULINKLIBS         =  -lGL -lGLU -lm -lSDL
+
+.PHONY: default
+linux:
+	@$(MAKE) gnu_execute
+
+.PHONY: gnu_execute
+gnu_execute:  $(PLIBS)
+	@echo Linking project...
+	@$(GNUCPP) $(GNULINKLIBS) $(PLIBS) -o $(PNAME)
+	@echo $(PNAME) produced succesfully!
+
+.PHONY: clean
+clean:
+	@rm -v -f $(PNAME) *.o core
+
+%.cpp:  %.h
+	@echo Checking: $<
+	@touch $@
+
+%.o:  %.cpp
+	@echo Compiling: $<
+	@$(GNUCPP) $(GNUCOMPILEFLAGS) -c $< -o $@
