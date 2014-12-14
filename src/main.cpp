@@ -125,23 +125,7 @@ void Main::initializeSurface () {
     }
 
     glViewport(0, 0, this->screen->w, this->screen->h);
-    SDL_WM_SetCaption("machina", NULL);
-}
-
-
-
-
-/**
- *  Event-processing.
- */
-inline void Main::processEvents () {
-    while (this->mainLoopRunning  &&  SDL_PollEvent(&this->event)) {
-        switch (this->event.type) {
-            case SDL_QUIT:
-                this->mainLoopRunning = false;
-                break;
-        }
-    }
+    SDL_WM_SetCaption(PROGRAM_NAME, NULL);
 }
 
 
@@ -161,33 +145,6 @@ void Main::setupOpenGL () {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
-}
-
-
-
-
-/**
- *  Drawing.
- */
-inline void Main::draw () {
-    glClear(
-        GL_COLOR_BUFFER_BIT |
-        GL_DEPTH_BUFFER_BIT
-    );
-}
-
-
-
-
-/**
- *  Main application loop.
- */
-void Main::mainLoop () {
-    while (this->mainLoopRunning) {
-        this->processEvents();
-        this->draw();
-        SDL_GL_SwapBuffers();
-    }
 }
 
 

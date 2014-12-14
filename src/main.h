@@ -30,6 +30,7 @@ using namespace m3d;
 
 
 #define DRIVER_NAME_BUFFER_SIZE 64
+#define PROGRAM_NAME "machina"
 
 
 
