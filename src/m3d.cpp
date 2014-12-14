@@ -18,15 +18,6 @@ namespace m3d {
 
 
 /**
- *  GArray destructor.
- */
-template< typename T, std::size_t N >
-GArray< T, N >::~GArray () {}
-
-
-
-
-/**
  *  GArray deep comparision "==".
  */
 template< typename T, std::size_t N >

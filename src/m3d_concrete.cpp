@@ -21,16 +21,6 @@ namespace m3d {
 
 
 
-template GArray< GLfloat, 3 >::~GArray();
-template GArray< GLdouble, 3 >::~GArray();
-template GArray< GLfloat, 4 >::~GArray();
-template GArray< GLdouble, 4 >::~GArray();
-template GArray< GLfloat, 4*4 >::~GArray();
-template GArray< GLdouble, 4*4 >::~GArray();
-
-
-
-
 template bool operator== < GLfloat, 3 > (
     const GArray < GLfloat, 3 > &l, const GArray< GLfloat, 3 > &r
 );
