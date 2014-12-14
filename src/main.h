@@ -7,6 +7,9 @@
  *  https://github.com/drmats/machina
  */
 
+#ifndef __MAIN_H_
+#define __MAIN_H_ 1
+
 #include "m3d.h"
 
 #include <iostream>
@@ -129,3 +132,5 @@ public:
     void mainLoop ();
 
 };
+
+#endif
