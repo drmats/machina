@@ -42,7 +42,7 @@ namespace m3d {
 /**
  *  Equality test with allowed error.
  */
-template< typename T >
+template < typename T >
 inline bool close_to (T a, T b) {
     return fabs(a - b) < static_cast<T>(m3d_epsilon);
 }
@@ -53,7 +53,7 @@ inline bool close_to (T a, T b) {
 /**
  *  Square root.
  */
-template< typename T >
+template < typename T >
 inline T sqr (T x) {
     return x * x;
 }
@@ -64,12 +64,12 @@ inline T sqr (T x) {
 /**
  *  Angle conversions.
  */
-template< typename T >
+template < typename T >
 inline T deg_to_rad (T x) {
     return x * static_cast<T>(m3d_pi180);
 }
 
-template< typename T >
+template < typename T >
 inline T rad_to_deg (T x) {
     return x * static_cast<T>(m3d_invpi180);
 }
@@ -80,7 +80,7 @@ inline T rad_to_deg (T x) {
 /**
  *  Linear interpolation.
  */
-template< typename T >
+template < typename T >
 inline T linear_interpolation (T x1, T x2, T x3, T y1, T y3) {
     return (((x2 - x1) * (y3 - y1)) / (x3 - x1)) + y1;
 }
@@ -91,16 +91,16 @@ inline T linear_interpolation (T x1, T x2, T x3, T y1, T y3) {
 /**
  *  Forward declarations for GArray friend operators.
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 class GArray;
 
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 bool operator== (const GArray < T, N > &, const GArray< T, N > &);
 
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 bool operator!= (const GArray < T, N > &, const GArray< T, N > &);
 
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 std::ostream& operator<< (std::ostream &, const GArray< T, N > &);
 
 
@@ -109,7 +109,7 @@ std::ostream& operator<< (std::ostream &, const GArray< T, N > &);
 /**
  *  Base abstract class for Points, Vectors and Matrices.
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 class GArray {
 
 protected:
@@ -118,7 +118,7 @@ protected:
 
 
 public:
-    
+
     virtual ~GArray () = 0;
 
 
@@ -228,7 +228,7 @@ public:
 /**
  *  Forward declaration for GVector< T, N >::transform.
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 class GMatrix;
 
 
@@ -237,7 +237,7 @@ class GMatrix;
 /**
  *  Base class for all Vector types.
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 class GVector : public GArray< T, N > {
 
 public:
@@ -338,7 +338,7 @@ public:
 /**
  *  Vector3D specialization.
  */
-template< typename T >
+template < typename T >
 class GVector3 : public GVector< T, 3 > {
 
 public:
@@ -383,7 +383,7 @@ public:
 /**
  *  Four component vector specialization.
  */
-template< typename T >
+template < typename T >
 class GVector4 : public GVector< T, 4 > {
 
 public:
@@ -417,7 +417,7 @@ public:
 /**
  *  Base class for all matrix types.
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 class GMatrix : public GArray< T, N*N > {
 
 public:
@@ -459,7 +459,7 @@ public:
 /**
  *  4x4 column-major matrix specialization.
  */
-template< typename T >
+template < typename T >
 class GMatrix4x4 : public GMatrix< T, 4 > {
 
 public:
@@ -496,7 +496,7 @@ public:
         angle = deg_to_rad(angle);
         GVector3< T > v(x, y, z);
         v.normalize();
-        
+
         #define X (v[0])
         #define Y (v[1])
         #define Z (v[2])
@@ -508,7 +508,7 @@ public:
             xs = X*s,       ys = Y*s,       zs = Z*s,
           xync = X*Y*nc,  xznc = X*Z*nc,  yznc = Y*Z*nc;
 
-        #define set(i, val) GMatrix< T, 4 >::data[i] = static_cast<T>(val) 
+        #define set(i, val) GMatrix< T, 4 >::data[i] = static_cast<T>(val)
 
         set(0, sqr(X)*nc+c);  set(4, xync-zs);      set(8 , xznc+ys);      set(12, 0);
         set(1, xync+zs);      set(5, sqr(Y)*nc+c);  set(9 , yznc-xs);      set(13, 0);
@@ -531,7 +531,7 @@ public:
         fovy = deg_to_rad(fovy);
         T   f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
             zNear_zFar = zNear - zFar;
-    
+
         GMatrix< T, 4 >::data[0] = f / aspect;
         GMatrix< T, 4 >::data[5] = f;
         GMatrix< T, 4 >::data[10] = (zNear + zFar) / zNear_zFar;

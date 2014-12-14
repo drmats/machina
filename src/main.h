@@ -11,20 +11,12 @@
 #define __MAIN_H_ 1
 
 #include "m3d.h"
+#include "camera.h"
 
 #include <iostream>
 #include <cstdlib>
 
-#ifdef __LINUX__
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
-#endif
-#ifdef __WIN32__
-#include <tchar.h>
-#include <windows.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
-#endif
+#include "sdl_opengl.h"
 
 using namespace std;
 using namespace m3d;
@@ -74,6 +66,10 @@ private:
         int height = 540;
         int bpp = 32;
     } view;
+
+
+    // main camera
+    Camera< GLfloat > camera;
 
 
     // main loop sustaining variable

@@ -18,9 +18,18 @@ namespace m3d {
 
 
 /**
+ *  GArray destructor.
+ */
+template < typename T, std::size_t N >
+GArray< T, N >::~GArray () {}
+
+
+
+
+/**
  *  GArray deep comparision "==".
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 bool operator== (const GArray < T, N > &l, const GArray< T, N > &r) {
     for (std::size_t i = 0;  i < N;  i++) {
         if (l[i] != r[i]) { return false; }
@@ -34,7 +43,7 @@ bool operator== (const GArray < T, N > &l, const GArray< T, N > &r) {
 /**
  *  GArray deep comparision "!=".
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 bool operator!= (const GArray < T, N > &l, const GArray< T, N > &r) {
     return !(l == r);
 }
@@ -45,7 +54,7 @@ bool operator!= (const GArray < T, N > &l, const GArray< T, N > &r) {
 /**
  *  GArray to string serialization.
  */
-template< typename T, std::size_t N >
+template < typename T, std::size_t N >
 std::ostream& operator<< (std::ostream &os, const GArray< T, N > &gv) {
     os << "[";
     for (std::size_t i = 0;  i < N;  i++) {
