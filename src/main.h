@@ -24,7 +24,7 @@ using namespace m3d;
 
 
 
-#define DRIVER_NAME_BUFFER_SIZE 64
+#define VIDEO_DRIVER_NAME_BUFFER_SIZE 64
 #define PROGRAM_NAME "machina"
 
 
@@ -44,8 +44,8 @@ private:
 
     // SDL library versions
     SDL_version
-        compileSDLversion,
-        linkedSDLversion;
+        compile_sdl_version,
+        linked_sdl_version;
 
 
     // drawing surface
@@ -57,7 +57,7 @@ private:
 
 
     // current video driver
-    char videoDriverName[DRIVER_NAME_BUFFER_SIZE];
+    char video_driver_name[VIDEO_DRIVER_NAME_BUFFER_SIZE];
 
 
     // viewport parameters
@@ -73,7 +73,7 @@ private:
 
 
     // main loop sustaining variable
-    bool mainLoopRunning = true;
+    bool main_loop_running = true;
 
 
 
@@ -95,25 +95,25 @@ public:
     /**
      *  Obtain SDL versions, initialize SDL and get video driver name.
      */
-    void initializeSDL ();
+    void initialize_sdl ();
 
 
     /**
      *  Initialize viewport/drawing surface.
      */
-    void initializeSurface ();
+    void initialize_surface ();
 
 
     /**
      *  Event-processing.
      */
-    inline void processEvents ();
+    inline void process_events ();
 
 
     /**
      *  Setup OpenGL parameters.
      */
-    void setupOpenGL ();
+    void setup_opengl ();
 
 
     /**
@@ -125,7 +125,7 @@ public:
     /**
      *  Main application loop.
      */
-    void mainLoop ();
+    void main_loop ();
 
 };
 

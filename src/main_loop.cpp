@@ -15,11 +15,11 @@
 /**
  *  Event-processing.
  */
-inline void Main::processEvents () {
-    while (this->mainLoopRunning  &&  SDL_PollEvent(&this->event)) {
+inline void Main::process_events () {
+    while (this->main_loop_running  &&  SDL_PollEvent(&this->event)) {
         switch (this->event.type) {
             case SDL_QUIT:
-                this->mainLoopRunning = false;
+                this->main_loop_running = false;
                 break;
         }
     }
@@ -45,9 +45,9 @@ inline void Main::draw () {
 /**
  *  Main application loop.
  */
-void Main::mainLoop () {
-    while (this->mainLoopRunning) {
-        this->processEvents();
+void Main::main_loop () {
+    while (this->main_loop_running) {
+        this->process_events();
         this->draw();
         SDL_GL_SwapBuffers();
     }

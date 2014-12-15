@@ -20,10 +20,10 @@ Main::Main (int argc, char *argv[]):
 
     cout << "Hi!" << endl;
 
-    this->initializeSDL();
-    this->initializeSurface();
-    this->setupOpenGL();
-    this->mainLoop();
+    this->initialize_sdl();
+    this->initialize_surface();
+    this->setup_opengl();
+    this->main_loop();
 }
 
 
@@ -42,21 +42,21 @@ Main::~Main () {
 /**
  *  Obtain SDL versions, initialize SDL and get video driver name.
  */
-void Main::initializeSDL () {
-    SDL_VERSION(&this->compileSDLversion);
+void Main::initialize_sdl () {
+    SDL_VERSION(&this->compile_sdl_version);
     cout
         << "Compile-time SDL version: "
-        << static_cast<int>(this->compileSDLversion.major) << "."
-        << static_cast<int>(this->compileSDLversion.minor) << "."
-        << static_cast<int>(this->compileSDLversion.patch)
+        << static_cast<int>(this->compile_sdl_version.major) << "."
+        << static_cast<int>(this->compile_sdl_version.minor) << "."
+        << static_cast<int>(this->compile_sdl_version.patch)
         << endl;
 
-    this->linkedSDLversion = *SDL_Linked_Version();
+    this->linked_sdl_version = *SDL_Linked_Version();
     cout
         << "Runtime SDL version: "
-        << static_cast<int>(this->linkedSDLversion.major) << "."
-        << static_cast<int>(this->linkedSDLversion.minor) << "."
-        << static_cast<int>(this->linkedSDLversion.patch)
+        << static_cast<int>(this->linked_sdl_version.major) << "."
+        << static_cast<int>(this->linked_sdl_version.minor) << "."
+        << static_cast<int>(this->linked_sdl_version.patch)
         << endl;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
@@ -71,13 +71,13 @@ void Main::initializeSDL () {
 
     if (
         SDL_VideoDriverName(
-            this->videoDriverName,
-            DRIVER_NAME_BUFFER_SIZE
+            this->video_driver_name,
+            VIDEO_DRIVER_NAME_BUFFER_SIZE
         ) != NULL
     ) {
         cout
             << "Video driver: "
-            << this->videoDriverName
+            << this->video_driver_name
             << endl;
     } else {
         cerr
@@ -92,7 +92,7 @@ void Main::initializeSDL () {
 /**
  *  Initialize viewport/drawing surface.
  */
-void Main::initializeSurface () {
+void Main::initialize_surface () {
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -134,7 +134,7 @@ void Main::initializeSurface () {
 /**
  *  Setup OpenGL parameters.
  */
-void Main::setupOpenGL () {
+void Main::setup_opengl () {
     glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
