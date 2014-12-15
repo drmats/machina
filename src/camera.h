@@ -10,8 +10,8 @@
 #ifndef __CAMERA_H_
 #define __CAMERA_H_ 1
 
-#include "m3d.h"
 #include "sdl_opengl.h"
+#include "m3d.h"
 
 
 

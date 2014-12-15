@@ -7,7 +7,38 @@
  *  https://github.com/drmats/machina
  */
 
-#include "main.h"
+#ifndef __MAIN_LOOP_CPP_
+#define __MAIN_LOOP_CPP_ 1
+
+#include "main_loop.h"
+
+
+
+
+/**
+ *  Initialize vital components.
+ */
+MainLoop::MainLoop () {
+    this->assign_default_handlers();
+}
+
+
+
+
+/**
+ *  Clean-up.
+ */
+MainLoop::~MainLoop () {}
+
+
+
+
+/**
+ *  Assign default handlers (mouse/keyboard).
+ */
+void MainLoop::assign_default_handlers () {
+    // ...
+}
 
 
 
@@ -15,8 +46,8 @@
 /**
  *  Event-processing.
  */
-inline void Main::process_events () {
-    while (this->main_loop_running  &&  SDL_PollEvent(&this->event)) {
+inline void MainLoop::process_events () {
+    while (this->running  &&  SDL_PollEvent(&this->event)) {
         switch (this->event.type) {
             case SDL_MOUSEMOTION:
                 this->handle.mouse_motion(this->event);
@@ -33,7 +64,7 @@ inline void Main::process_events () {
                 break;
 
             case SDL_QUIT:
-                this->terminate_main_loop();
+                this->terminate();
                 break;
         }
     }
@@ -45,7 +76,7 @@ inline void Main::process_events () {
 /**
  *  Drawing.
  */
-inline void Main::draw () {
+inline void MainLoop::draw () {
     glClear(
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
@@ -59,10 +90,26 @@ inline void Main::draw () {
 /**
  *  Main application loop.
  */
-void Main::main_loop () {
-    while (this->main_loop_running) {
+void MainLoop::run () {
+    this->running = true;
+    while (this->running) {
         this->process_events();
         this->draw();
         SDL_GL_SwapBuffers();
     }
 }
+
+
+
+
+/**
+ *  Gracefully finish.
+ */
+void MainLoop::terminate () {
+    this->running = false;
+}
+
+
+
+
+#endif

@@ -10,12 +10,12 @@
 #ifndef __M3D_H_
 #define __M3D_H_ 1
 
-#include "platform.h"
-#include "messages.h"
+#include "sdl_opengl.h"
 #include <cstring>
 #include <stdexcept>
 #include <ostream>
 #include <cmath>
+#include "messages.h"
 
 namespace m3d {
 

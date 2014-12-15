@@ -7,6 +7,9 @@
  *  https://github.com/drmats/machina
  */
 
+#ifndef __CAMERA_CPP_
+#define __CAMERA_CPP_ 1
+
 #include "camera.h"
 
 
@@ -62,3 +65,8 @@ void Camera< GLdouble >::establish () {
  */
 template class Camera< GLfloat >;
 template class Camera< GLdouble >;
+
+
+
+
+#endif

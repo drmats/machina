@@ -10,14 +10,10 @@
 #ifndef __MAIN_H_
 #define __MAIN_H_ 1
 
-#include "m3d.h"
-#include "camera.h"
-
+#include "sdl_opengl.h"
 #include <iostream>
 #include <cstdlib>
-#include <functional>
-
-#include "sdl_opengl.h"
+#include "main_loop.h"
 
 
 
@@ -62,27 +58,8 @@ private:
     } view;
 
 
-    // event storage
-    SDL_Event event;
-
-
-    // event handlers
-    struct handle_t {
-        std::function< void (const SDL_Event &) > mouse_motion =
-            [] (const SDL_Event &) -> void { return; };
-        std::function< void (const SDL_Event &) > mouse_buttons =
-            [] (const SDL_Event &) -> void { return; };
-        std::function< void (const SDL_Event &) > keyboard =
-            [] (const SDL_Event &) -> void { return; };
-    } handle;
-
-
-    // main camera
-    Camera< GLfloat > camera;
-
-
-    // main loop sustaining variable
-    bool main_loop_running = true;
+    // event-processing / frame-rendering
+    MainLoop main_loop;
 
 
 
@@ -114,39 +91,9 @@ public:
 
 
     /**
-     *  Assign default handlers (mouse/keyboard).
-     */
-    void assign_default_handlers ();
-
-
-    /**
      *  Setup OpenGL parameters.
      */
     void setup_opengl ();
-
-
-    /**
-     *  Gracefully finish main loop.
-     */
-    void terminate_main_loop ();
-
-
-    /**
-     *  Event-processing.
-     */
-    inline void process_events ();
-
-
-    /**
-     *  Drawing.
-     */
-    inline void draw ();
-
-
-    /**
-     *  Main application loop.
-     */
-    void main_loop ();
 
 };
 

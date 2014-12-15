@@ -7,6 +7,9 @@
  *  https://github.com/drmats/machina
  */
 
+#ifndef __MAIN_CPP_
+#define __MAIN_CPP_ 1
+
 #include "main.h"
 
 
@@ -22,9 +25,8 @@ Main::Main (int argc, char *argv[]):
 
     this->initialize_sdl();
     this->initialize_surface();
-    this->assign_default_handlers();
     this->setup_opengl();
-    this->main_loop();
+    this->main_loop.run();
 }
 
 
@@ -133,16 +135,6 @@ void Main::initialize_surface () {
 
 
 /**
- *  Assign default handlers (mouse/keyboard).
- */
-void Main::assign_default_handlers () {
-    // ...
-}
-
-
-
-
-/**
  *  Setup OpenGL parameters.
  */
 void Main::setup_opengl () {
@@ -162,20 +154,14 @@ void Main::setup_opengl () {
 
 
 /**
- *  Gracefully finish main loop.
- */
-void Main::terminate_main_loop () {
-    this->main_loop_running = false;
-}
-
-
-
-
-/**
  *  Program entry-point.
  */
 int main (int argc, char *argv[]) {
-    Main *m = new Main(argc, argv);
-    delete m;
+    Main(argc, argv);
     exit(EXIT_SUCCESS);
 }
+
+
+
+
+#endif

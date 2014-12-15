@@ -11,7 +11,6 @@
 #define __M3D_CPP_ 1
 
 #include "m3d.h"
-#include "sdl_opengl.h"
 
 namespace m3d {
 

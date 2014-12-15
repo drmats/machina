@@ -19,12 +19,12 @@ linux:
 gnu_execute:  $(PLIBS)
 	@echo Linking project...
 	@$(GNUCPP) $(GNULINKLIBS) $(PLIBS) -o $(PNAME)
-	@echo $(PNAME) produced succesfully!
+	@echo \"$(PNAME)\" produced succesfully!
 
 .PHONY: clean
 clean:
 	@rm -v -f $(PNAME) *.o core
 
-%.o:  %.cpp
+%.o: %.cpp %.h
 	@echo Compiling: $<
 	@$(GNUCPP) $(GNUCOMPILEFLAGS) -c $< -o $@
