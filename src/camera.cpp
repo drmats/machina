@@ -13,15 +13,6 @@
 
 
 /**
- * Instantiation for used types.
- */
-template class Camera< GLfloat >;
-template class Camera< GLdouble >;
-
-
-
-
-/**
  *  Camera initialization.
  */
 template < typename T >
@@ -62,3 +53,12 @@ void Camera< GLdouble >::establish () {
     glLoadMatrixd(*this->rotation);
     glMultMatrixd(*this->translation);
 }
+
+
+
+
+/**
+ *  Instantiation for allowed types.
+ */
+template class Camera< GLfloat >;
+template class Camera< GLdouble >;

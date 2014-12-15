@@ -529,7 +529,8 @@ public:
      */
     GMatrix4x4< T >& load_perspective (T fovy, T aspect, T zNear, T zFar) {
         fovy = deg_to_rad(fovy);
-        T   f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
+        T
+            f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
             zNear_zFar = zNear - zFar;
 
         GMatrix< T, 4 >::data[0] = f / aspect;
