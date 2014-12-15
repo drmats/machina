@@ -48,24 +48,31 @@ void MainLoop::assign_default_handlers () {
  */
 inline void MainLoop::process_events () {
     while (this->running  &&  SDL_PollEvent(&this->event)) {
-        switch (this->event.type) {
-            case SDL_MOUSEMOTION:
-                this->handle.mouse_motion(this->event);
-                break;
+        try {
+            switch (this->event.type) {
+                case SDL_MOUSEMOTION:
+                    this->handle.mouse_motion(this->event);
+                    break;
 
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-                this->handle.mouse_buttons(this->event);
-                break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                    this->handle.mouse_buttons(this->event);
+                    break;
 
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-                this->handle.keyboard(this->event);
-                break;
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                    this->handle.keyboard(this->event);
+                    break;
 
-            case SDL_QUIT:
-                this->terminate();
-                break;
+                case SDL_QUIT:
+                    this->terminate();
+                    break;
+            }
+        } catch (std::bad_function_call &e) {
+            std::cout
+                << "MainLoop::process_events: "
+                << e.what()
+                << std::endl;
         }
     }
 }

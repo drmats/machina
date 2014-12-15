@@ -11,6 +11,7 @@
 #define __MAIN_LOOP_H_ 1
 
 #include "sdl_opengl.h"
+#include <iostream>
 #include <functional>
 #include "camera.h"
 
