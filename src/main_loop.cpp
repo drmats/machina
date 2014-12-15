@@ -83,7 +83,7 @@ inline void MainLoop::process_events () {
 /**
  *  Drawing.
  */
-inline void MainLoop::draw () {
+inline void MainLoop::draw () const {
     glClear(
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT

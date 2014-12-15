@@ -43,7 +43,7 @@ public:
     /**
      *  Establish camera projection in a viewport.
      */
-    void establish ();
+    void establish () const;
 
 };
 

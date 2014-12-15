@@ -79,7 +79,7 @@ public:
     /**
      *  Drawing.
      */
-    inline void draw ();
+    inline void draw () const;
 
 
     /**
