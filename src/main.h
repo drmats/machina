@@ -29,11 +29,19 @@
  */
 class Main {
 
-private:
+protected:
 
     // command-line parameters
-    int argc;
-    char **argv;
+    struct command_line_t {
+        command_line_t (
+            int const& argc,
+            char** const& argv
+        ):
+            argc{argc}, argv{argv}
+            {}
+        int const& argc;
+        char** const& argv;
+    } command_line;
 
 
     // SDL library versions
@@ -69,7 +77,7 @@ public:
     /**
      *  Initialize vital application components.
      */
-    Main (int argc, char *argv[]);
+    Main (int argc, char **argv);
 
 
     /**

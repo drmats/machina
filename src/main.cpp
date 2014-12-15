@@ -18,11 +18,10 @@
 /**
  *  Initialize vital application components.
  */
-Main::Main (int argc, char *argv[]):
-    argc{argc}, argv{argv} {
-
+Main::Main (int argc, char **argv):
+    command_line{argc, argv}
+{
     std::cout << "Hi!" << std::endl;
-
     this->initialize_sdl();
     this->initialize_surface();
     this->setup_opengl();
