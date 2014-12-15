@@ -12,6 +12,9 @@
 
 #include "platform.h"
 
+
+
+
 #ifdef __LINUX__
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
@@ -22,5 +25,8 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #endif
+
+
+
 
 #endif
