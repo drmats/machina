@@ -18,10 +18,11 @@
 Main::Main (int argc, char *argv[]):
     argc{argc}, argv{argv} {
 
-    cout << "Hi!" << endl;
+    std::cout << "Hi!" << std::endl;
 
     this->initialize_sdl();
     this->initialize_surface();
+    this->assign_default_handlers();
     this->setup_opengl();
     this->main_loop();
 }
@@ -33,7 +34,7 @@ Main::Main (int argc, char *argv[]):
  *  Clean-up.
  */
 Main::~Main () {
-    cout << "Bye!" << endl;
+    std::cout << "Bye!" << std::endl;
 }
 
 
@@ -44,26 +45,26 @@ Main::~Main () {
  */
 void Main::initialize_sdl () {
     SDL_VERSION(&this->compile_sdl_version);
-    cout
+    std::cout
         << "Compile-time SDL version: "
         << static_cast<int>(this->compile_sdl_version.major) << "."
         << static_cast<int>(this->compile_sdl_version.minor) << "."
         << static_cast<int>(this->compile_sdl_version.patch)
-        << endl;
+        << std::endl;
 
     this->linked_sdl_version = *SDL_Linked_Version();
-    cout
+    std::cout
         << "Runtime SDL version: "
         << static_cast<int>(this->linked_sdl_version.major) << "."
         << static_cast<int>(this->linked_sdl_version.minor) << "."
         << static_cast<int>(this->linked_sdl_version.patch)
-        << endl;
+        << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
-        cerr
+        std::cerr
             << "Unable to initialize SDL: "
             << SDL_GetError()
-            << endl;
+            << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -75,14 +76,14 @@ void Main::initialize_sdl () {
             VIDEO_DRIVER_NAME_BUFFER_SIZE
         ) != NULL
     ) {
-        cout
+        std::cout
             << "Video driver: "
             << this->video_driver_name
-            << endl;
+            << std::endl;
     } else {
-        cerr
+        std::cerr
             << "Failed to obtain the video driver name."
-            << endl;
+            << std::endl;
     }
 }
 
@@ -111,21 +112,31 @@ void Main::initialize_surface () {
     );
 
     if (screen != NULL) {
-        cout
+        std::cout
             << "Initialized surface: "
             << this->screen->w << "x" << this->screen->h
             << "@" << static_cast<int>(this->screen->format->BitsPerPixel)
-            << endl;
+            << std::endl;
     } else {
-        cerr
+        std::cerr
             << "Unable to initialize surface: "
             << SDL_GetError()
-            << endl;
+            << std::endl;
         exit(EXIT_FAILURE);
     }
 
     glViewport(0, 0, this->screen->w, this->screen->h);
     SDL_WM_SetCaption(PROGRAM_NAME, NULL);
+}
+
+
+
+
+/**
+ *  Assign default handlers (mouse/keyboard).
+ */
+void Main::assign_default_handlers () {
+    // ...
 }
 
 
@@ -145,6 +156,16 @@ void Main::setup_opengl () {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+}
+
+
+
+
+/**
+ *  Gracefully finish main loop.
+ */
+void Main::terminate_main_loop () {
+    this->main_loop_running = false;
 }
 
 

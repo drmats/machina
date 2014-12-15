@@ -15,11 +15,9 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <functional>
 
 #include "sdl_opengl.h"
-
-using namespace std;
-using namespace m3d;
 
 
 
@@ -52,10 +50,6 @@ private:
     SDL_Surface *screen;
 
 
-    // event storage
-    SDL_Event event;
-
-
     // current video driver
     char video_driver_name[VIDEO_DRIVER_NAME_BUFFER_SIZE];
 
@@ -66,6 +60,21 @@ private:
         int height = 540;
         int bpp = 32;
     } view;
+
+
+    // event storage
+    SDL_Event event;
+
+
+    // event handlers
+    struct handle_t {
+        std::function< void (const SDL_Event &) > mouse_motion =
+            [] (const SDL_Event &) -> void { return; };
+        std::function< void (const SDL_Event &) > mouse_buttons =
+            [] (const SDL_Event &) -> void { return; };
+        std::function< void (const SDL_Event &) > keyboard =
+            [] (const SDL_Event &) -> void { return; };
+    } handle;
 
 
     // main camera
@@ -105,15 +114,27 @@ public:
 
 
     /**
-     *  Event-processing.
+     *  Assign default handlers (mouse/keyboard).
      */
-    inline void process_events ();
+    void assign_default_handlers ();
 
 
     /**
      *  Setup OpenGL parameters.
      */
     void setup_opengl ();
+
+
+    /**
+     *  Gracefully finish main loop.
+     */
+    void terminate_main_loop ();
+
+
+    /**
+     *  Event-processing.
+     */
+    inline void process_events ();
 
 
     /**
@@ -128,5 +149,8 @@ public:
     void main_loop ();
 
 };
+
+
+
 
 #endif
