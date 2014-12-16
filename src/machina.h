@@ -64,7 +64,7 @@ protected:
 
 
     // viewport parameters
-    struct view_t {
+    struct {
         int width = 960;
         int height = 540;
         int bpp = 32;
