@@ -15,6 +15,8 @@
 #include <functional>
 #include "camera.h"
 
+namespace machina {
+
 
 
 
@@ -97,5 +99,7 @@ public:
 
 
 
+
+} // namespace machina
 
 #endif

@@ -6,7 +6,7 @@
 #
 
 PNAME               =  machina
-PLIBS               =  messages.o m3d.o camera.o main_loop.o main.o
+PLIBS               =  m3d_message.o m3d.o camera.o main_loop.o machina.o main.o
 GNUCPP              =  g++
 GNUCOMPILEFLAGS     =  -std=c++11 -Wall -Wpedantic -O2 -D_GNU_SOURCE=1
 GNULINKLIBS         =  -lGL -lGLU -lm -lSDL

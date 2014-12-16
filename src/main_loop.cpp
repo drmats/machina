@@ -12,6 +12,8 @@
 
 #include "main_loop.h"
 
+namespace machina {
+
 
 
 
@@ -118,5 +120,7 @@ void MainLoop::terminate () {
 
 
 
+
+} // namespace machina
 
 #endif

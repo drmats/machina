@@ -7,10 +7,10 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __MESSAGES_H_
-#define __MESSAGES_H_ 1
+#ifndef __M3D_MESSAGE_H_
+#define __M3D_MESSAGE_H_ 1
 
-namespace message {
+namespace m3d_message {
 
 
 
@@ -20,6 +20,6 @@ extern const char *out_of_range;
 
 
 
-} // namespace message
+} // namespace m3d_message
 
 #endif

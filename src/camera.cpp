@@ -12,6 +12,8 @@
 
 #include "camera.h"
 
+namespace machina {
+
 
 
 
@@ -68,5 +70,7 @@ template class Camera< GLdouble >;
 
 
 
+
+} // namespace machina
 
 #endif

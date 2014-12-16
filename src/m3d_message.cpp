@@ -7,12 +7,12 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __MESSAGES_CPP_
-#define __MESSAGES_CPP_ 1
+#ifndef __M3D_MESSAGE_CPP_
+#define __M3D_MESSAGE_CPP_ 1
 
-#include "messages.h"
+#include "m3d_message.h"
 
-namespace message {
+namespace m3d_message {
 
 
 
@@ -22,6 +22,6 @@ const char *out_of_range = "Index out of range.";
 
 
 
-} // namespace message
+} // namespace m3d_message
 
 #endif

@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <ostream>
 #include <cmath>
-#include "messages.h"
+#include "m3d_message.h"
 
 namespace m3d {
 
@@ -127,14 +127,14 @@ public:
      */
     T& operator[] (std::size_t i) throw (std::out_of_range) {
         if (i >= N) {
-            throw std::out_of_range(message::out_of_range);
+            throw std::out_of_range(m3d_message::out_of_range);
         }
         return data[i];
     }
 
     const T& operator[] (std::size_t i) const throw (std::out_of_range) {
         if (i >= N) {
-            throw std::out_of_range(message::out_of_range);
+            throw std::out_of_range(m3d_message::out_of_range);
         }
         return data[i];
     }

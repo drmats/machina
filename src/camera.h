@@ -13,6 +13,8 @@
 #include "sdl_opengl.h"
 #include "m3d.h"
 
+namespace machina {
+
 
 
 
@@ -49,5 +51,7 @@ public:
 
 
 
+
+} // namespace machina
 
 #endif
