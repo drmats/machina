@@ -10,6 +10,7 @@
 #ifndef __MAIN_H_
 #define __MAIN_H_ 1
 
+#include <memory>
 #include "machina.h"
 
 

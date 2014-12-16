@@ -24,10 +24,12 @@ Machina::Machina (int argc, char **argv):
     command_line_params{argc, argv}
 {
     std::cout << "Hi!" << std::endl;
+
     this->initialize_sdl();
     this->initialize_surface();
     this->setup_opengl();
-    this->main_loop.run();
+
+    this->main_loop = std::make_unique< MainLoop >(this);
 }
 
 
@@ -50,17 +52,17 @@ void Machina::initialize_sdl () {
     SDL_VERSION(&this->compile_sdl_version);
     std::cout
         << "Compile-time SDL version: "
-        << static_cast<int>(this->compile_sdl_version.major) << "."
-        << static_cast<int>(this->compile_sdl_version.minor) << "."
-        << static_cast<int>(this->compile_sdl_version.patch)
+        << static_cast< int >(this->compile_sdl_version.major) << "."
+        << static_cast< int >(this->compile_sdl_version.minor) << "."
+        << static_cast< int >(this->compile_sdl_version.patch)
         << std::endl;
 
     this->linked_sdl_version = *SDL_Linked_Version();
     std::cout
         << "Runtime SDL version: "
-        << static_cast<int>(this->linked_sdl_version.major) << "."
-        << static_cast<int>(this->linked_sdl_version.minor) << "."
-        << static_cast<int>(this->linked_sdl_version.patch)
+        << static_cast< int >(this->linked_sdl_version.major) << "."
+        << static_cast< int >(this->linked_sdl_version.minor) << "."
+        << static_cast< int >(this->linked_sdl_version.patch)
         << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
@@ -149,6 +151,16 @@ void Machina::setup_opengl () {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+}
+
+
+
+
+/**
+ *  Run the app.
+ */
+void Machina::run () {
+    this->main_loop->run();
 }
 
 

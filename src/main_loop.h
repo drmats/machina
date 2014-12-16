@@ -13,9 +13,18 @@
 #include "sdl_opengl.h"
 #include <iostream>
 #include <functional>
+#include <memory>
 #include "camera.h"
 
 namespace machina {
+
+
+
+
+/**
+ *  Forward declaration for "root" pointer.
+ */
+class Machina;
 
 
 
@@ -27,12 +36,16 @@ class MainLoop {
 
 private:
 
+    // program root
+    Machina *root;
+
+
     // event storage
     SDL_Event event;
 
 
     // event handlers
-    struct handle_t {
+    struct {
         std::function< void (const SDL_Event &) > mouse_motion =
             [] (const SDL_Event &) -> void { return; };
         std::function< void (const SDL_Event &) > mouse_buttons =
@@ -57,7 +70,7 @@ public:
     /**
      *  Initialize vital components.
      */
-    MainLoop ();
+    MainLoop (Machina *root);
 
 
     /**

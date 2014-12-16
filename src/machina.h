@@ -13,6 +13,7 @@
 #include "sdl_opengl.h"
 #include <iostream>
 #include <cstdlib>
+#include <memory>
 #include "main_loop.h"
 
 namespace machina {
@@ -72,7 +73,8 @@ protected:
 
 
     // event-processing / frame-rendering
-    MainLoop main_loop;
+    std::unique_ptr< MainLoop > main_loop;
+    friend class MainLoop;
 
 
 
@@ -107,6 +109,12 @@ public:
      *  Setup OpenGL parameters.
      */
     void setup_opengl ();
+
+
+    /**
+     *  Run the app.
+     */
+    void run ();
 
 };
 

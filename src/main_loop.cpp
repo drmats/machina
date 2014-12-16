@@ -11,6 +11,7 @@
 #define __MAIN_LOOP_CPP_ 1
 
 #include "main_loop.h"
+#include "machina.h"
 
 namespace machina {
 
@@ -20,7 +21,9 @@ namespace machina {
 /**
  *  Initialize vital components.
  */
-MainLoop::MainLoop () {
+MainLoop::MainLoop (Machina *root):
+    root{root}
+{
     this->assign_default_handlers();
 }
 
