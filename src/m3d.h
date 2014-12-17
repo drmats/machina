@@ -125,38 +125,38 @@ public:
     /**
      *  Array indexers.
      */
-    T& operator[] (std::size_t i) throw (std::out_of_range) {
+    inline T& operator[] (std::size_t i) throw (std::out_of_range) {
         if (i >= N) {
             throw std::out_of_range(m3d_message::out_of_range);
         }
-        return data[i];
+        return this->data[i];
     }
 
-    const T& operator[] (std::size_t i) const throw (std::out_of_range) {
+    inline const T& operator[] (std::size_t i) const throw (std::out_of_range) {
         if (i >= N) {
             throw std::out_of_range(m3d_message::out_of_range);
         }
-        return data[i];
+        return this->data[i];
     }
 
 
     /**
      *  Return pointer of basic type to array.
      */
-    const T* operator* () const { return data; }
+    inline const T* operator* () const { return this->data; }
 
 
     /**
      *  Return size of array.
      */
-    std::size_t size () const { return N; }
+    inline std::size_t size () const { return N; }
 
 
     /**
      *  Reset current array (fill data with zeros).
      */
-    GArray<T, N>& reset () {
-        memset(data, 0, N*sizeof(T));
+    inline GArray<T, N>& reset () {
+        memset(this->data, 0, N*sizeof(T));
         return *this;
     }
 
@@ -164,13 +164,13 @@ public:
     /**
      *  Replace current array.
      */
-    GArray<T, N>& assign (const T d[]) {
-        memcpy(data, d, N*sizeof(T));
+    inline GArray<T, N>& assign (const T d[]) {
+        memcpy(this->data, d, N*sizeof(T));
         return *this;
     }
 
-    GArray<T, N>& assign (const GArray<T, N> &a) {
-        memcpy(data, *a, N*sizeof(T));
+    inline GArray<T, N>& assign (const GArray<T, N> &a) {
+        memcpy(this->data, *a, N*sizeof(T));
         return *this;
     }
 
@@ -178,9 +178,9 @@ public:
     /**
      *  Add to current array.
      */
-    GArray<T, N>& add (const GArray<T, N> &a) {
+    inline GArray<T, N>& add (const GArray<T, N> &a) {
         for (std::size_t i = 0;  i < N;  i++) {
-            data[i] += a[i];
+            this->data[i] += a[i];
         }
         return *this;
     }
@@ -189,9 +189,9 @@ public:
     /**
      *  Subtract from current array.
      */
-    GArray<T, N>& sub (const GArray<T, N> &a) {
+    inline GArray<T, N>& sub (const GArray<T, N> &a) {
         for (std::size_t i = 0;  i < N;  i++) {
-            data[i] -= a[i];
+            this->data[i] -= a[i];
         }
         return *this;
     }
@@ -200,9 +200,9 @@ public:
     /**
      *  Scale current array (multiply each component by a given value).
      */
-    GArray<T, N>& scale (T s) {
+    inline GArray<T, N>& scale (T s) {
         for (std::size_t i = 0;  i < N;  i++) {
-            data[i] *= s;
+            this->data[i] *= s;
         }
         return *this;
     }
@@ -245,7 +245,7 @@ public:
     /**
      *  Compute square length of the current vector.
      */
-    T sqr_length () const {
+    inline T sqr_length () const {
         T result = static_cast<T>(0);
         for (std::size_t i = 0;  i < N;  i++) {
             result += sqr((*this)[i]);
@@ -257,8 +257,8 @@ public:
     /**
      *  Compute length of the current vector.
      */
-    T length () const {
-        return std::sqrt(sqr_length());
+    inline T length () const {
+        return std::sqrt(this->sqr_length());
     }
 
 
@@ -266,11 +266,11 @@ public:
      *  Perform a vector normalization.
      */
     GVector<T, N>& normalize () {
-        T l = length();
+        T l = this->length();
         if (close_to(l, static_cast<T>(0))) {
             this->reset();
         } else {
-            scale(static_cast<T>(1) / length());
+            this->scale(static_cast<T>(1) / this->length());
         }
         return *this;
     }
@@ -279,16 +279,16 @@ public:
     /**
      *  Is it a unit vector?
      */
-    bool is_unit () const {
-        return close_to(length(), static_cast<T>(1));
+    inline bool is_unit () const {
+        return close_to(this->length(), static_cast<T>(1));
     }
 
 
     /**
      *  Is this vector length equal to zero?
      */
-    bool is_zero () const {
-        return close_to(length(), static_cast<T>(0));
+    inline bool is_zero () const {
+        return close_to(this->length(), static_cast<T>(0));
     }
 
 
@@ -297,7 +297,7 @@ public:
      */
     GVector<T, N>& flip () {
         for (std::size_t i = 0;  i < N;  i++) {
-            GArray<T, N>::data[i] = -GArray<T, N>::data[i];
+            this->data[i] = -this->data[i];
         }
         return *this;
     }
@@ -325,7 +325,7 @@ public:
             for (std::size_t j = 0;  j < N;  j++) {
                 val += m[i + j*N] * v[j];
             }
-            GArray<T, N>::data[i] = val;
+            this->data[i] = val;
         }
         return *this;
     }
@@ -358,7 +358,7 @@ public:
 
 
     GVector3<T>& assign (T x0, T x1, T x2) {
-        #define set(i, v) GVector<T, 3>::data[i] = v
+        #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1); set(2, x2);
         #undef set
         return *this;
@@ -369,9 +369,9 @@ public:
      *  Compute cross product and store the result in current vector.
      */
     GVector3<T>& cross (const GVector3<T> &u, const GVector3<T> &v) {
-        GVector<T, 3>::data[0] = u[1] * v[2] - v[1] * u[2];
-        GVector<T, 3>::data[1] = u[2] * v[0] - v[2] * u[0];
-        GVector<T, 3>::data[2] = u[0] * v[1] - v[0] * u[1];
+        this->data[0] = u[1] * v[2] - v[1] * u[2];
+        this->data[1] = u[2] * v[0] - v[2] * u[0];
+        this->data[2] = u[0] * v[1] - v[0] * u[1];
         return *this;
     }
 
@@ -403,7 +403,7 @@ public:
 
 
     GVector4<T>& assign (T x0, T x1, T x2, T x3) {
-        #define set(i, v) GVector<T, 4>::data[i] = v
+        #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1); set(2, x2); set(3, x3);
         #undef set
         return *this;
@@ -428,7 +428,7 @@ public:
     GMatrix<T, N>& load_identity () {
         this->reset();
         for (std::size_t i = 0;  i < N*N;  i += (N+1)) {
-            GArray<T, N*N>::data[i] = static_cast<T>(1);
+            this->data[i] = static_cast<T>(1);
         }
         return *this;
     }
@@ -446,7 +446,7 @@ public:
             for (std::size_t j = 0;  j < N;  j++) {
                 val += l[row + j*N] * r[column + j];
             }
-            GArray<T, N*N>::data[i] = val;
+            this->data[i] = val;
         }
         return *this;
     }
@@ -482,9 +482,9 @@ public:
      */
     GMatrix4x4<T>& load_translation (T x, T y, T z) {
         this->load_identity();
-        GMatrix<T, 4>::data[12] = x;
-        GMatrix<T, 4>::data[13] = y;
-        GMatrix<T, 4>::data[14] = z;
+        this->data[12] = x;
+        this->data[13] = y;
+        this->data[14] = z;
         return *this;
     }
 
@@ -508,7 +508,7 @@ public:
             xs = X*s,       ys = Y*s,       zs = Z*s,
           xync = X*Y*nc,  xznc = X*Z*nc,  yznc = Y*Z*nc;
 
-        #define set(i, val) GMatrix<T, 4>::data[i] = static_cast<T>(val)
+        #define set(i, val) this->data[i] = static_cast<T>(val)
 
         set(0, sqr(X)*nc+c);  set(4, xync-zs);      set(8 , xznc+ys);      set(12, 0);
         set(1, xync+zs);      set(5, sqr(Y)*nc+c);  set(9 , yznc-xs);      set(13, 0);
@@ -533,11 +533,11 @@ public:
             f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
             zNear_zFar = zNear - zFar;
 
-        GMatrix<T, 4>::data[0] = f / aspect;
-        GMatrix<T, 4>::data[5] = f;
-        GMatrix<T, 4>::data[10] = (zNear + zFar) / zNear_zFar;
-        GMatrix<T, 4>::data[11] = static_cast<T>(-1);
-        GMatrix<T, 4>::data[14] = (static_cast<T>(2) * zNear * zFar) / zNear_zFar;
+        this->data[0] = f / aspect;
+        this->data[5] = f;
+        this->data[10] = (zNear + zFar) / zNear_zFar;
+        this->data[11] = static_cast<T>(-1);
+        this->data[14] = (static_cast<T>(2) * zNear * zFar) / zNear_zFar;
 
         return *this;
     }
