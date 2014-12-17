@@ -45,7 +45,7 @@ private:
     SDL_Event event;
 
 
-    // event handlers
+    // event handles
     struct {
         std::function<void (const SDL_Event &)> mouse_motion =
             [] (const SDL_Event &) -> void { return; };
@@ -54,6 +54,12 @@ private:
         std::function<void (const SDL_Event &)> keyboard =
             [] (const SDL_Event &) -> void { return; };
     } handle;
+
+
+    // default event handlers
+    struct default_handler_t {
+        void keyboard (MainLoop *, const SDL_Event &);
+    } default_handler;
 
 
     // main camera
