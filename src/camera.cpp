@@ -30,6 +30,23 @@ Camera<T>::Camera () {
 
 
 /**
+ *  Rotate camera (look-around).
+ */
+template <typename T>
+void Camera<T>::rotate (T delta, T x, T y, T z) {
+    Matrix relative_rotation;
+    this->rotation.multiply(
+        relative_rotation.load_rotation(
+            delta, x, y, z
+        ),
+        rotation
+    );
+}
+
+
+
+
+/**
  *  Establish camera projection in a viewport (GLfloat specialization).
  */
 template <>

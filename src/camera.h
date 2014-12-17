@@ -132,6 +132,11 @@ public:
 
 
     /**
+     *  Rotate camera (look-around).
+     */
+    void rotate (T, T, T, T);
+
+    /**
      *  Establish camera projection in a viewport.
      */
     void establish_projection () const;
