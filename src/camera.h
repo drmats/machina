@@ -22,17 +22,25 @@ namespace machina {
 /**
  *  Perspective projection matrix with helpers.
  */
-template < typename T >
+template <typename T>
 class PerspectiveProjection {
 
 private:
 
-    m3d::GMatrix4x4< T > projection;
+    using Matrix = m3d::GMatrix4x4<T>;
 
-    T fovy = static_cast< T >(60.0f);
-    T aspect = static_cast< T >(16.0f / 9.0f);
-    T zNear = static_cast< T >(1.0f);
-    T zFar = static_cast< T >(8000.0f);
+    /**
+     *  Perspective projection matrix.
+     */
+    Matrix projection;
+
+    /**
+     *  Helper vars.
+     */
+    T fovy = static_cast<T>(60.0f);
+    T aspect = static_cast<T>(16.0f / 9.0f);
+    T zNear = static_cast<T>(1.0f);
+    T zFar = static_cast<T>(8000.0f);
 
 
 public:
@@ -50,13 +58,10 @@ public:
     }
 
 
-    ~PerspectiveProjection () {}
-
-
     /**
      *  Return projection matrix.
      */
-    inline const m3d::GMatrix4x4< T >& get_matrix () const {
+    inline const Matrix& get_matrix () const {
         return this->projection;
     }
 
@@ -64,8 +69,8 @@ public:
     /**
      *  Get all parameters as a vector.
      */
-    inline std::vector< T > get_all () const {
-        std::vector< T > all = {
+    inline std::vector<T> get_all () const {
+        std::vector<T> all = {
             this->fovy,
             this->aspect,
             this->zNear,
@@ -78,7 +83,7 @@ public:
     /**
      *  Set all parameters from a given vector.
      */
-    inline const m3d::GMatrix4x4< T >& set_all (const std::vector< T > &all) {
+    inline const Matrix& set_all (const std::vector<T> &all) {
         this->fovy = all[0];
         this->aspect = all[1];
         this->zNear = all[2];
@@ -99,34 +104,31 @@ public:
 /**
  *  Simple camera / view class.
  */
-template < typename T >
+template <typename T>
 class Camera {
 
 public:
 
+    using Matrix = m3d::GMatrix4x4<T>;
+
+
     /**
      *  Perspective projection matrix.
      */
-    PerspectiveProjection< T > projection;
+    PerspectiveProjection<T> projection;
 
 
     /**
      *  Modelview matrices.
      */
-    m3d::GMatrix4x4< T > rotation;
-    m3d::GMatrix4x4< T > translation;
+    Matrix rotation;
+    Matrix translation;
 
 
     /**
      *  Camera initialization.
      */
     Camera ();
-
-
-    /**
-     *  Camera destruction.
-     */
-    ~Camera ();
 
 
     /**

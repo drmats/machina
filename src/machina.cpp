@@ -28,7 +28,7 @@ Machina::Machina (int argc, char **argv):
     this->initialize_sdl();
     this->initialize_surface();
 
-    this->main_loop = std::make_shared< MainLoop >(this);
+    this->main_loop = std::make_shared<MainLoop>(this);
 }
 
 
@@ -51,17 +51,17 @@ void Machina::initialize_sdl () {
     SDL_VERSION(&this->compile_sdl_version);
     std::cout
         << "Compile-time SDL version: "
-        << static_cast< int >(this->compile_sdl_version.major) << "."
-        << static_cast< int >(this->compile_sdl_version.minor) << "."
-        << static_cast< int >(this->compile_sdl_version.patch)
+        << static_cast<int>(this->compile_sdl_version.major) << "."
+        << static_cast<int>(this->compile_sdl_version.minor) << "."
+        << static_cast<int>(this->compile_sdl_version.patch)
         << std::endl;
 
     this->linked_sdl_version = *SDL_Linked_Version();
     std::cout
         << "Runtime SDL version: "
-        << static_cast< int >(this->linked_sdl_version.major) << "."
-        << static_cast< int >(this->linked_sdl_version.minor) << "."
-        << static_cast< int >(this->linked_sdl_version.patch)
+        << static_cast<int>(this->linked_sdl_version.major) << "."
+        << static_cast<int>(this->linked_sdl_version.minor) << "."
+        << static_cast<int>(this->linked_sdl_version.patch)
         << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {

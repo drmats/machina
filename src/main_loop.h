@@ -47,17 +47,17 @@ private:
 
     // event handlers
     struct {
-        std::function< void (const SDL_Event &) > mouse_motion =
+        std::function<void (const SDL_Event &)> mouse_motion =
             [] (const SDL_Event &) -> void { return; };
-        std::function< void (const SDL_Event &) > mouse_buttons =
+        std::function<void (const SDL_Event &)> mouse_buttons =
             [] (const SDL_Event &) -> void { return; };
-        std::function< void (const SDL_Event &) > keyboard =
+        std::function<void (const SDL_Event &)> keyboard =
             [] (const SDL_Event &) -> void { return; };
     } handle;
 
 
     // main camera
-    Camera< GLfloat > camera;
+    Camera<GLfloat> camera;
 
 
     // loop sustaining variable
@@ -72,12 +72,6 @@ public:
      *  Initialize vital components.
      */
     MainLoop (Machina *root);
-
-
-    /**
-     *  Clean-up.
-     */
-    ~MainLoop ();
 
 
     /**

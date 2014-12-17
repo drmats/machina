@@ -20,8 +20,8 @@ namespace machina {
 /**
  *  Camera initialization.
  */
-template < typename T >
-Camera< T >::Camera () {
+template <typename T>
+Camera<T>::Camera () {
     this->rotation.load_identity();
     this->translation.load_identity();
 }
@@ -30,19 +30,10 @@ Camera< T >::Camera () {
 
 
 /**
- *  Camera destruction.
- */
-template < typename T >
-Camera< T >::~Camera () {}
-
-
-
-
-/**
  *  Establish camera projection in a viewport (GLfloat specialization).
  */
 template <>
-void Camera< GLfloat >::establish_projection () const {
+void Camera<GLfloat>::establish_projection () const {
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(*this->projection.get_matrix());
 }
@@ -54,7 +45,7 @@ void Camera< GLfloat >::establish_projection () const {
  *  Establish camera projection in a viewport (GLdouble specialization).
  */
 template <>
-void Camera< GLdouble >::establish_projection () const {
+void Camera<GLdouble>::establish_projection () const {
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixd(*this->projection.get_matrix());
 }
@@ -66,7 +57,7 @@ void Camera< GLdouble >::establish_projection () const {
  *  Establish camera modelview in a viewport (GLfloat specialization).
  */
 template <>
-void Camera< GLfloat >::establish_modelview () const {
+void Camera<GLfloat>::establish_modelview () const {
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(*this->rotation);
     glMultMatrixf(*this->translation);
@@ -79,7 +70,7 @@ void Camera< GLfloat >::establish_modelview () const {
  *  Establish camera modelview in a viewport (GLdouble specialization).
  */
 template <>
-void Camera< GLdouble >::establish_modelview () const {
+void Camera<GLdouble>::establish_modelview () const {
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(*this->rotation);
     glMultMatrixd(*this->translation);
@@ -91,8 +82,8 @@ void Camera< GLdouble >::establish_modelview () const {
 /**
  *  Instantiation for allowed types.
  */
-template class Camera< GLfloat >;
-template class Camera< GLdouble >;
+template class Camera<GLfloat>;
+template class Camera<GLdouble>;
 
 
 

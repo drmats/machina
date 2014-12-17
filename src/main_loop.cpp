@@ -32,14 +32,6 @@ MainLoop::MainLoop (Machina *root):
 
 
 /**
- *  Clean-up.
- */
-MainLoop::~MainLoop () {}
-
-
-
-
-/**
  *  Assign default handlers (mouse/keyboard).
  */
 void MainLoop::assign_default_handlers () {
@@ -67,8 +59,8 @@ void MainLoop::setup_opengl () {
     this->camera.projection.set_all([this] () {
         auto all = this->camera.projection.get_all();
         all[1] =
-            static_cast< GLfloat >(this->root->viewport.width) /
-            static_cast< GLfloat >(this->root->viewport.height);
+            static_cast<GLfloat>(this->root->viewport.width) /
+            static_cast<GLfloat>(this->root->viewport.height);
         return all;
     }());
 }
