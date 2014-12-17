@@ -12,6 +12,7 @@
 
 #include "main_loop.h"
 #include "machina.h"
+#include "primitives.h"
 
 namespace machina {
 
@@ -142,6 +143,8 @@ inline void MainLoop::draw () const {
     );
     this->camera.establish_projection();
     this->camera.establish_modelview();
+
+    primitives::grid(240.0f, 10.0f);
 }
 
 
