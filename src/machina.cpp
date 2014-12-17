@@ -28,7 +28,7 @@ Machina::Machina (int argc, char **argv):
     this->initialize_sdl();
     this->initialize_surface();
 
-    this->main_loop = std::make_unique< MainLoop >(this);
+    this->main_loop = std::make_shared< MainLoop >(this);
 }
 
 

@@ -73,7 +73,7 @@ protected:
 
 
     // event-processing / frame-rendering
-    std::unique_ptr< MainLoop > main_loop;
+    std::shared_ptr< MainLoop > main_loop;
     friend class MainLoop;
 
 
