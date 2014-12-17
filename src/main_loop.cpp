@@ -20,9 +20,23 @@ namespace machina {
 
 
 /**
+ *  Default mouse-motion event handler (do-nothing).
+ */
+void MainLoop::default_handler_t::empty_mouse_motion (
+    MainLoop *ml, const SDL_Event &e
+) {
+    return;
+}
+
+
+
+
+/**
  *  Default keyboard event handler.
  */
-void MainLoop::default_handler_t::keyboard (MainLoop *ml, const SDL_Event &e) {
+void MainLoop::default_handler_t::keyboard (
+    MainLoop *ml, const SDL_Event &e
+) {
     Uint8 *keystate = SDL_GetKeyState(NULL);
 
     if (keystate[SDLK_ESCAPE] == 1) {
@@ -60,6 +74,10 @@ MainLoop::MainLoop (Machina *root):
  *  Assign default handlers (mouse/keyboard).
  */
 void MainLoop::assign_default_handlers () {
+    this->handle.mouse_motion =
+        [this] (const SDL_Event &e) -> void {
+            return this->default_handler.empty_mouse_motion(this, e);
+        };
     this->handle.keyboard =
         [this] (const SDL_Event &e) -> void {
             return this->default_handler.keyboard(this, e);

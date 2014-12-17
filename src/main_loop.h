@@ -58,6 +58,7 @@ private:
 
     // default event handlers
     struct default_handler_t {
+        void empty_mouse_motion (MainLoop *, const SDL_Event &);
         void keyboard (MainLoop *, const SDL_Event &);
     } default_handler;
 
@@ -77,7 +78,7 @@ public:
     /**
      *  Initialize vital components.
      */
-    MainLoop (Machina *root);
+    MainLoop (Machina *);
 
 
     /**
