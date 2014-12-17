@@ -14,6 +14,7 @@
 #include <iostream>
 #include <functional>
 #include <memory>
+#include <vector>
 #include "camera.h"
 
 namespace machina {
@@ -83,6 +84,12 @@ public:
      *  Assign default handlers (mouse/keyboard).
      */
     void assign_default_handlers ();
+
+
+    /**
+     *  Setup initial OpenGL parameters.
+     */
+    void setup_opengl ();
 
 
     /**

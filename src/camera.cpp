@@ -42,9 +42,9 @@ Camera< T >::~Camera () {}
  *  Establish camera projection in a viewport (GLfloat specialization).
  */
 template <>
-void Camera< GLfloat >::establish () const {
-    glLoadMatrixf(*this->rotation);
-    glMultMatrixf(*this->translation);
+void Camera< GLfloat >::establish_projection () const {
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(*this->projection.get_matrix());
 }
 
 
@@ -54,7 +54,33 @@ void Camera< GLfloat >::establish () const {
  *  Establish camera projection in a viewport (GLdouble specialization).
  */
 template <>
-void Camera< GLdouble >::establish () const {
+void Camera< GLdouble >::establish_projection () const {
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(*this->projection.get_matrix());
+}
+
+
+
+
+/**
+ *  Establish camera modelview in a viewport (GLfloat specialization).
+ */
+template <>
+void Camera< GLfloat >::establish_modelview () const {
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(*this->rotation);
+    glMultMatrixf(*this->translation);
+}
+
+
+
+
+/**
+ *  Establish camera modelview in a viewport (GLdouble specialization).
+ */
+template <>
+void Camera< GLdouble >::establish_modelview () const {
+    glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(*this->rotation);
     glMultMatrixd(*this->translation);
 }

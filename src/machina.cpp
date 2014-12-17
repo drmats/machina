@@ -27,7 +27,6 @@ Machina::Machina (int argc, char **argv):
 
     this->initialize_sdl();
     this->initialize_surface();
-    this->setup_opengl();
 
     this->main_loop = std::make_unique< MainLoop >(this);
 }
@@ -108,7 +107,7 @@ void Machina::initialize_surface () {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     this->screen = SDL_SetVideoMode(
-        this->view.width, this->view.height, this->view.bpp,
+        this->viewport.width, this->viewport.height, this->viewport.bpp,
         SDL_OPENGL
         | SDL_GL_DOUBLEBUFFER
         | SDL_HWPALETTE
@@ -132,25 +131,6 @@ void Machina::initialize_surface () {
 
     glViewport(0, 0, this->screen->w, this->screen->h);
     SDL_WM_SetCaption(PROGRAM_NAME.c_str(), NULL);
-}
-
-
-
-
-/**
- *  Setup OpenGL parameters.
- */
-void Machina::setup_opengl () {
-    glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glShadeModel(GL_SMOOTH);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
 }
 
 

@@ -25,6 +25,7 @@ MainLoop::MainLoop (Machina *root):
     root{root}
 {
     this->assign_default_handlers();
+    this->setup_opengl();
 }
 
 
@@ -43,6 +44,33 @@ MainLoop::~MainLoop () {}
  */
 void MainLoop::assign_default_handlers () {
     // ...
+}
+
+
+
+
+/**
+ *  Setup initial OpenGL parameters.
+ */
+void MainLoop::setup_opengl () {
+    glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glShadeModel(GL_SMOOTH);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
+    this->camera.projection.set_all([this] () {
+        auto all = this->camera.projection.get_all();
+        all[1] =
+            static_cast< GLfloat >(this->root->viewport.width) /
+            static_cast< GLfloat >(this->root->viewport.height);
+        return all;
+    }());
 }
 
 
@@ -93,7 +121,8 @@ inline void MainLoop::draw () const {
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
     );
-    this->camera.establish();
+    this->camera.establish_projection();
+    this->camera.establish_modelview();
 }
 
 

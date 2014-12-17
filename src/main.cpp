@@ -19,8 +19,7 @@
  *  Program entry-point.
  */
 int main (int argc, char *argv[]) {
-    std::shared_ptr< machina::Machina > machina =
-        std::make_shared< machina::Machina >(argc, argv);
+    auto machina = std::make_shared< machina::Machina >(argc, argv);
     machina->run();
     exit(EXIT_SUCCESS);
 }

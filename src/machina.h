@@ -69,7 +69,7 @@ protected:
         int width = 960;
         int height = 540;
         int bpp = 32;
-    } view;
+    } viewport;
 
 
     // event-processing / frame-rendering
@@ -103,12 +103,6 @@ public:
      *  Initialize viewport/drawing surface.
      */
     void initialize_surface ();
-
-
-    /**
-     *  Setup OpenGL parameters.
-     */
-    void setup_opengl ();
 
 
     /**
