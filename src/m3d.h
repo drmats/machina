@@ -437,7 +437,7 @@ public:
     /**
      *  Multiply two matrices and store the result in the current matrix.
      */
-    GMatrix<T, N>& multiply (GMatrix<T, N> &l, GMatrix<T, N> &r) {
+    GMatrix<T, N>& multiply (const GMatrix<T, N> &l, const GMatrix<T, N> &r) {
         T val;
         std::size_t row, column;
         for (std::size_t i = 0;  i < N*N;  i++) {
