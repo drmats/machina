@@ -59,6 +59,7 @@ private:
     // default event handlers
     struct default_handler_t {
         void empty_mouse_motion (MainLoop *, const SDL_Event &);
+        void look_around_camera (MainLoop *, const SDL_Event &);
         void keyboard (MainLoop *, const SDL_Event &);
     } default_handler;
 

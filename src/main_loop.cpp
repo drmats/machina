@@ -32,6 +32,25 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 
 
 /**
+ *  Default mouse-motion event handler (do-nothing).
+ */
+void MainLoop::default_handler_t::look_around_camera (
+    MainLoop *ml, const SDL_Event &e
+) {
+    ml->camera.rotate(
+        static_cast<GLfloat>(e.motion.xrel)*0.35f,
+        0.0f, 1.0f, 0.0f
+    );
+    ml->camera.rotate(
+        static_cast<GLfloat>(e.motion.yrel)*0.35f,
+        1.0f, 0.0f, 0.0f
+    );
+}
+
+
+
+
+/**
  *  Default keyboard event handler.
  */
 void MainLoop::default_handler_t::keyboard (
