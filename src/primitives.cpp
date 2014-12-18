@@ -23,8 +23,8 @@ namespace machina {
      */
     void grid (GLfloat dim, GLfloat space) {
         dim = dim * 0.5f;
-        
-        #define intensity 0.6f
+
+        #define intensity 0.55f
         #define line(x1, y1, z1, x2, y2, z2) \
             glVertex3f(x1, y1, z1); \
             glVertex3f(x2, y2, z2)
@@ -36,7 +36,7 @@ namespace machina {
         );
         glDisable(GL_LIGHTING);
         glColor3f(intensity, 0.0f, 0.0f);
-        glLineWidth(2.0f);
+        glLineWidth(2.2f);
         glBegin(GL_LINES);
         line(-dim-2.0f*space,      0.0f,  0.0f,    dim+2.0f*space, 0.0f, 0.0f);
         line( dim+2.0f*space-4.0f, 0.0f,  2.0f,    dim+2.0f*space, 0.0f, 0.0f);
@@ -46,15 +46,15 @@ namespace machina {
         line( 0.0f, -space*2.0f,       0.0f,    0.0f, space*2.0f, 0.0f);
         line( 2.0f,  space*2.0f-4.0f,  0.0f,    0.0f, space*2.0f, 0.0f);
         line(-2.0f,  space*2.0f-4.0f,  0.0f,    0.0f, space*2.0f, 0.0f);
-        
+
         glColor3f(0.0f, 0.0f, intensity);
         line( 0.0f, 0.0f, -dim-2.0f*space,         0.0f, 0.0f, dim+2.0f*space);
         line( 2.0f, 0.0f,  dim+2.0f*space-4.0f,    0.0f, 0.0f, dim+2.0f*space);
         line(-2.0f, 0.0f,  dim+2.0f*space-4.0f,    0.0f, 0.0f, dim+2.0f*space);
         glEnd();
 
-        glColor3f(0.2f, 0.2f, 0.3f);
-        glLineWidth(1.0f);
+        glColor3f(0.15f, 0.15f, 0.25f);
+        glLineWidth(1.4f);
         glBegin(GL_LINES);
         for (
             GLfloat d = space;
