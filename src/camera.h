@@ -12,6 +12,7 @@
 
 #include "sdl_opengl.h"
 #include <vector>
+#include <algorithm>
 #include "m3d.h"
 
 namespace machina {
@@ -135,6 +136,13 @@ public:
      *  Rotate camera (look-around).
      */
     void rotate (T, T, T, T);
+
+
+    /**
+     *  Relative translate camera (move).
+     */
+    void relative_translate (const std::vector<T> &, T, T);
+
 
     /**
      *  Establish camera projection in a viewport.

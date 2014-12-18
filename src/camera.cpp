@@ -47,6 +47,29 @@ void Camera<T>::rotate (T delta, T x, T y, T z) {
 
 
 /**
+ *  Relative translate camera (move).
+ */
+template <typename T>
+void Camera<T>::relative_translate (
+    const std::vector<T> &direction,
+    T heading,
+    T delta
+) {
+    int i = 12;
+    std::for_each(
+        direction.begin(),
+        direction.end(),
+        [this, heading, delta, &i] (T el) {
+            this->translation[i] += delta*this->rotation[el]*heading;
+            i++;
+        }
+    );
+}
+
+
+
+
+/**
  *  Establish camera projection in a viewport (GLfloat specialization).
  */
 template <>
