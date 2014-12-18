@@ -127,11 +127,11 @@ public:
 
 
     /**
-     *  dist -- distance to target
+     *  dist  -- distance to target
+     *  yaw   -- angle on y-axe
      *  pitch -- angle on x-axe
-     *  roll -- angle on y-axe
      */
-    T dist = 100, pitch = 0, roll = 0;
+    T dist = 100, yaw = 0, pitch = 0;
 
 
     /**
@@ -141,7 +141,7 @@ public:
 
 
     /**
-     *  Recompute rotation matrix from dist/pitch/roll.
+     *  Recompute rotation matrix from dist/pitch/yaw.
      */
     void recompute_rotation ();
 

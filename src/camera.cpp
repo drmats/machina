@@ -30,23 +30,19 @@ Camera<T>::Camera () {
 
 
 /**
- *  Recompute rotation matrix from dist/pitch/roll.
+ *  Recompute rotation matrix from dist/pitch/yaw.
  */
 template <typename T>
 void Camera<T>::recompute_rotation () {
     Matrix op, tmp;
-    this->rotation.load_rotation(90.0, 1.0, 0.0, 0.0);
+    this->rotation.load_translation(0.0, 0.0, -this->dist);
     this->rotation = op.multiply(
-        tmp.load_rotation(this->roll, 0.0, 0.0, 1.0),
-        this->rotation
+        this->rotation,
+        tmp.load_rotation(this->pitch, 1.0, 0.0, 0.0)
     );
     this->rotation = op.multiply(
-        tmp.load_rotation(this->pitch, 1.0, 0.0, 0.0),
-        this->rotation
-    );
-    this->rotation = op.multiply(
-        tmp.load_translation(0.0, 0.0, -this->dist),
-        this->rotation
+        this->rotation,
+        tmp.load_rotation(this->yaw, 0.0, 1.0, 0.0)
     );
 }
 

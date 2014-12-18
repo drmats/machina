@@ -37,7 +37,7 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 void MainLoop::default_handler_t::look_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
-    ml->camera.roll += (e.motion.xrel) * 0.3f;
+    ml->camera.yaw += (e.motion.xrel) * 0.3f;
     ml->camera.pitch += (e.motion.yrel) * 0.3f;
     ml->camera.recompute_rotation();
 }
@@ -51,7 +51,6 @@ void MainLoop::default_handler_t::look_around_camera (
 void MainLoop::default_handler_t::move_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
-
     ml->camera.relative_translate(
         ml->camera.strafe, 1.0,
         e.motion.xrel * ml->camera.dist * 0.00215f
