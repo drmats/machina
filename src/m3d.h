@@ -44,7 +44,7 @@ namespace m3d {
  */
 template <typename T>
 inline bool close_to (T a, T b) {
-    return fabs(a - b) < static_cast<T>(m3d_epsilon);
+    return std::fabs(a - b) < static_cast<T>(m3d_epsilon);
 }
 
 
