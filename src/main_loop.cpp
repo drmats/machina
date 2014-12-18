@@ -32,7 +32,7 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 
 
 /**
- *  Default mouse-motion event handler (do-nothing).
+ *  Mouse-motion event handler (look-around).
  */
 void MainLoop::default_handler_t::look_around_camera (
     MainLoop *ml, const SDL_Event &e
@@ -45,6 +45,19 @@ void MainLoop::default_handler_t::look_around_camera (
         static_cast<GLfloat>(e.motion.yrel)*0.35f,
         1.0f, 0.0f, 0.0f
     );
+}
+
+
+
+
+/**
+ *  Mouse-wheel default event handler.
+ */
+void MainLoop::default_handler_t::mouse_wheel (
+    MainLoop *ml, const SDL_Event &e
+) {
+    static std::vector<GLfloat> direction = { 2, 6, 10 };
+    ml->camera.relative_translate(direction, 1, e.wheel.y*5);
 }
 
 
@@ -127,6 +140,10 @@ void MainLoop::assign_default_handlers () {
         [this] (const SDL_Event &e) -> void {
             return this->default_handler.empty_mouse_motion(this, e);
         };
+    this->handle.mouse_wheel =
+        [this] (const SDL_Event &e) -> void {
+            return this->default_handler.mouse_wheel(this, e);
+        };
     this->handle.mouse_buttons =
         [this] (const SDL_Event &e) -> void {
             return this->default_handler.mouse_buttons(this, e);
@@ -144,7 +161,7 @@ void MainLoop::assign_default_handlers () {
  *  Setup initial OpenGL parameters.
  */
 void MainLoop::setup_opengl () {
-    glClearColor(0.1f, 0.1f, 0.3f, 0.0f);
+    glClearColor(0.1f, 0.1f, 0.2f, 0.0f);
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
 
@@ -176,6 +193,10 @@ inline void MainLoop::process_events () {
             switch (this->event.type) {
                 case SDL_MOUSEMOTION:
                     this->handle.mouse_motion(this->event);
+                    break;
+
+                case SDL_MOUSEWHEEL:
+                    this->handle.mouse_wheel(this->event);
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
