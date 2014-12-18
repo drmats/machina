@@ -23,7 +23,7 @@
 #include <tchar.h>
 #include <windows.h>
 #include <SDL.h>
-#include <SD_opengl.h>
+#include <SDL_opengl.h>
 #endif
 
 
