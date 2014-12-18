@@ -37,8 +37,8 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 void MainLoop::default_handler_t::look_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
-    ml->camera.roll += (e.motion.xrel)*0.3f;
-    ml->camera.pitch += (e.motion.yrel)*0.3f;
+    ml->camera.roll += (e.motion.xrel) * 0.3f;
+    ml->camera.pitch += (e.motion.yrel) * 0.3f;
     ml->camera.recompute_rotation();
 }
 
@@ -46,12 +46,35 @@ void MainLoop::default_handler_t::look_around_camera (
 
 
 /**
- *  Mouse-wheel default event handler.
+ *  Mouse-motion event handler (move-around).
+ */
+void MainLoop::default_handler_t::move_around_camera (
+    MainLoop *ml, const SDL_Event &e
+) {
+
+    ml->camera.relative_translate(
+        ml->camera.strafe, 1.0,
+        e.motion.xrel * ml->camera.dist * 0.00215f
+    );
+    ml->camera.relative_translate(
+        ml->camera.up, -1.0,
+        e.motion.yrel * ml->camera.dist * 0.00215f
+    );
+}
+
+
+
+
+/**
+ *  Mouse-wheel default event handler (distance-to-target).
  */
 void MainLoop::default_handler_t::mouse_wheel (
     MainLoop *ml, const SDL_Event &e
 ) {
-    ml->camera.dist = 10 + std::fabs(ml->camera.dist - 10 - e.wheel.y*10);
+    ml->camera.dist =
+        10.0f + std::exp2(std::fabs(
+            std::log2(ml->camera.dist - 10.0f) - e.wheel.y*0.2f
+        ));
     ml->camera.recompute_rotation();
 }
 
@@ -78,8 +101,20 @@ void MainLoop::default_handler_t::mouse_buttons (
                     };
             }
             break;
-        case SDL_BUTTON_MIDDLE:
         case SDL_BUTTON_LEFT:
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                ml->handle.mouse_motion =
+                    [ml] (const SDL_Event &e) -> void {
+                        return ml->default_handler.move_around_camera(ml, e);
+                    };
+            } else if (e.type == SDL_MOUSEBUTTONUP) {
+                ml->handle.mouse_motion =
+                    [ml] (const SDL_Event &e) -> void {
+                        return ml->default_handler.empty_mouse_motion(ml, e);
+                    };
+            }
+            break;
+        case SDL_BUTTON_MIDDLE:
         default:
             break;
     }

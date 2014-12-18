@@ -155,7 +155,10 @@ public:
     /**
      *  Relative translate camera (move).
      */
-    void relative_translate (const std::vector<T> &, T, T);
+    void relative_translate (const std::vector<char> &, T, T);
+    static const std::vector<char> strafe;
+    static const std::vector<char> up;
+    static const std::vector<char> out;
 
 
     /**

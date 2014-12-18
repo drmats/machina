@@ -73,20 +73,29 @@ void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
  */
 template <typename T>
 void Camera<T>::relative_translate (
-    const std::vector<T> &direction,
+    const std::vector<char> &direction,
     T heading,
     T delta
 ) {
-    int i = 12;
+    char i = 12;
     std::for_each(
         direction.begin(),
         direction.end(),
-        [this, heading, delta, &i] (T el) {
+        [this, heading, delta, &i] (char el) {
             this->translation[i] += delta*this->rotation[el]*heading;
             i++;
         }
     );
 }
+
+template <typename T>
+const std::vector<char> Camera<T>::strafe = { 0, 4, 8 };
+
+template <typename T>
+const std::vector<char> Camera<T>::up = { 1, 5, 9 };
+
+template <typename T>
+const std::vector<char> Camera<T>::out = { 2, 6, 10 };
 
 
 
