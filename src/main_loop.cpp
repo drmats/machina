@@ -141,6 +141,10 @@ void MainLoop::default_handler_t::keyboard (
                 ml->terminate();
             }
             break;
+        case SDLK_c:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera.translation.load_identity();
+            }
         default:
             break;
     }
