@@ -33,13 +33,13 @@ Camera<T>::Camera () {
  *  Rotate camera (look-around).
  */
 template <typename T>
-void Camera<T>::rotate (T delta, T x, T y, T z) {
-    Matrix relative_rotation;
-    this->rotation.multiply(
+void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
+    Matrix tmp, relative_rotation;
+    this->rotation = tmp.multiply(
         relative_rotation.load_rotation(
             delta, x, y, z
         ),
-        rotation
+        this->rotation
     );
 }
 

@@ -36,6 +36,7 @@ namespace machina {
         );
         glDisable(GL_LIGHTING);
         glColor3f(intensity, 0.0f, 0.0f);
+        glLineWidth(2.0f);
         glBegin(GL_LINES);
         line(-dim-2.0f*space,      0.0f,  0.0f,    dim+2.0f*space, 0.0f, 0.0f);
         line( dim+2.0f*space-4.0f, 0.0f,  2.0f,    dim+2.0f*space, 0.0f, 0.0f);
@@ -53,6 +54,7 @@ namespace machina {
         glEnd();
 
         glColor3f(0.2f, 0.2f, 0.3f);
+        glLineWidth(1.0f);
         glBegin(GL_LINES);
         for (
             GLfloat d = space;

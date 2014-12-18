@@ -37,11 +37,11 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 void MainLoop::default_handler_t::look_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
-    ml->camera.rotate(
+    ml->camera.relative_rotate(
         static_cast<GLfloat>(e.motion.xrel)*0.35f,
         0.0f, 1.0f, 0.0f
     );
-    ml->camera.rotate(
+    ml->camera.relative_rotate(
         static_cast<GLfloat>(e.motion.yrel)*0.35f,
         1.0f, 0.0f, 0.0f
     );
@@ -171,6 +171,11 @@ void MainLoop::setup_opengl () {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     this->camera.projection.set_all([this] () {
         auto all = this->camera.projection.get_all();
