@@ -51,14 +51,44 @@ void MainLoop::default_handler_t::look_around_camera (
 
 
 /**
+ *  Default mouse-buttons event handler.
+ */
+void MainLoop::default_handler_t::mouse_buttons (
+    MainLoop *ml, const SDL_Event &e
+) {
+    switch (e.button.button) {
+        case SDL_BUTTON_LEFT:
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                ml->handle.mouse_motion =
+                    [ml] (const SDL_Event &e) -> void {
+                        return ml->default_handler.look_around_camera(ml, e);
+                    };
+            } else if (e.type == SDL_MOUSEBUTTONUP) {
+                ml->handle.mouse_motion =
+                    [ml] (const SDL_Event &e) -> void {
+                        return ml->default_handler.empty_mouse_motion(ml, e);
+                    };
+            }
+            break;
+        case SDL_BUTTON_MIDDLE:
+        case SDL_BUTTON_RIGHT:
+        default:
+            break;
+    }
+}
+
+
+
+
+/**
  *  Default keyboard event handler.
  */
 void MainLoop::default_handler_t::keyboard (
     MainLoop *ml, const SDL_Event &e
 ) {
-    Uint8 *keystate = SDL_GetKeyState(NULL);
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
-    if (keystate[SDLK_ESCAPE] == 1) {
+    if (keystate[SDL_SCANCODE_ESCAPE] == 1) {
         ml->terminate();
         return;
     }
@@ -96,6 +126,10 @@ void MainLoop::assign_default_handlers () {
     this->handle.mouse_motion =
         [this] (const SDL_Event &e) -> void {
             return this->default_handler.empty_mouse_motion(this, e);
+        };
+    this->handle.mouse_buttons =
+        [this] (const SDL_Event &e) -> void {
+            return this->default_handler.mouse_buttons(this, e);
         };
     this->handle.keyboard =
         [this] (const SDL_Event &e) -> void {
@@ -195,7 +229,7 @@ void MainLoop::run () {
     while (this->running) {
         this->process_events();
         this->draw();
-        SDL_GL_SwapBuffers();
+        SDL_GL_SwapWindow(this->root->main_window);
     }
 }
 

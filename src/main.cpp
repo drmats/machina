@@ -21,7 +21,8 @@
 int main (int argc, char *argv[]) {
     auto machina = std::make_shared<machina::Machina>(argc, argv);
     machina->run();
-    exit(EXIT_SUCCESS);
+    machina.reset();
+    std::exit(EXIT_SUCCESS);
 }
 
 

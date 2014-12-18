@@ -24,7 +24,6 @@ namespace machina {
 /**
  *  "Defines".
  */
-const int VIDEO_DRIVER_NAME_BUFFER_SIZE = 64;
 const std::string PROGRAM_NAME = "machina";
 
 
@@ -57,18 +56,18 @@ protected:
 
 
     // drawing surface
-    SDL_Surface *screen;
+    SDL_Window *main_window;
+    SDL_GLContext gl_context;
 
 
     // current video driver
-    char video_driver_name[VIDEO_DRIVER_NAME_BUFFER_SIZE];
+    const char *video_driver_name;
 
 
     // viewport parameters
     struct {
         int width = 960;
         int height = 540;
-        int bpp = 32;
     } viewport;
 
 

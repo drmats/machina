@@ -38,6 +38,20 @@ Machina::Machina (int argc, char **argv):
  *  Clean-up.
  */
 Machina::~Machina () {
+    if (this->gl_context != NULL) {
+        SDL_GL_DeleteContext(this->gl_context);
+        std::cout
+            << "Deleted OpenGL context."
+            << std::endl;
+    }
+
+    if (this->main_window != NULL) {
+        SDL_DestroyWindow(this->main_window);
+        std::cout
+            << "Destroyed surface."
+            << std::endl;
+    }
+
     std::cout << "Bye!" << std::endl;
 }
 
@@ -56,7 +70,7 @@ void Machina::initialize_sdl () {
         << static_cast<int>(this->compile_sdl_version.patch)
         << std::endl;
 
-    this->linked_sdl_version = *SDL_Linked_Version();
+    SDL_GetVersion(&this->linked_sdl_version);
     std::cout
         << "Runtime SDL version: "
         << static_cast<int>(this->linked_sdl_version.major) << "."
@@ -64,22 +78,18 @@ void Machina::initialize_sdl () {
         << static_cast<int>(this->linked_sdl_version.patch)
         << std::endl;
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER) == 0) {
+        std::atexit(SDL_Quit);
+    } else {
         std::cerr
             << "Unable to initialize SDL: "
             << SDL_GetError()
             << std::endl;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 
-    atexit(SDL_Quit);
-
-    if (
-        SDL_VideoDriverName(
-            this->video_driver_name,
-            VIDEO_DRIVER_NAME_BUFFER_SIZE
-        ) != NULL
-    ) {
+    this->video_driver_name = SDL_GetCurrentVideoDriver();
+    if (this->video_driver_name != NULL) {
         std::cout
             << "Video driver: "
             << this->video_driver_name
@@ -98,39 +108,40 @@ void Machina::initialize_sdl () {
  *  Initialize viewport/drawing surface.
  */
 void Machina::initialize_surface () {
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-    this->screen = SDL_SetVideoMode(
-        this->viewport.width, this->viewport.height, this->viewport.bpp,
-        SDL_OPENGL
-        | SDL_GL_DOUBLEBUFFER
-        | SDL_HWPALETTE
-        | SDL_HWSURFACE
-        | SDL_HWACCEL
+    this->main_window = SDL_CreateWindow(
+        PROGRAM_NAME.c_str(),
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        this->viewport.width, this->viewport.height,
+        SDL_WINDOW_OPENGL
     );
-
-    if (screen != NULL) {
+    if (this->main_window != NULL) {
         std::cout
             << "Initialized surface: "
-            << this->screen->w << "x" << this->screen->h
-            << "@" << static_cast<int>(this->screen->format->BitsPerPixel)
+            << this->viewport.width << "x" << this->viewport.height
             << std::endl;
     } else {
         std::cerr
             << "Unable to initialize surface: "
             << SDL_GetError()
             << std::endl;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 
-    glViewport(0, 0, this->screen->w, this->screen->h);
-    SDL_WM_SetCaption(PROGRAM_NAME.c_str(), NULL);
+    this->gl_context = SDL_GL_CreateContext(this->main_window);
+    if (this->gl_context != NULL) {
+        std::cout
+            << "Initialized OpenGL context."
+            << std::endl;
+    } else {
+        std::cerr
+            << "Unable to initialize OpenGL context "
+            << SDL_GetError()
+            << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    glViewport(0, 0, this->viewport.width, this->viewport.height);
 }
 
 

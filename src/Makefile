@@ -9,7 +9,7 @@ PNAME               =  machina
 PLIBS               =  m3d_message.o m3d.o primitives.o camera.o main_loop.o machina.o main.o
 GNUCPP              =  g++
 GNUCOMPILEFLAGS     =  -std=c++11 -Wall -Wpedantic -O2 -D_GNU_SOURCE=1
-GNULINKLIBS         =  -lGL -lGLU -lm -lSDL
+GNULINKLIBS         =  -lGL -lGLU -lm -lSDL2
 
 .PHONY: default
 linux:

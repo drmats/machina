@@ -16,14 +16,14 @@
 
 
 #ifdef __LINUX__
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 #endif
 #ifdef __WIN32__
 #include <tchar.h>
 #include <windows.h>
 #include <SDL.h>
-#include <SDL_opengl.h>
+#include <SD_opengl.h>
 #endif
 
 
