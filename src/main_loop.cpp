@@ -37,14 +37,9 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 void MainLoop::default_handler_t::look_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
-    ml->camera.relative_rotate(
-        static_cast<GLfloat>(e.motion.xrel)*0.35f,
-        0.0f, 1.0f, 0.0f
-    );
-    ml->camera.relative_rotate(
-        static_cast<GLfloat>(e.motion.yrel)*0.35f,
-        1.0f, 0.0f, 0.0f
-    );
+    ml->camera.roll += (e.motion.xrel)*0.3f;
+    ml->camera.pitch += (e.motion.yrel)*0.3f;
+    ml->camera.recompute_rotation();
 }
 
 
@@ -56,8 +51,8 @@ void MainLoop::default_handler_t::look_around_camera (
 void MainLoop::default_handler_t::mouse_wheel (
     MainLoop *ml, const SDL_Event &e
 ) {
-    static std::vector<GLfloat> direction = { 2, 6, 10 };
-    ml->camera.relative_translate(direction, 1, e.wheel.y*5);
+    ml->camera.dist = 10 + std::fabs(ml->camera.dist - 10 - e.wheel.y*10);
+    ml->camera.recompute_rotation();
 }
 
 
@@ -70,7 +65,7 @@ void MainLoop::default_handler_t::mouse_buttons (
     MainLoop *ml, const SDL_Event &e
 ) {
     switch (e.button.button) {
-        case SDL_BUTTON_LEFT:
+        case SDL_BUTTON_RIGHT:
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 ml->handle.mouse_motion =
                     [ml] (const SDL_Event &e) -> void {
@@ -84,7 +79,7 @@ void MainLoop::default_handler_t::mouse_buttons (
             }
             break;
         case SDL_BUTTON_MIDDLE:
-        case SDL_BUTTON_RIGHT:
+        case SDL_BUTTON_LEFT:
         default:
             break;
     }
@@ -184,6 +179,7 @@ void MainLoop::setup_opengl () {
             static_cast<GLfloat>(this->root->viewport.height);
         return all;
     }());
+    this->camera.recompute_rotation();
 }
 
 

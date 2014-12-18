@@ -127,9 +127,23 @@ public:
 
 
     /**
+     *  dist -- distance to target
+     *  pitch -- angle on x-axe
+     *  roll -- angle on y-axe
+     */
+    T dist = 100, pitch = 0, roll = 0;
+
+
+    /**
      *  Camera initialization.
      */
     Camera ();
+
+
+    /**
+     *  Recompute rotation matrix from dist/pitch/roll.
+     */
+    void recompute_rotation ();
 
 
     /**

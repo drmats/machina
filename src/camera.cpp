@@ -30,15 +30,37 @@ Camera<T>::Camera () {
 
 
 /**
+ *  Recompute rotation matrix from dist/pitch/roll.
+ */
+template <typename T>
+void Camera<T>::recompute_rotation () {
+    Matrix op, tmp;
+    this->rotation.load_rotation(90.0, 1.0, 0.0, 0.0);
+    this->rotation = op.multiply(
+        tmp.load_rotation(this->roll, 0.0, 0.0, 1.0),
+        this->rotation
+    );
+    this->rotation = op.multiply(
+        tmp.load_rotation(this->pitch, 1.0, 0.0, 0.0),
+        this->rotation
+    );
+    this->rotation = op.multiply(
+        tmp.load_translation(0.0, 0.0, -this->dist),
+        this->rotation
+    );
+}
+
+
+
+
+/**
  *  Rotate camera (look-around).
  */
 template <typename T>
 void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
-    Matrix tmp, relative_rotation;
-    this->rotation = tmp.multiply(
-        relative_rotation.load_rotation(
-            delta, x, y, z
-        ),
+    Matrix op, relative_rotation;
+    this->rotation = op.multiply(
+        relative_rotation.load_rotation(delta, x, y, z),
         this->rotation
     );
 }
@@ -98,9 +120,9 @@ void Camera<GLdouble>::establish_projection () const {
  */
 template <>
 void Camera<GLfloat>::establish_modelview () const {
+    Matrix op;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(*this->rotation);
-    glMultMatrixf(*this->translation);
+    glLoadMatrixf(*op.multiply(this->rotation, this->translation));
 }
 
 
@@ -111,9 +133,9 @@ void Camera<GLfloat>::establish_modelview () const {
  */
 template <>
 void Camera<GLdouble>::establish_modelview () const {
+    Matrix op;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixd(*this->rotation);
-    glMultMatrixd(*this->translation);
+    glLoadMatrixd(*op.multiply(this->rotation, this->translation));
 }
 
 
