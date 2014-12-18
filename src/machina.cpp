@@ -79,7 +79,7 @@ void Machina::initialize_sdl () {
         << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER) == 0) {
-        SDL_Delay(200);
+        SDL_Delay(this->init_delay);
         std::atexit(SDL_Quit);
     } else {
         std::cerr
@@ -117,7 +117,7 @@ void Machina::initialize_surface () {
         SDL_WINDOW_OPENGL
     );
     if (this->main_window != NULL) {
-        SDL_Delay(200);
+        SDL_Delay(this->init_delay);
         std::cout
             << "Initialized surface: "
             << this->viewport.width << "x" << this->viewport.height
@@ -132,7 +132,7 @@ void Machina::initialize_surface () {
 
     this->gl_context = SDL_GL_CreateContext(this->main_window);
     if (this->gl_context != NULL) {
-        SDL_Delay(200);
+        SDL_Delay(this->init_delay);
         std::cout
             << "Initialized OpenGL context."
             << std::endl;

@@ -55,6 +55,10 @@ protected:
         linked_sdl_version;
 
 
+    // ...
+    static const int init_delay = 150;
+
+
     // drawing surface
     SDL_Window *main_window;
     SDL_GLContext gl_context;
