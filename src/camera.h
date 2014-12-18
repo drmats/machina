@@ -127,11 +127,14 @@ public:
 
 
     /**
-     *  dist  -- distance to target
+     *  dist  -- distance to the target
      *  yaw   -- angle on y-axe
      *  pitch -- angle on x-axe
      */
-    T dist = 100, yaw = 0, pitch = 0;
+    T
+        dist = static_cast<T>(80.0f),
+        yaw = static_cast<T>(30.0f),
+        pitch = static_cast<T>(15.0f);
 
 
     /**
