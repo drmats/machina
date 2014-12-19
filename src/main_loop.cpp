@@ -76,7 +76,7 @@ void MainLoop::default_handler_t::mouse_wheel (
         // set fovy
         ml->camera.projection.set_all([ml, e] () {
             auto all = ml->camera.projection.get_all();
-            all[0] += e.wheel.y*4;
+            all[0] -= e.wheel.y*4;
             return all;
         }());
     } else {
