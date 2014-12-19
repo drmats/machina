@@ -19,9 +19,9 @@ namespace machina {
 
 
     /**
-     *  Draw a grid.
+     *  Draw an axe-grid.
      */
-    void grid (GLfloat dim, GLfloat space) {
+    void axes_grid (GLfloat dim, GLfloat space) {
         const GLfloat intensity = 0.55f;
 
         dim = dim * 0.5f;
@@ -79,6 +79,42 @@ namespace machina {
         glPopAttrib();
 
         #undef line
+    }
+
+
+
+
+    /**
+     *  Draw an axe-grid.
+     */
+    void grid (
+        GLfloat dim,
+        GLfloat space
+    ) {
+        dim = dim * 0.5f;
+
+        glPushAttrib(
+            GL_CURRENT_BIT |
+            GL_ENABLE_BIT |
+            GL_LIGHTING_BIT
+        );
+
+        glDisable(GL_LIGHTING);
+        glLineWidth(1.0);
+        glColor4f(0.11f, 0.22f, 0.44f, 0.2f);
+
+        glBegin(GL_LINES);
+        for (
+            GLfloat d = -dim;
+            d <= dim;
+            d += space
+        ) {
+            glVertex3f(-dim, 0.0f,    d);  glVertex3f(dim, 0.0f,    d);
+            glVertex3f(   d, 0.0f, -dim);  glVertex3f(  d, 0.0f,  dim);
+        }
+        glEnd();
+
+        glPopAttrib();
     }
 
 

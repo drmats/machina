@@ -19,6 +19,12 @@ namespace machina {
 
 
     /**
+     *  Draw an axes-grid.
+     */
+    void axes_grid (GLfloat dim, GLfloat space);
+
+
+    /**
      *  Draw a grid.
      */
     void grid (GLfloat dim, GLfloat space);

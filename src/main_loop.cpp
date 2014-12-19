@@ -70,11 +70,17 @@ void MainLoop::default_handler_t::move_around_camera (
 void MainLoop::default_handler_t::mouse_wheel (
     MainLoop *ml, const SDL_Event &e
 ) {
-    ml->camera.dist =
-        10.0f + std::exp2(std::fabs(
-            std::log2(ml->camera.dist - 10.0f) - e.wheel.y*0.2f
-        ));
-    ml->camera.recompute_rotation();
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
+    if (keystate[SDL_SCANCODE_LCTRL] == 1) {
+        // ...
+    } else {
+        ml->camera.dist =
+            10.0f + std::exp2(std::fabs(
+                std::log2(ml->camera.dist - 10.0f) - e.wheel.y*0.2f
+            ));
+        ml->camera.recompute_rotation();
+    }
 }
 
 
@@ -160,10 +166,16 @@ void MainLoop::default_handler_t::window (
 ) {
     switch (e.window.event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-        case SDL_WINDOWEVENT_RESIZED:
             ml->root->viewport.width = e.window.data1;
             ml->root->viewport.height = e.window.data2;
             ml->adjust_camera_aspect();
+            break;
+        case SDL_WINDOWEVENT_RESIZED:
+            std::cout
+                << "Resized surface: "
+                << e.window.data1 << "x"
+                << e.window.data2
+                << std::endl;
             break;
         default:
             break;
@@ -322,7 +334,7 @@ inline void MainLoop::draw () const {
     this->camera.establish_projection();
     this->camera.establish_modelview();
 
-    primitives::grid(160.0f, 10.0f);
+    primitives::axes_grid(160.0f, 10.0f);
 
     primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, 1.0f, GL_POINTS);
     primitives::this_thing(160.0f*4.0f, 20.0f, 0.9f, 1.5f, 0.75f, GL_POINTS);
