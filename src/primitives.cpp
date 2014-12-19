@@ -11,6 +11,7 @@
 #define __PRIMITIVES_CPP_ 1
 
 #include "primitives.h"
+#include <cstdlib>
 
 namespace machina {
     namespace primitives {
@@ -87,10 +88,7 @@ namespace machina {
     /**
      *  Draw an axe-grid.
      */
-    void grid (
-        GLfloat dim,
-        GLfloat space
-    ) {
+    void grid (GLfloat dim, GLfloat space) {
         dim = dim * 0.5f;
 
         glPushAttrib(
@@ -111,6 +109,47 @@ namespace machina {
         ) {
             glVertex3f(-dim, 0.0f,    d);  glVertex3f(dim, 0.0f,    d);
             glVertex3f(   d, 0.0f, -dim);  glVertex3f(  d, 0.0f,  dim);
+        }
+        glEnd();
+
+        glPopAttrib();
+    }
+
+
+
+
+    /**
+     *  Draw a point-cube.
+     */
+    void point_cube (GLfloat dim, GLfloat space, GLfloat a) {
+        const GLfloat cstep = (1.0/(2.0f*dim));
+        const GLfloat cshift = 0.5f;
+
+        std::srand(0);
+
+        dim = dim * 0.5f;
+
+        glPushAttrib(
+            GL_CURRENT_BIT |
+            GL_ENABLE_BIT |
+            GL_LIGHTING_BIT
+        );
+
+        glDisable(GL_LIGHTING);
+        glPointSize(1.0);
+
+        glBegin(GL_POINTS);
+        for (GLfloat x = -dim; x <= dim; x += space) {
+            for (GLfloat y = -dim; y <= dim; y += space) {
+                for (GLfloat z = -dim; z <= dim; z += space) {
+                    glColor4f(cstep*x+cshift, cstep*y+cshift, cstep*z+cshift, a);
+                    glVertex3f(
+                        x + (std::rand() % static_cast<int>(space)) - space/2.0f,
+                        y + (std::rand() % static_cast<int>(space)) - space/2.0f,
+                        z + (std::rand() % static_cast<int>(space)) - space/2.0f
+                    );
+                }
+            }
         }
         glEnd();
 

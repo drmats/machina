@@ -336,10 +336,9 @@ inline void MainLoop::draw () const {
 
     primitives::axes_grid(160.0f, 10.0f);
 
+    primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f);
     primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, 1.0f, GL_POINTS);
-    primitives::this_thing(160.0f*4.0f, 20.0f, 0.9f, 1.5f, 0.75f, GL_POINTS);
-    primitives::this_thing(160.0f*8.0f, 40.0f, 0.8f, 2.0f, 0.50f, GL_POINTS);
-    primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.125f, GL_LINES);
+    primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
 }
 
 

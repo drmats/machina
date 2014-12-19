@@ -31,6 +31,12 @@ namespace machina {
 
 
     /**
+     *  Draw a point-cube.
+     */
+    void point_cube (GLfloat dim, GLfloat space, GLfloat a);
+
+
+    /**
      *  Draw this thing...
      */
     void this_thing (
