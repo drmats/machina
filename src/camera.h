@@ -41,7 +41,7 @@ private:
     T fovy = static_cast<T>(60.0f);
     T aspect = static_cast<T>(16.0f / 9.0f);
     T zNear = static_cast<T>(1.0f);
-    T zFar = static_cast<T>(8000.0f);
+    T zFar = static_cast<T>(200000.0f);
 
 
 public:

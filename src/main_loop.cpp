@@ -153,6 +153,27 @@ void MainLoop::default_handler_t::keyboard (
 
 
 /**
+ *  Default window event handler.
+ */
+void MainLoop::default_handler_t::window (
+    MainLoop *ml, const SDL_Event &e
+) {
+    switch (e.window.event) {
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+        case SDL_WINDOWEVENT_RESIZED:
+            ml->root->viewport.width = e.window.data1;
+            ml->root->viewport.height = e.window.data2;
+            ml->adjust_camera_aspect();
+            break;
+        default:
+            break;
+    }
+}
+
+
+
+
+/**
  *  Initialize vital components.
  */
 MainLoop::MainLoop (Machina *root):
@@ -185,7 +206,32 @@ void MainLoop::assign_default_handlers () {
         [this] (const SDL_Event &e) -> void {
             return this->default_handler.keyboard(this, e);
         };
+    this->handle.window =
+        [this] (const SDL_Event &e) -> void {
+            return this->default_handler.window(this, e);
+        };
 }
+
+
+
+
+/**
+ *  Adjust camera aspect ratio.
+ */
+inline void MainLoop::adjust_camera_aspect () {
+    glViewport(
+        0, 0,
+        this->root->viewport.width, this->root->viewport.height
+    );
+    this->camera.projection.set_all([this] () {
+        auto all = this->camera.projection.get_all();
+        all[1] =
+            static_cast<GLfloat>(this->root->viewport.width) /
+            static_cast<GLfloat>(this->root->viewport.height);
+        return all;
+    }());
+}
+
 
 
 
@@ -194,6 +240,8 @@ void MainLoop::assign_default_handlers () {
  *  Setup initial OpenGL parameters.
  */
 void MainLoop::setup_opengl () {
+    this->adjust_camera_aspect();
+
     glClearColor(0.1f, 0.1f, 0.2f, 0.0f);
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
@@ -209,15 +257,6 @@ void MainLoop::setup_opengl () {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-    this->camera.projection.set_all([this] () {
-        auto all = this->camera.projection.get_all();
-        all[1] =
-            static_cast<GLfloat>(this->root->viewport.width) /
-            static_cast<GLfloat>(this->root->viewport.height);
-        return all;
-    }());
-    this->camera.recompute_rotation();
 }
 
 
@@ -248,6 +287,10 @@ inline void MainLoop::process_events () {
                     this->handle.keyboard(this->event);
                     break;
 
+                case SDL_WINDOWEVENT:
+                    this->handle.window(this->event);
+                    break;
+
                 case SDL_QUIT:
                     this->terminate();
                     break;
@@ -275,7 +318,7 @@ inline void MainLoop::draw () const {
     this->camera.establish_projection();
     this->camera.establish_modelview();
 
-    primitives::grid(240.0f, 10.0f);
+    primitives::grid(160.0f, 10.0f);
 }
 
 

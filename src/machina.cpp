@@ -114,7 +114,7 @@ void Machina::initialize_surface () {
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         this->viewport.width, this->viewport.height,
-        SDL_WINDOW_OPENGL
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
     if (this->main_window != NULL) {
         SDL_Delay(this->init_delay);
@@ -143,8 +143,6 @@ void Machina::initialize_surface () {
             << std::endl;
         std::exit(EXIT_FAILURE);
     }
-
-    glViewport(0, 0, this->viewport.width, this->viewport.height);
 }
 
 

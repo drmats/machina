@@ -24,6 +24,7 @@ template <typename T>
 Camera<T>::Camera () {
     this->rotation.load_identity();
     this->translation.load_identity();
+    this->recompute_rotation();
 }
 
 

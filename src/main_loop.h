@@ -55,6 +55,8 @@ private:
             [] (const SDL_Event &) -> void { return; };
         std::function<void (const SDL_Event &)> keyboard =
             [] (const SDL_Event &) -> void { return; };
+        std::function<void (const SDL_Event &)> window =
+            [] (const SDL_Event &) -> void { return; };
     } handle;
 
 
@@ -66,6 +68,7 @@ private:
         void mouse_wheel (MainLoop *, const SDL_Event &);
         void mouse_buttons (MainLoop *, const SDL_Event &);
         void keyboard (MainLoop *, const SDL_Event &);
+        void window (MainLoop *, const SDL_Event &);
     } default_handler;
 
 
@@ -91,6 +94,12 @@ public:
      *  Assign default handlers (mouse/keyboard).
      */
     void assign_default_handlers ();
+
+
+    /**
+     *  Adjust camera aspect ratio.
+     */
+    inline void adjust_camera_aspect ();
 
 
     /**
