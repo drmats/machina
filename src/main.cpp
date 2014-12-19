@@ -11,6 +11,9 @@
 #define __MAIN_CPP_ 1
 
 #include "main.h"
+#include <memory>
+#include <ctime>
+#include <cstdlib>
 
 
 
@@ -20,6 +23,7 @@
  */
 int main (int argc, char *argv[]) {
     auto machina = std::make_shared<machina::Machina>(argc, argv);
+    std::srand(std::time(NULL));
     machina->run();
     machina.reset();
     std::exit(EXIT_SUCCESS);
