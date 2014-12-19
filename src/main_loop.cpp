@@ -253,10 +253,14 @@ void MainLoop::setup_opengl () {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_POINT_SMOOTH);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -319,6 +323,11 @@ inline void MainLoop::draw () const {
     this->camera.establish_modelview();
 
     primitives::grid(160.0f, 10.0f);
+
+    primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, 1.0f, GL_POINTS);
+    primitives::this_thing(160.0f*4.0f, 20.0f, 0.9f, 1.5f, 0.75f, GL_POINTS);
+    primitives::this_thing(160.0f*8.0f, 40.0f, 0.8f, 2.0f, 0.50f, GL_POINTS);
+    primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.125f, GL_LINES);
 }
 
 
