@@ -156,7 +156,7 @@ public:
      *  Reset current array (fill data with zeros).
      */
     inline GArray<T, N>& reset () {
-        memset(this->data, 0, N*sizeof(T));
+        std::memset(this->data, 0, N*sizeof(T));
         return *this;
     }
 
@@ -165,12 +165,12 @@ public:
      *  Replace current array.
      */
     inline GArray<T, N>& assign (const T d[]) {
-        memcpy(this->data, d, N*sizeof(T));
+        std::memcpy(this->data, d, N*sizeof(T));
         return *this;
     }
 
     inline GArray<T, N>& assign (const GArray<T, N> &a) {
-        memcpy(this->data, *a, N*sizeof(T));
+        std::memcpy(this->data, *a, N*sizeof(T));
         return *this;
     }
 
@@ -266,7 +266,7 @@ public:
      *  Perform a vector normalization.
      */
     GVector<T, N>& normalize () {
-        T l = this->length();
+        const T l = this->length();
         if (close_to(l, static_cast<T>(0))) {
             this->reset();
         } else {
@@ -506,14 +506,10 @@ public:
      */
     GMatrix4x4<T>& load_rotation (T angle, T x, T y, T z) {
         angle = deg_to_rad(angle);
-        GVector3<T> v(x, y, z);
-        v.normalize();
 
-        #define X (v[0])
-        #define Y (v[1])
-        #define Z (v[2])
-
-        T
+        GVector3<T> v(x, y, z); v.normalize();
+        const T
+             X = v[0], Y = v[1], Z = v[2],
              c = std::cos(angle),
             nc = static_cast<T>(1)-c,
              s = std::sin(angle),
@@ -528,9 +524,6 @@ public:
         set(3, 0);            set(7, 0);            set(11, 0);            set(15, 1);
 
         #undef set
-        #undef Z
-        #undef Y
-        #undef X
 
         return *this;
     }
@@ -539,17 +532,42 @@ public:
     /**
      *  Replaces current matrix with the perspective projection matrix.
      */
-    GMatrix4x4<T>& load_perspective (T fovy, T aspect, T zNear, T zFar) {
+    GMatrix4x4<T>& load_perspective (T fovy, T aspect, T near, T far) {
+        this->reset();
         fovy = deg_to_rad(fovy);
-        T
+
+        const T
             f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
-            zNear_zFar = zNear - zFar;
+            nf = near - far;
 
         this->data[0] = f / aspect;
         this->data[5] = f;
-        this->data[10] = (zNear + zFar) / zNear_zFar;
+        this->data[10] = (near + far) / nf;
         this->data[11] = static_cast<T>(-1);
-        this->data[14] = (static_cast<T>(2) * zNear * zFar) / zNear_zFar;
+        this->data[14] = (static_cast<T>(2) * near * far) / nf;
+
+        return *this;
+    }
+
+
+    /**
+     *  Replaces current matrix with the perspective projection matrix.
+     */
+    GMatrix4x4<T>& load_ortho (T left, T right, T bottom, T top, T near, T far) {
+        this->reset();
+
+        const T
+            rl = right - left,
+            tb = top - bottom,
+            fn = far - near;
+
+        this->data[0] = static_cast<T>(2) / rl;
+        this->data[5] = static_cast<T>(2) / tb;
+        this->data[10] = static_cast<T>(-2) / fn;
+        this->data[12] = static_cast<T>(-1) * ((right + left) / rl);
+        this->data[13] = static_cast<T>(-1) * ((top + bottom) / tb);
+        this->data[14] = static_cast<T>(-1) * ((far + near) / fn);
+        this->data[15] = static_cast<T>(1);
 
         return *this;
     }
