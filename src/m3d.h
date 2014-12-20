@@ -532,19 +532,19 @@ public:
     /**
      *  Replaces current matrix with the perspective projection matrix.
      */
-    GMatrix4x4<T>& load_perspective (T fovy, T aspect, T near, T far) {
+    GMatrix4x4<T>& load_perspective (T fovy, T aspect, T z_near, T z_far) {
         this->reset();
         fovy = deg_to_rad(fovy);
 
         const T
             f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
-            nf = near - far;
+            nf = z_near - z_far;
 
         this->data[0] = f / aspect;
         this->data[5] = f;
-        this->data[10] = (near + far) / nf;
+        this->data[10] = (z_near + z_far) / nf;
         this->data[11] = static_cast<T>(-1);
-        this->data[14] = (static_cast<T>(2) * near * far) / nf;
+        this->data[14] = (static_cast<T>(2) * z_near * z_far) / nf;
 
         return *this;
     }
@@ -553,20 +553,20 @@ public:
     /**
      *  Replaces current matrix with the perspective projection matrix.
      */
-    GMatrix4x4<T>& load_ortho (T left, T right, T bottom, T top, T near, T far) {
+    GMatrix4x4<T>& load_ortho (T left, T right, T bottom, T top, T z_near, T z_far) {
         this->reset();
 
         const T
             rl = right - left,
             tb = top - bottom,
-            fn = far - near;
+            fn = z_far - z_near;
 
         this->data[0] = static_cast<T>(2) / rl;
         this->data[5] = static_cast<T>(2) / tb;
         this->data[10] = static_cast<T>(-2) / fn;
         this->data[12] = static_cast<T>(-1) * ((right + left) / rl);
         this->data[13] = static_cast<T>(-1) * ((top + bottom) / tb);
-        this->data[14] = static_cast<T>(-1) * ((far + near) / fn);
+        this->data[14] = static_cast<T>(-1) * ((z_far + z_near) / fn);
         this->data[15] = static_cast<T>(1);
 
         return *this;

@@ -40,8 +40,8 @@ private:
      */
     T fovy = static_cast<T>(60.0f);
     T aspect = static_cast<T>(16.0f / 9.0f);
-    T near = static_cast<T>(1.0f);
-    T far = static_cast<T>(200000.0f);
+    T z_near = static_cast<T>(1.0f);
+    T z_far = static_cast<T>(200000.0f);
 
 
 public:
@@ -53,8 +53,8 @@ public:
         this->projection.load_perspective(
             this->fovy,
             this->aspect,
-            this->near,
-            this->far
+            this->z_near,
+            this->z_far
         );
     }
 
@@ -74,8 +74,8 @@ public:
         std::vector<T> all = {
             this->fovy,
             this->aspect,
-            this->near,
-            this->far
+            this->z_near,
+            this->z_far
         };
         return all;
     }
@@ -87,13 +87,13 @@ public:
     inline const Matrix& set_all (const std::vector<T> &all) {
         this->fovy = all[0];
         this->aspect = all[1];
-        this->near = all[2];
-        this->far = all[3];
+        this->z_near = all[2];
+        this->z_far = all[3];
         return this->projection.load_perspective(
             this->fovy,
             this->aspect,
-            this->near,
-            this->far
+            this->z_near,
+            this->z_far
         );
     }
 
