@@ -267,7 +267,7 @@ inline void MainLoop::adjust_camera_aspect () {
 void MainLoop::setup_opengl () {
     this->adjust_camera_aspect();
 
-    glClearColor(0.1f, 0.1f, 0.2f, 0.0f);
+    glClearColor(0.05f, 0.05f, 0.15f, 0.0f);
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
 
