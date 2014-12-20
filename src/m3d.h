@@ -346,7 +346,7 @@ public:
     GVector3 () {}
     GVector3 (const GArray<T, 3> &v) { GVector<T, 3>::assign(*v); }
     GVector3 (const T d[]) { GVector<T, 3>::assign(d); }
-    GVector3 (T x0, T x1, T x2) { assign(x0, x1, x2); }
+    GVector3 (T x0, T x1, T x2) { this->assign(x0, x1, x2); }
 
 
     GVector3<T>& operator= (const GArray<T, 3> &v) {
@@ -391,7 +391,7 @@ public:
     GVector4 () {}
     GVector4 (const GArray<T, 4> &v) { GVector<T, 4>::assign(*v); }
     GVector4 (const T d[]) { GVector<T, 4>::assign(d); }
-    GVector4 (T x0, T x1, T x2, T x3) { assign(x0, x1, x2, x3); }
+    GVector4 (T x0, T x1, T x2, T x3) { this->assign(x0, x1, x2, x3); }
 
 
     GVector4<T>& operator= (const GArray<T, 4> &v) {
@@ -485,6 +485,18 @@ public:
         this->data[12] = x;
         this->data[13] = y;
         this->data[14] = z;
+        return *this;
+    }
+
+
+    /**
+     *  Replaces current matrix with the scale matrix.
+     */
+    GMatrix4x4<T>& load_scale (T x, T y, T z) {
+        this->load_identity();
+        this->data[0] = x;
+        this->data[5] = y;
+        this->data[10] = z;
         return *this;
     }
 
