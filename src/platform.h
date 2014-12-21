@@ -23,7 +23,7 @@
 #endif
 
 
-#ifdef __WIN32__
+#if defined(__WIN32__) && defined(_MSC_VER)
 #pragma warning( disable : 4290 )
 #endif
 
