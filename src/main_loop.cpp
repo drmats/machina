@@ -99,6 +99,7 @@ void MainLoop::default_handler_t::mouse_buttons (
     MainLoop *ml, const SDL_Event &e
 ) {
     switch (e.button.button) {
+        case SDL_BUTTON_MIDDLE:
         case SDL_BUTTON_RIGHT:
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 ml->handle.mouse_motion =
@@ -125,7 +126,6 @@ void MainLoop::default_handler_t::mouse_buttons (
                     };
             }
             break;
-        case SDL_BUTTON_MIDDLE:
         default:
             break;
     }
