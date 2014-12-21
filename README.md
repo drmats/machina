@@ -18,11 +18,24 @@ Parts of code written in 2011.
 
 
 
+## compilation
+
+    $ make help
+    Available targets:
+        linux  -  build using "gcc/g++" (GNU C/C++ Compiler) [default]
+        win32  -  build using "i686-w64-mingw32-g++" (32bit Windows target)
+        win64  -  build using "x86_64-w64-mingw32-g++" (64bit Windows target)
+        clean  -  remove compiled objects and main program
+
+
+
+
 ## dependencies
 
-* C++ compiler ([**gcc**](http://gcc.gnu.org/) or [**clang**](http://clang.llvm.org/))
-* [**Simple Directmedia Layer**](https://www.libsdl.org/)
 * [**GNU Make**](http://www.gnu.org/software/make/)
+* C++ compiler with [**C++11**](https://en.wikipedia.org/wiki/C%2B%2B11) support ([**gcc**](http://gcc.gnu.org/) or [**clang**](http://clang.llvm.org/))
+* [**Mingw-w64**](http://mingw-w64.sourceforge.net/) for windows cross-compilation
+* [**Simple Directmedia Layer**](https://www.libsdl.org/)
 
 
 
