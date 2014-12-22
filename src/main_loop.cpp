@@ -35,10 +35,18 @@ void MainLoop::default_handler_t::empty_mouse_motion (
  *  Mouse-motion event handler (look-around).
  */
 void MainLoop::default_handler_t::look_around_camera (
-    MainLoop *ml, const SDL_Event &e
+    MainLoop *ml, const SDL_Event &e, const GLfloat yaw_direction
 ) {
-    ml->camera.yaw += (e.motion.xrel) * 0.3f;
-    ml->camera.pitch += (e.motion.yrel) * 0.3f;
+    static const auto positive_fmod =
+        [] (GLfloat val, GLfloat denom) -> GLfloat {
+            return std::fmod(std::fmod(val, denom) + denom, denom);
+        };
+    ml->camera.pitch = positive_fmod(
+        ml->camera.pitch + e.motion.yrel * 0.3f, 360.0f
+    );
+    ml->camera.yaw = positive_fmod(
+        ml->camera.yaw + yaw_direction * e.motion.xrel * 0.3f, 360.0f
+    );
     ml->camera.recompute_rotation();
 }
 
@@ -99,13 +107,29 @@ void MainLoop::default_handler_t::mouse_buttons (
     MainLoop *ml, const SDL_Event &e
 ) {
     switch (e.button.button) {
+
+        // look-around camera
         case SDL_BUTTON_MIDDLE:
         case SDL_BUTTON_RIGHT:
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                ml->handle.mouse_motion =
-                    [ml] (const SDL_Event &e) -> void {
-                        return ml->default_handler.look_around_camera(ml, e);
-                    };
+                if (
+                    ml->camera.pitch > 90.0f  &&
+                    ml->camera.pitch <= 270.0f
+                ) {
+                    ml->handle.mouse_motion =
+                        [ml] (const SDL_Event &e) -> void {
+                            return ml->default_handler.look_around_camera(
+                                ml, e, -1.0f
+                            );
+                        };
+                } else {
+                    ml->handle.mouse_motion =
+                        [ml] (const SDL_Event &e) -> void {
+                            return ml->default_handler.look_around_camera(
+                                ml, e, 1.0f
+                            );
+                        };
+                }
             } else if (e.type == SDL_MOUSEBUTTONUP) {
                 ml->handle.mouse_motion =
                     [ml] (const SDL_Event &e) -> void {
@@ -113,6 +137,8 @@ void MainLoop::default_handler_t::mouse_buttons (
                     };
             }
             break;
+
+        // move-around camera
         case SDL_BUTTON_LEFT:
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 ml->handle.mouse_motion =
@@ -126,6 +152,7 @@ void MainLoop::default_handler_t::mouse_buttons (
                     };
             }
             break;
+
         default:
             break;
     }
@@ -147,11 +174,13 @@ void MainLoop::default_handler_t::keyboard (
         return;
     }
     switch (e.key.keysym.sym) {
+
         case SDLK_q:
             if (e.key.state == SDL_PRESSED) {
                 ml->terminate();
             }
             break;
+
         case SDLK_c:
             if (e.key.state == SDL_PRESSED) {
                 // reset position
@@ -163,6 +192,7 @@ void MainLoop::default_handler_t::keyboard (
                     return all;
                 }());
             }
+
         default:
             break;
     }
