@@ -59,14 +59,23 @@ void MainLoop::default_handler_t::look_around_camera (
 void MainLoop::default_handler_t::move_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
     ml->camera.relative_translate(
         ml->camera.strafe, 1.0,
         e.motion.xrel * ml->camera.dist * 0.00215f
     );
-    ml->camera.relative_translate(
-        ml->camera.up, -1.0,
-        e.motion.yrel * ml->camera.dist * 0.00215f
-    );
+    if (keystate[SDL_SCANCODE_LCTRL] == 1) {
+        ml->camera.relative_translate(
+            ml->camera.out, 1.0,
+            e.motion.yrel * ml->camera.dist * 0.00215f
+        );
+    } else {
+        ml->camera.relative_translate(
+            ml->camera.up, -1.0,
+            e.motion.yrel * ml->camera.dist * 0.00215f
+        );
+    }
 }
 
 
