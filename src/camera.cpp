@@ -79,6 +79,22 @@ void Camera<T>::relative_translate (
 }
 
 template <typename T>
+void Camera<T>::relative_translate_on_xz (
+    const std::vector<char> &direction,
+    T heading,
+    T delta
+) {
+    static m3d::GVector2<T> dir;
+    dir.assign(
+        this->rotation[direction[0]]*heading,
+        this->rotation[direction[2]]*heading
+    );
+    dir.normalize();
+    this->translation[0] += delta*dir[0];
+    this->translation[2] += delta*dir[1];
+}
+
+template <typename T>
 const std::vector<char> Camera<T>::strafe = { 0, 4, 8 };
 
 template <typename T>
