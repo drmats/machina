@@ -90,25 +90,31 @@ void MainLoop::default_handler_t::mouse_wheel (
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
+
         // set fovy
         ml->camera.projection.set_all([ml, e] () {
             auto all = ml->camera.projection.get_all();
             all[0] -= e.wheel.y*4;
             return all;
         }());
+
     } else if (keystate[SDL_SCANCODE_LSHIFT] == 1) {
+
         // move camera on a x-z plane (forward/backward)
         ml->camera.relative_translate_on_xz(
             ml->camera.out, 1.0,
             e.wheel.y * 0.1 * ml->camera.dist
         );
+
     } else {
+
         // set camera distance-to-target
         ml->camera.dist =
             10.0f + std::exp2(std::fabs(
                 std::log2(ml->camera.dist - 10.0f) - e.wheel.y*0.2f
             ));
         ml->camera.recompute_rotation();
+
     }
 }
 
