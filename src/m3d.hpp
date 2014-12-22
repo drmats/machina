@@ -114,7 +114,7 @@ class GArray {
 
 protected:
 
-    T data[N];
+    T data[N] = { 0 };
 
 
 public:
@@ -464,7 +464,7 @@ class GMatrix4x4 : public GMatrix<T, 4> {
 
 public:
 
-    GMatrix4x4 () { }
+    GMatrix4x4 () {}
     GMatrix4x4 (const GArray<T, 4*4> &m) { GMatrix<T, 4>::assign(*m); }
     GMatrix4x4 (const T d[]) { GMatrix<T, 4>::assign(d); }
 
@@ -480,7 +480,7 @@ public:
     /**
      *  Replaces current matrix with the translation matrix.
      */
-    GMatrix4x4<T>& load_translation (T x, T y, T z) {
+    inline GMatrix4x4<T>& load_translation (T x, T y, T z) {
         this->load_identity();
         this->data[12] = x;
         this->data[13] = y;
@@ -490,14 +490,31 @@ public:
 
 
     /**
+     *  Replaces current matrix with the translation matrix (built from GVector3).
+     */
+    GMatrix4x4<T>& load_translation (const GVector3<T> &v) {
+        return this->load_translation(v[0], v[1], v[2]);
+    }
+
+
+    /**
      *  Replaces current matrix with the scale matrix.
      */
-    GMatrix4x4<T>& load_scale (T x, T y, T z) {
-        this->load_identity();
+    inline GMatrix4x4<T>& load_scale (T x, T y, T z) {
+        this->reset();
         this->data[0] = x;
         this->data[5] = y;
         this->data[10] = z;
+        this->data[15] = static_cast<T>(1);
         return *this;
+    }
+
+
+    /**
+     *  Replaces current matrix with the scale matrix (built from GVector3).
+     */
+    GMatrix4x4<T>& load_scale (const GVector3<T> &v) {
+        return this->load_scale(v[0], v[1], v[2]);
     }
 
 
