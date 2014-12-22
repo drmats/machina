@@ -10,7 +10,7 @@
 #ifndef __CAMERA_CPP_
 #define __CAMERA_CPP_ 1
 
-#include "camera.h"
+#include "camera.hpp"
 
 namespace machina {
 

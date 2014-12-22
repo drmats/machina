@@ -7,14 +7,14 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __MACHINA_H_
-#define __MACHINA_H_ 1
+#ifndef __MACHINA_HPP_
+#define __MACHINA_HPP_ 1
 
-#include "sdl_opengl.h"
+#include "sdl_opengl.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <memory>
-#include "main_loop.h"
+#include "main_loop.hpp"
 
 namespace machina {
 

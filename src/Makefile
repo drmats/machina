@@ -73,7 +73,7 @@ clean:
 	@rm -v -f $(PNAME) $(PNAME).exe *.o core
 
 
-%.o: %.cpp %.h
+%.o: %.cpp %.hpp
 ifeq ($(ENVIRONMENT),gnu)
 	@echo Compiling [g++/linux]: $<
 	@$(GNUCPP) $(GNUCOMPILEFLAGS) -c $< -o $@

@@ -10,7 +10,7 @@
 #ifndef __MAIN_CPP_
 #define __MAIN_CPP_ 1
 
-#include "main.h"
+#include "main.hpp"
 #include <memory>
 #include <ctime>
 #include <cstdlib>

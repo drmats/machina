@@ -7,8 +7,8 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __M3D_MESSAGE_H_
-#define __M3D_MESSAGE_H_ 1
+#ifndef __M3D_MESSAGE_HPP_
+#define __M3D_MESSAGE_HPP_ 1
 
 namespace m3d_message {
 

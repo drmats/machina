@@ -10,7 +10,7 @@
 #ifndef __PRIMITIVES_CPP_
 #define __PRIMITIVES_CPP_ 1
 
-#include "primitives.h"
+#include "primitives.hpp"
 #include <cstdlib>
 
 namespace machina {

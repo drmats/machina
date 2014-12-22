@@ -7,10 +7,10 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __PRIMITIVES_H_
-#define __PRIMITIVES_H_ 1
+#ifndef __PRIMITIVES_HPP_
+#define __PRIMITIVES_HPP_ 1
 
-#include "sdl_opengl.h"
+#include "sdl_opengl.hpp"
 
 namespace machina {
     namespace primitives {

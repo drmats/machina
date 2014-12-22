@@ -7,15 +7,15 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __MAIN_LOOP_H_
-#define __MAIN_LOOP_H_ 1
+#ifndef __MAIN_LOOP_HPP_
+#define __MAIN_LOOP_HPP_ 1
 
-#include "sdl_opengl.h"
+#include "sdl_opengl.hpp"
 #include <iostream>
 #include <functional>
 #include <memory>
 #include <vector>
-#include "camera.h"
+#include "camera.hpp"
 
 namespace machina {
 

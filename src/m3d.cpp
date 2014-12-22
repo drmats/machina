@@ -10,7 +10,7 @@
 #ifndef __M3D_CPP_
 #define __M3D_CPP_ 1
 
-#include "m3d.h"
+#include "m3d.hpp"
 
 namespace m3d {
 

@@ -7,13 +7,13 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __CAMERA_H_
-#define __CAMERA_H_ 1
+#ifndef __CAMERA_HPP_
+#define __CAMERA_HPP_ 1
 
-#include "sdl_opengl.h"
+#include "sdl_opengl.hpp"
 #include <vector>
 #include <algorithm>
-#include "m3d.h"
+#include "m3d.hpp"
 
 namespace machina {
 

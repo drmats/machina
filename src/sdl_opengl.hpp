@@ -7,10 +7,10 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __SDL_OPENGL_H_
-#define __SDL_OPENGL_H_ 1
+#ifndef __SDL_OPENGL_HPP_
+#define __SDL_OPENGL_HPP_ 1
 
-#include "platform.h"
+#include "platform.hpp"
 
 
 

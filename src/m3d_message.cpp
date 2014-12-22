@@ -10,7 +10,7 @@
 #ifndef __M3D_MESSAGE_CPP_
 #define __M3D_MESSAGE_CPP_ 1
 
-#include "m3d_message.h"
+#include "m3d_message.hpp"
 
 namespace m3d_message {
 

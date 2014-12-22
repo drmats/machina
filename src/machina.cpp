@@ -10,7 +10,7 @@
 #ifndef __MACHINA_CPP_
 #define __MACHINA_CPP_ 1
 
-#include "machina.h"
+#include "machina.hpp"
 
 namespace machina {
 

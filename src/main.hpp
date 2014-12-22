@@ -7,10 +7,10 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __MAIN_H_
-#define __MAIN_H_ 1
+#ifndef __MAIN_HPP_
+#define __MAIN_HPP_ 1
 
-#include "machina.h"
+#include "machina.hpp"
 
 
 

@@ -7,8 +7,8 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __PLATFORM_H_
-#define __PLATFORM_H_ 1
+#ifndef __PLATFORM_HPP_
+#define __PLATFORM_HPP_ 1
 
 
 

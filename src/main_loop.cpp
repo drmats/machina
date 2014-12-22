@@ -10,9 +10,9 @@
 #ifndef __MAIN_LOOP_CPP_
 #define __MAIN_LOOP_CPP_ 1
 
-#include "main_loop.h"
-#include "machina.h"
-#include "primitives.h"
+#include "main_loop.hpp"
+#include "machina.hpp"
+#include "primitives.hpp"
 
 namespace machina {
 

@@ -7,15 +7,15 @@
  *  https://github.com/drmats/machina
  */
 
-#ifndef __M3D_H_
-#define __M3D_H_ 1
+#ifndef __M3D_HPP_
+#define __M3D_HPP_ 1
 
-#include "sdl_opengl.h"
+#include "sdl_opengl.hpp"
 #include <cstring>
 #include <stdexcept>
 #include <ostream>
 #include <cmath>
-#include "m3d_message.h"
+#include "m3d_message.hpp"
 
 namespace m3d {
 
