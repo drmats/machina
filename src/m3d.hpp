@@ -524,7 +524,7 @@ public:
 
 
     /**
-     *  Replaces current matrix with the translation matrix (built from GVector3).
+     *  Replaces current matrix with the translation matrix (built from vector).
      */
     GMatrix4x4<T>& load_translation (const GVector3<T> &v) {
         return this->load_translation(v[0], v[1], v[2]);
@@ -545,7 +545,7 @@ public:
 
 
     /**
-     *  Replaces current matrix with the scale matrix (built from GVector3).
+     *  Replaces current matrix with the scale matrix (built from vector).
      */
     GMatrix4x4<T>& load_scale (const GVector3<T> &v) {
         return this->load_scale(v[0], v[1], v[2]);
@@ -555,7 +555,7 @@ public:
     /**
      *  Replaces current matrix with the rotation matrix.
      */
-    GMatrix4x4<T>& load_rotation (T angle, T x, T y, T z) {
+    inline GMatrix4x4<T>& load_rotation (T angle, T x, T y, T z) {
         angle = deg_to_rad(angle);
 
         GVector3<T> v(x, y, z); v.normalize();
@@ -577,6 +577,14 @@ public:
         #undef set
 
         return *this;
+    }
+
+
+    /**
+     *  Replaces current matrix with the rotation matrix (built from angle and vector).
+     */
+    GMatrix4x4<T>& load_rotation (T angle, const GVector3<T> &v) {
+        return this->load_rotation(angle, v[0], v[1], v[2]);
     }
 
 
