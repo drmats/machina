@@ -336,6 +336,40 @@ public:
 
 
 /**
+ *  Vector2D specialization.
+ */
+template <typename T>
+class GVector2 : public GVector<T, 2> {
+
+public:
+
+    GVector2 () {}
+    GVector2 (const GArray<T, 2> &v) { GVector<T, 2>::assign(*v); }
+    GVector2 (const T d[]) { GVector<T, 2>::assign(d); }
+    GVector2 (T x0, T x1) { this->assign(x0, x1); }
+
+
+    GVector2<T>& operator= (const GArray<T, 2> &v) {
+        return static_cast<GVector2<T>&>(GVector<T, 2>::assign(*v));
+    }
+    GVector2<T>& operator= (const T d[]) {
+        return static_cast<GVector2<T>&>(GVector<T, 2>::assign(d));
+    }
+
+
+    GVector2<T>& assign (T x0, T x1) {
+        #define set(i, v) this->data[i] = v
+        set(0, x0); set(1, x1);
+        #undef set
+        return *this;
+    }
+
+};
+
+
+
+
+/**
  *  Vector3D specialization.
  */
 template <typename T>

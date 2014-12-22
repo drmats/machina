@@ -29,6 +29,8 @@ inline GArray<T, N>::~GArray () {}
 /**
  *  Instantiation of GArray destructor for allowed types.
  */
+template GArray<GLfloat, 2>::~GArray();
+template GArray<GLdouble, 2>::~GArray();
 template GArray<GLfloat, 3>::~GArray();
 template GArray<GLdouble, 3>::~GArray();
 template GArray<GLfloat, 4>::~GArray();
@@ -56,6 +58,12 @@ bool operator== (const GArray<T, N> &l, const GArray<T, N> &r) {
 /**
  *  Instantiation of GArray deep comparision "==" for allowed types.
  */
+template bool operator== <GLfloat, 2> (
+    const GArray<GLfloat, 2> &l, const GArray<GLfloat, 2> &r
+);
+template bool operator== <GLdouble, 2> (
+    const GArray<GLdouble, 2> &l, const GArray<GLdouble, 2> &r
+);
 template bool operator== <GLfloat, 3> (
     const GArray<GLfloat, 3> &l, const GArray<GLfloat, 3> &r
 );
@@ -92,6 +100,12 @@ bool operator!= (const GArray<T, N> &l, const GArray<T, N> &r) {
 /**
  *  Instantiation of GArray deep comparision "!=" for allowed types.
  */
+template bool operator!= <GLfloat, 2> (
+    const GArray<GLfloat, 2> &l, const GArray<GLfloat, 2> &r
+);
+template bool operator!= <GLdouble, 2> (
+    const GArray<GLdouble, 2> &l, const GArray<GLdouble, 2> &r
+);
 template bool operator!= <GLfloat, 3> (
     const GArray<GLfloat, 3> &l, const GArray<GLfloat, 3> &r
 );
@@ -134,6 +148,12 @@ std::ostream& operator<< (std::ostream &os, const GArray<T, N> &gv) {
 /**
  *  Instantiation of GArray to string serialization for allowed types.
  */
+template std::ostream& operator<< <GLfloat, 2> (
+    std::ostream &os, const GArray<GLfloat, 2> &gv
+);
+template std::ostream& operator<< <GLdouble, 2> (
+    std::ostream &os, const GArray<GLdouble, 2> &gv
+);
 template std::ostream& operator<< <GLfloat, 3> (
     std::ostream &os, const GArray<GLfloat, 3> &gv
 );
