@@ -12,7 +12,6 @@
 
 #include "sdl_opengl.hpp"
 #include <vector>
-#include <algorithm>
 #include "m3d.hpp"
 
 namespace machina {
@@ -111,6 +110,7 @@ class Camera {
 public:
 
     using Matrix = m3d::GMatrix4x4<T>;
+    using Vector3 = m3d::GVector3<T>;
 
 
     /**
@@ -120,10 +120,15 @@ public:
 
 
     /**
-     *  Modelview matrices.
+     *  Camera rotation representation.
      */
     Matrix rotation;
-    Matrix translation;
+
+
+    /**
+     *  Camera translation representation.
+     */
+    Vector3 translation;
 
 
     /**

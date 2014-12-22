@@ -23,7 +23,6 @@ namespace machina {
 template <typename T>
 Camera<T>::Camera () {
     this->rotation.load_identity();
-    this->translation.load_identity();
     this->recompute_rotation();
 }
 
@@ -74,15 +73,9 @@ void Camera<T>::relative_translate (
     T heading,
     T delta
 ) {
-    char i = 12;
-    std::for_each(
-        direction.begin(),
-        direction.end(),
-        [this, heading, delta, &i] (char el) {
-            this->translation[i] += delta*this->rotation[el]*heading;
-            i++;
-        }
-    );
+    this->translation[0] += delta*this->rotation[direction[0]]*heading;
+    this->translation[1] += delta*this->rotation[direction[1]]*heading;
+    this->translation[2] += delta*this->rotation[direction[2]]*heading;
 }
 
 template <typename T>
@@ -126,9 +119,14 @@ void Camera<GLdouble>::establish_projection () const {
  */
 template <>
 void Camera<GLfloat>::establish_modelview () const {
-    Matrix op;
+    static Matrix op, translation;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(*op.multiply(this->rotation, this->translation));
+    glLoadMatrixf(
+        *op.multiply(
+            this->rotation,
+            translation.load_translation(this->translation)
+        )
+    );
 }
 
 
@@ -139,9 +137,14 @@ void Camera<GLfloat>::establish_modelview () const {
  */
 template <>
 void Camera<GLdouble>::establish_modelview () const {
-    Matrix op;
+    static Matrix op, translation;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixd(*op.multiply(this->rotation, this->translation));
+    glLoadMatrixd(
+        *op.multiply(
+            this->rotation,
+            translation.load_translation(this->translation)
+        )
+    );
 }
 
 

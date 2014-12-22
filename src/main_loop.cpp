@@ -177,6 +177,7 @@ void MainLoop::default_handler_t::keyboard (
 
         case SDLK_q:
             if (e.key.state == SDL_PRESSED) {
+
                 ml->terminate();
             }
             break;
@@ -184,7 +185,7 @@ void MainLoop::default_handler_t::keyboard (
         case SDLK_c:
             if (e.key.state == SDL_PRESSED) {
                 // reset position
-                ml->camera.translation.load_identity();
+                ml->camera.translation.reset();
                 // reset camera.projection.fovy
                 ml->camera.projection.set_all([ml] () {
                     auto all = ml->camera.projection.get_all();
