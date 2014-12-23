@@ -190,12 +190,14 @@ void MainLoop::default_handler_t::keyboard (
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
+    // quit program on ESC
     if (keystate[SDL_SCANCODE_ESCAPE] == 1) {
         ml->terminate();
         return;
     }
     switch (e.key.keysym.sym) {
 
+        // quit program
         case SDLK_q:
             if (e.key.state == SDL_PRESSED) {
 
@@ -203,6 +205,7 @@ void MainLoop::default_handler_t::keyboard (
             }
             break;
 
+        // reset camera position
         case SDLK_c:
             if (e.key.state == SDL_PRESSED) {
                 // reset position
@@ -214,6 +217,14 @@ void MainLoop::default_handler_t::keyboard (
                     return all;
                 }());
             }
+            break;
+
+        // list OpenGL extenstions
+        case SDLK_l:
+            if (e.key.state == SDL_PRESSED) {
+                ml->root->list_gl_extensions();
+            }
+            break;
 
         default:
             break;

@@ -136,12 +136,28 @@ void Machina::initialize_surface () {
     if (this->gl_context != NULL) {
         SDL_Delay(this->init_delay);
         std::cout
-            << "Initialized OpenGL context."
+            << "Created OpenGL context."
             << std::endl;
     } else {
         std::cerr
-            << "Unable to initialize OpenGL context "
+            << "Unable to create OpenGL context "
             << SDL_GetError()
+            << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    // GLEW initialization
+    this->glew_status = glewInit();
+    if (this->glew_status == GLEW_OK) {
+        SDL_Delay(this->init_delay);
+        std::cout
+            << "GLEW version: "
+            << glewGetString(GLEW_VERSION)
+            << std::endl;
+    } else {
+        std::cerr
+            << "Unable to initialize GLEW: "
+            << glewGetErrorString(this->glew_status)
             << std::endl;
         std::exit(EXIT_FAILURE);
     }
@@ -164,6 +180,20 @@ void Machina::initialize_surface () {
         << "OpenGL extensions available: "
         << this->opengl_num_extensions
         << std::endl;
+}
+
+
+
+
+/**
+ *  Print known OpenGL extenstions to stdout.
+ */
+void Machina::list_gl_extensions () {
+    for (int i = 0;  i < this->opengl_num_extensions;  i++) {
+        std::cout
+            << reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i))
+            << std::endl;
+    }
 }
 
 

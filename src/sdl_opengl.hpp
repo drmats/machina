@@ -17,13 +17,13 @@
 
 #ifdef __LINUX__
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+#include <GL/glew.h>
 #endif
 #ifdef __WIN32__
 #include <tchar.h>
 #include <windows.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+#include <GL/glew.h>
 #endif
 
 

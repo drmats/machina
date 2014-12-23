@@ -50,7 +50,7 @@ protected:
 
 
     // ...
-    static const int init_delay = 150;
+    static const int init_delay = 100;
 
 
     // SDL library versions
@@ -68,11 +68,16 @@ protected:
     SDL_GLContext gl_context;
 
 
+    // GLEW status
+    GLenum glew_status;
+
+
     // OpenGL version
     GLint
         opengl_major_version,
         opengl_minor_version;
     const char *opengl_version_string;
+
 
     // OpenGL extensions
     GLint opengl_num_extensions;
@@ -116,6 +121,12 @@ public:
      *  Initialize viewport/drawing surface.
      */
     void initialize_surface ();
+
+
+    /**
+     *  Print known OpenGL extenstions to stdout.
+     */
+    void list_gl_extensions ();
 
 
     /**

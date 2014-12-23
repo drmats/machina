@@ -36,6 +36,7 @@ Parts of code written in 2011.
 * C++ compiler with [**C++11**](https://en.wikipedia.org/wiki/C%2B%2B11) support ([**gcc**](http://gcc.gnu.org/) or [**clang**](http://clang.llvm.org/))
 * [**Mingw-w64**](http://mingw-w64.sourceforge.net/) for windows cross-compilation
 * [**Simple Directmedia Layer**](https://www.libsdl.org/)
+* [**OpenGL Extension Wrangler Library**](http://glew.sourceforge.net/)
 
 
 

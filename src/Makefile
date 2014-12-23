@@ -11,8 +11,8 @@ GNUCPP           =  g++
 CROSSCPP32       =  i686-w64-mingw32-g++
 CROSSCPP64       =  x86_64-w64-mingw32-g++
 GNUCOMPILEFLAGS  =  -std=c++11 -mtune=generic -O2 -Wall -Wpedantic
-GNULINKLIBS      =  -lGL -lGLU -lSDL2 -lm
-CROSSLINKLIBS    =  -lmingw32 -lstdc++ -lwinpthread -lopengl32 -lglu32 -lSDL2main -lSDL2 -lm
+GNULINKLIBS      =  -lGLEW -lGL -lGLU -lSDL2 -lm
+CROSSLINKLIBS    =  -lmingw32 -lstdc++ -lwinpthread -lglew32 -lopengl32 -lglu32 -lSDL2main -lSDL2 -lm
 CROSSLINKFLAGS   =  -mwindows
 ENVIRONMENT      =
 
