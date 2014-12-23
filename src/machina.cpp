@@ -109,6 +109,7 @@ void Machina::initialize_sdl () {
  *  Initialize viewport/drawing surface.
  */
 void Machina::initialize_surface () {
+    // main window
     this->main_window = SDL_CreateWindow(
         PROGRAM_NAME.c_str(),
         SDL_WINDOWPOS_CENTERED,
@@ -130,6 +131,7 @@ void Machina::initialize_surface () {
         std::exit(EXIT_FAILURE);
     }
 
+    // main GL context
     this->gl_context = SDL_GL_CreateContext(this->main_window);
     if (this->gl_context != NULL) {
         SDL_Delay(this->init_delay);
@@ -143,6 +145,18 @@ void Machina::initialize_surface () {
             << std::endl;
         std::exit(EXIT_FAILURE);
     }
+
+    // GL version
+    glGetIntegerv(GL_MAJOR_VERSION, &this->opengl_major_version);
+    glGetIntegerv(GL_MINOR_VERSION, &this->opengl_minor_version);
+    this->opengl_version_string =
+        reinterpret_cast<const char *>(glGetString(GL_VERSION));
+    std::cout
+        << "OpenGL version: "
+        << this->opengl_major_version << "."
+        << this->opengl_minor_version << " "
+        << "(" << this->opengl_version_string << ")"
+        << std::endl;
 }
 
 

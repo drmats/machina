@@ -49,14 +49,18 @@ protected:
     } command_line_params;
 
 
+    // ...
+    static const int init_delay = 150;
+
+
     // SDL library versions
     SDL_version
         compile_sdl_version,
         linked_sdl_version;
 
 
-    // ...
-    static const int init_delay = 150;
+    // current video driver
+    const char *video_driver_name;
 
 
     // drawing surface
@@ -64,8 +68,11 @@ protected:
     SDL_GLContext gl_context;
 
 
-    // current video driver
-    const char *video_driver_name;
+    // OpenGL version
+    GLint
+        opengl_major_version,
+        opengl_minor_version;
+    const char *opengl_version_string;
 
 
     // viewport parameters
