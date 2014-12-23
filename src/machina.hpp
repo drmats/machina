@@ -74,6 +74,9 @@ protected:
         opengl_minor_version;
     const char *opengl_version_string;
 
+    // OpenGL extensions
+    GLint opengl_num_extensions;
+
 
     // viewport parameters
     struct {

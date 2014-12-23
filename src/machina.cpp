@@ -157,6 +157,13 @@ void Machina::initialize_surface () {
         << this->opengl_minor_version << " "
         << "(" << this->opengl_version_string << ")"
         << std::endl;
+
+    // GL extensions
+    glGetIntegerv(GL_NUM_EXTENSIONS, &this->opengl_num_extensions);
+    std::cout
+        << "OpenGL extensions available: "
+        << this->opengl_num_extensions
+        << std::endl;
 }
 
 
