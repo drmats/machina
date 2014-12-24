@@ -172,6 +172,15 @@ void Machina::initialize_surface () {
         << this->opengl_major_version << "."
         << this->opengl_minor_version << " "
         << "(" << this->opengl_version_string << ")"
+        << std::endl
+        << "OpenGL vendor: "
+        << reinterpret_cast<const char *>(glGetString(GL_VENDOR))
+        << std::endl
+        << "OpenGL renderer: "
+        << reinterpret_cast<const char *>(glGetString(GL_RENDERER))
+        << std::endl
+        << "GLSL version: "
+        << reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION))
         << std::endl;
 
     // GL extensions
