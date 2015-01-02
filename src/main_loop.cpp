@@ -407,6 +407,7 @@ inline void MainLoop::draw () const {
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
     );
+
     this->camera.establish_projection();
     this->camera.establish_modelview();
 
@@ -415,6 +416,26 @@ inline void MainLoop::draw () const {
     primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f);
     primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, 1.0f, GL_POINTS);
     primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
+
+    // ...
+    static m3d::GMatrix4x4<GLfloat> translation, mv, mvp;
+    static GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    this->shader.use(
+        mvp.multiply(
+            this->camera.projection.get_matrix(),
+            mv.multiply(
+                this->camera.rotation,
+                translation.load_translation(this->camera.translation)
+            )
+        ),
+        yellow
+    );
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(2.0f);
+    this->model.draw();
+
+    glUseProgram(0);
+    // ...
 }
 
 
@@ -425,6 +446,17 @@ inline void MainLoop::draw () const {
  */
 void MainLoop::run () {
     this->running = true;
+
+    // ...
+    GLfloat verts[] = {
+        100, 100, 100,
+        -100, 100, 100,
+        100, 100, -100,
+        -100, 100, -100
+    };
+    this->model.prepare(GL_LINES, 4, verts);
+    // ...
+
     while (this->running) {
         this->process_events();
         this->draw();

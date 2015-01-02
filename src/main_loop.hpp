@@ -16,6 +16,8 @@
 #include <memory>
 #include <vector>
 #include "camera.hpp"
+#include "batch.hpp"
+#include "shader.hpp"
 
 namespace machina {
 
@@ -74,6 +76,14 @@ private:
 
     // main camera
     Camera<GLfloat> camera;
+
+
+    // batch
+    SimpleBatch model;
+
+
+    // shader
+    shader::Shader shader;
 
 
     // loop sustaining variable
