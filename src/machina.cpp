@@ -147,6 +147,7 @@ void Machina::initialize_surface () {
     }
 
     // GLEW initialization
+    glewExperimental = GL_TRUE;
     this->glew_status = glewInit();
     if (this->glew_status == GLEW_OK) {
         SDL_Delay(this->init_delay);
