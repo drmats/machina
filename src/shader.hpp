@@ -12,6 +12,7 @@
 
 #include "sdl_opengl.hpp"
 #include "m3d.hpp"
+#include <stdexcept>
 
 namespace machina {
     namespace shader {
@@ -51,9 +52,12 @@ public:
 
 
     /**
-     *  ...
+     *  Compile shader from a given source.
      */
-    void load_shader_src (const GLchar *shader_src, GLuint shader);
+    GLuint load_shader (
+        GLenum shader_type,
+        const GLchar *shader_src
+    ) throw (std::runtime_error);
 
 };
 

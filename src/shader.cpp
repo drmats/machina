@@ -42,33 +42,13 @@ static const GLchar *fs_basic =
  */
 Shader::Shader () {
 
-    // temporary shader objects
+    // temporary shader objects (load and compile from sources)
     GLuint
-        vertex_shader = glCreateShader(GL_VERTEX_SHADER),
-        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        vertex_shader = this->load_shader(GL_VERTEX_SHADER, vs_basic),
+        fragment_shader = this->load_shader(GL_FRAGMENT_SHADER, fs_basic);
 
     // status variable (for testing errors)
     GLint status;
-
-    // load shader sources
-    this->load_shader_src(vs_basic, vertex_shader);
-    this->load_shader_src(fs_basic, fragment_shader);
-
-    // compile them
-    glCompileShader(vertex_shader);
-    glCompileShader(fragment_shader);
-
-    // check for compilation errors
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE) {
-        glDeleteShader(vertex_shader);
-        glDeleteShader(fragment_shader);
-    }
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE) {
-        glDeleteShader(vertex_shader);
-        glDeleteShader(fragment_shader);
-    }
 
     // attach shaders to gl program
     this->program = glCreateProgram();
@@ -127,11 +107,24 @@ void Shader::use (const m3d::GMatrix4x4<GLfloat> &mvp, const GLfloat *color) con
 
 
 /**
- *  ...
+ *  Compile shader from a given source.
  */
-void Shader::load_shader_src (const GLchar *shader_src, GLuint shader) {
-    const GLchar *shaders_source_table[] = { shader_src };
-    glShaderSource(shader, 1, shaders_source_table, NULL);
+GLuint Shader::load_shader (
+    GLenum shader_type,
+    const GLchar *shader_src
+) throw (std::runtime_error) {
+    GLuint shader = glCreateShader(shader_type);
+    GLint status;
+
+    glShaderSource(shader, 1, &shader_src, NULL);
+    glCompileShader(shader);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    if (status == GL_FALSE) {
+        glDeleteShader(shader);
+        throw std::runtime_error("Shader compilation failure.");
+    }
+
+    return shader;
 }
 
 
