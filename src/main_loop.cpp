@@ -418,7 +418,7 @@ inline void MainLoop::draw () const {
     primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
 
     // ...
-    static m3d::GMatrix4x4<GLfloat> translation, mv, mvp;
+    static m3d::GMatrix4<GLfloat> translation, mv, mvp;
     static GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     this->shader.use(
         mvp.multiply(

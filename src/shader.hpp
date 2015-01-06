@@ -48,7 +48,7 @@ public:
     /**
      *  ...
      */
-    void use (const m3d::GMatrix4x4<GLfloat> &mvp, const GLfloat *color) const;
+    void use (const m3d::GMatrix4<GLfloat> &mvp, const GLfloat *color) const;
 
 
     /**

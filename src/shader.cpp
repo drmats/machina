@@ -91,7 +91,7 @@ Shader::~Shader () {
 /**
  *  ...
  */
-void Shader::use (const m3d::GMatrix4x4<GLfloat> &mvp, const GLfloat *color) const {
+void Shader::use (const m3d::GMatrix4<GLfloat> &mvp, const GLfloat *color) const {
     glUseProgram(this->program);
     glUniformMatrix4fv(
         glGetUniformLocation(this->program, "mvp_matrix"),

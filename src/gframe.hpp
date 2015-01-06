@@ -26,7 +26,7 @@ class GFrame {
 
 public:
 
-    using Matrix = m3d::GMatrix4x4<T>;
+    using Matrix = m3d::GMatrix4<T>;
     using Vector3 = m3d::GVector3<T>;
 
 
