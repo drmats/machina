@@ -82,6 +82,42 @@ m3d::GMatrix4<T> GFrame<T>::get_transformation_matrix () const {
 
 
 /**
+ *  Assemble the view matrix.
+ */
+template <typename T>
+m3d::GMatrix4<T> GFrame<T>::get_view_matrix () const {
+    mat4 rotation, translation, m;
+    vec3 forward(this->forward), right, origin(this->origin);
+
+    forward.flip();
+    right.cross(this->up, forward);
+
+    #define set(i, val) rotation[i] = val
+    #define up this->up
+    #define zero static_cast<T>(0)
+    #define one static_cast<T>(1)
+
+    set(0,   right[0]);  set(4,   right[1]);  set( 8,   right[2]);  set(12, zero);
+    set(1,      up[0]);  set(5,      up[1]);  set( 9,      up[2]);  set(13, zero);
+    set(2, forward[0]);  set(6, forward[1]);  set(10, forward[2]);  set(14, zero);
+    set(3,       zero);  set(7,       zero);  set(11,       zero);  set(15,  one);
+
+    #undef one
+    #undef zero
+    #undef up
+    #undef set
+
+    origin.flip();
+    translation.load_translation(origin);
+    m.multiply(rotation, translation);
+
+    return m;
+}
+
+
+
+
+/**
  *  Instantiation of allowed types.
  */
 template class GFrame<GLfloat>;

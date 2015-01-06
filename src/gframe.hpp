@@ -103,6 +103,12 @@ public:
      */
      m3d::GMatrix4<T> get_transformation_matrix () const;
 
+
+    /**
+     *  Assemble the view matrix.
+     */
+     m3d::GMatrix4<T> get_view_matrix () const;
+
 };
 
 
