@@ -176,6 +176,46 @@ template std::ostream& operator<< <GLdouble, 4*4> (
 
 
 
+/**
+ *  GVector destructor.
+ */
+template <typename T, std::size_t N>
+inline GVector<T, N>::~GVector () {}
+
+
+
+
+/**
+ *  Instantiation of GVector destructor for allowed types.
+ */
+template GVector<GLfloat, 2>::~GVector();
+template GVector<GLdouble, 2>::~GVector();
+template GVector<GLfloat, 3>::~GVector();
+template GVector<GLdouble, 3>::~GVector();
+template GVector<GLfloat, 4>::~GVector();
+template GVector<GLdouble, 4>::~GVector();
+
+
+
+
+/**
+ *  GMatrix destructor.
+ */
+template <typename T, std::size_t N>
+inline GMatrix<T, N>::~GMatrix () {}
+
+
+
+
+/**
+ *  Instantiation of GMatrix destructor for allowed types.
+ */
+template GMatrix<GLfloat, 4>::~GMatrix();
+template GMatrix<GLdouble, 4>::~GMatrix();
+
+
+
+
 } // namespace m3d
 
 #endif

@@ -120,7 +120,7 @@ protected:
 public:
 
     virtual ~GArray () = 0;
-    inline GArray<T, N>& operator= (const GArray<T, N> &a) { return this->assign(*a); }
+    inline GArray<T, N>& operator= (const GArray<T, N> &a) { return this->assign(a); }
     inline GArray<T, N>& operator= (const T d[]) { return this->assign(d); }
 
 
@@ -143,7 +143,7 @@ public:
 
 
     /**
-     *  Return pointer of basic type to array.
+     *  Return pointer of basic type to the internal array.
      */
     inline const T* operator* () const { return this->data; }
 
@@ -244,7 +244,7 @@ class GVector : public GArray<T, N> {
 
 public:
 
-    using GArray<T, N>::operator=;
+    virtual ~GVector () = 0;
 
 
     /**
@@ -350,7 +350,8 @@ public:
 
     GVector2 () {}
     GVector2 (T x0, T x1) { this->assign(x0, x1); }
-    using GVector<T, 2>::operator=;
+    GVector2 (const GArray<T, 2> &a) { GArray<T, 2>::assign(a); }
+    using GArray<T, 2>::operator=;
 
 
     GVector2<T>& assign (T x0, T x1) {
@@ -375,7 +376,8 @@ public:
 
     GVector3 () {}
     GVector3 (T x0, T x1, T x2) { this->assign(x0, x1, x2); }
-    using GVector<T, 3>::operator=;
+    GVector3 (const GArray<T, 3> &a) { GArray<T, 3>::assign(a); }
+    using GArray<T, 3>::operator=;
 
 
     GVector3<T>& assign (T x0, T x1, T x2) {
@@ -411,7 +413,8 @@ public:
 
     GVector4 () {}
     GVector4 (T x0, T x1, T x2, T x3) { this->assign(x0, x1, x2, x3); }
-    using GVector<T, 4>::operator=;
+    GVector4 (const GArray<T, 4> &a) { GArray<T, 4>::assign(a); }
+    using GArray<T, 4>::operator=;
 
 
     GVector4<T>& assign (T x0, T x1, T x2, T x3) {
@@ -434,7 +437,7 @@ class GMatrix : public GArray<T, N*N> {
 
 public:
 
-    using GArray<T, N*N>::operator=;
+    virtual ~GMatrix () = 0;
 
 
     /**
@@ -479,7 +482,9 @@ class GMatrix4 : public GMatrix<T, 4> {
 
 public:
 
-    using GMatrix<T, 4>::operator=;
+    GMatrix4 () {}
+    GMatrix4 (const GArray<T, 4*4> &a) { GArray<T, 4*4>::assign(a); }
+    using GArray<T, 4*4>::operator=;
 
 
     /**
@@ -487,9 +492,9 @@ public:
      */
     inline GMatrix4<T>& load_translation (T x, T y, T z) {
         this->load_identity();
-        this->data[12] = x;
-        this->data[13] = y;
-        this->data[14] = z;
+        #define set(i, v) this->data[i] = v
+        set(12, x); set(13, y); set(14, z);
+        #undef set
         return *this;
     }
 
@@ -507,10 +512,9 @@ public:
      */
     inline GMatrix4<T>& load_scale (T x, T y, T z) {
         this->reset();
-        this->data[0] = x;
-        this->data[5] = y;
-        this->data[10] = z;
-        this->data[15] = static_cast<T>(1);
+        #define set(i, v) this->data[i] = v
+        set(0, x); set(5, y); set(10, z); set(15, static_cast<T>(1));
+        #undef set
         return *this;
     }
 
