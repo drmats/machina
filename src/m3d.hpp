@@ -120,6 +120,8 @@ protected:
 public:
 
     virtual ~GArray () = 0;
+    inline GArray<T, N>& operator= (const GArray<T, N> &a) { return this->assign(*a); }
+    inline GArray<T, N>& operator= (const T d[]) { return this->assign(d); }
 
 
     /**
@@ -164,13 +166,13 @@ public:
     /**
      *  Replace current array.
      */
-    inline GArray<T, N>& assign (const T d[]) {
-        std::memcpy(this->data, d, N*sizeof(T));
+    inline GArray<T, N>& assign (const GArray<T, N> &a) {
+        std::memcpy(this->data, *a, N*sizeof(T));
         return *this;
     }
 
-    inline GArray<T, N>& assign (const GArray<T, N> &a) {
-        std::memcpy(this->data, *a, N*sizeof(T));
+    inline GArray<T, N>& assign (const T d[]) {
+        std::memcpy(this->data, d, N*sizeof(T));
         return *this;
     }
 
@@ -242,6 +244,9 @@ class GVector : public GArray<T, N> {
 
 public:
 
+    using GArray<T, N>::operator=;
+
+
     /**
      *  Compute square length of the current vector.
      */
@@ -304,12 +309,12 @@ public:
 
 
     /**
-     *  Compute dot product based on current vector and one passed in parameter.
+     *  Compute dot product based on the current vector and one passed in parameter.
      */
     T dot (const GVector<T, N> &v) const {
         T result = static_cast<T>(0);
         for (std::size_t i = 0;  i < N;  i++) {
-            result += (*this)[i] * v[i];
+            result += this->data[i] * v[i];
         }
         return result;
     }
@@ -344,17 +349,8 @@ class GVector2 : public GVector<T, 2> {
 public:
 
     GVector2 () {}
-    GVector2 (const GArray<T, 2> &v) { GVector<T, 2>::assign(*v); }
-    GVector2 (const T d[]) { GVector<T, 2>::assign(d); }
     GVector2 (T x0, T x1) { this->assign(x0, x1); }
-
-
-    GVector2<T>& operator= (const GArray<T, 2> &v) {
-        return static_cast<GVector2<T>&>(GVector<T, 2>::assign(*v));
-    }
-    GVector2<T>& operator= (const T d[]) {
-        return static_cast<GVector2<T>&>(GVector<T, 2>::assign(d));
-    }
+    using GVector<T, 2>::operator=;
 
 
     GVector2<T>& assign (T x0, T x1) {
@@ -378,17 +374,8 @@ class GVector3 : public GVector<T, 3> {
 public:
 
     GVector3 () {}
-    GVector3 (const GArray<T, 3> &v) { GVector<T, 3>::assign(*v); }
-    GVector3 (const T d[]) { GVector<T, 3>::assign(d); }
     GVector3 (T x0, T x1, T x2) { this->assign(x0, x1, x2); }
-
-
-    GVector3<T>& operator= (const GArray<T, 3> &v) {
-        return static_cast<GVector3<T>&>(GVector<T, 3>::assign(*v));
-    }
-    GVector3<T>& operator= (const T d[]) {
-        return static_cast<GVector3<T>&>(GVector<T, 3>::assign(d));
-    }
+    using GVector<T, 3>::operator=;
 
 
     GVector3<T>& assign (T x0, T x1, T x2) {
@@ -400,7 +387,7 @@ public:
 
 
     /**
-     *  Compute cross product and store the result in current vector.
+     *  Compute cross product and store the result in the current vector.
      */
     GVector3<T>& cross (const GVector3<T> &u, const GVector3<T> &v) {
         this->data[0] = u[1] * v[2] - v[1] * u[2];
@@ -423,17 +410,8 @@ class GVector4 : public GVector<T, 4> {
 public:
 
     GVector4 () {}
-    GVector4 (const GArray<T, 4> &v) { GVector<T, 4>::assign(*v); }
-    GVector4 (const T d[]) { GVector<T, 4>::assign(d); }
     GVector4 (T x0, T x1, T x2, T x3) { this->assign(x0, x1, x2, x3); }
-
-
-    GVector4<T>& operator= (const GArray<T, 4> &v) {
-        return static_cast<GVector4<T>&>(GVector<T, 4>::assign(*v));
-    }
-    GVector4<T>& operator= (const T d[]) {
-        return static_cast<GVector4<T>&>(GVector<T, 4>::assign(d));
-    }
+    using GVector<T, 4>::operator=;
 
 
     GVector4<T>& assign (T x0, T x1, T x2, T x3) {
@@ -455,6 +433,9 @@ template <typename T, std::size_t N>
 class GMatrix : public GArray<T, N*N> {
 
 public:
+
+    using GArray<T, N*N>::operator=;
+
 
     /**
      *  Replace matrix with identity.
@@ -494,27 +475,17 @@ public:
  *  4x4 column-major matrix specialization.
  */
 template <typename T>
-class GMatrix4x4 : public GMatrix<T, 4> {
+class GMatrix4 : public GMatrix<T, 4> {
 
 public:
 
-    GMatrix4x4 () {}
-    GMatrix4x4 (const GArray<T, 4*4> &m) { GMatrix<T, 4>::assign(*m); }
-    GMatrix4x4 (const T d[]) { GMatrix<T, 4>::assign(d); }
-
-
-    GMatrix4x4<T>& operator= (const GArray<T, 4*4> &m) {
-        return static_cast<GMatrix4x4<T>&>(GMatrix<T, 4>::assign(*m));
-    }
-    GMatrix4x4<T>& operator= (const T d[]) {
-        return static_cast<GMatrix4x4<T>&>(GMatrix<T, 4>::assign(d));
-    }
+    using GMatrix<T, 4>::operator=;
 
 
     /**
      *  Replaces current matrix with the translation matrix.
      */
-    inline GMatrix4x4<T>& load_translation (T x, T y, T z) {
+    inline GMatrix4<T>& load_translation (T x, T y, T z) {
         this->load_identity();
         this->data[12] = x;
         this->data[13] = y;
@@ -526,7 +497,7 @@ public:
     /**
      *  Replaces current matrix with the translation matrix (built from vector).
      */
-    GMatrix4x4<T>& load_translation (const GVector3<T> &v) {
+    GMatrix4<T>& load_translation (const GVector3<T> &v) {
         return this->load_translation(v[0], v[1], v[2]);
     }
 
@@ -534,7 +505,7 @@ public:
     /**
      *  Replaces current matrix with the scale matrix.
      */
-    inline GMatrix4x4<T>& load_scale (T x, T y, T z) {
+    inline GMatrix4<T>& load_scale (T x, T y, T z) {
         this->reset();
         this->data[0] = x;
         this->data[5] = y;
@@ -547,7 +518,7 @@ public:
     /**
      *  Replaces current matrix with the scale matrix (built from vector).
      */
-    GMatrix4x4<T>& load_scale (const GVector3<T> &v) {
+    GMatrix4<T>& load_scale (const GVector3<T> &v) {
         return this->load_scale(v[0], v[1], v[2]);
     }
 
@@ -555,7 +526,7 @@ public:
     /**
      *  Replaces current matrix with the rotation matrix.
      */
-    inline GMatrix4x4<T>& load_rotation (T angle, T x, T y, T z) {
+    inline GMatrix4<T>& load_rotation (T angle, T x, T y, T z) {
         angle = deg_to_rad(angle);
 
         GVector3<T> v(x, y, z); v.normalize();
@@ -583,7 +554,7 @@ public:
     /**
      *  Replaces current matrix with the rotation matrix (built from angle and vector).
      */
-    GMatrix4x4<T>& load_rotation (T angle, const GVector3<T> &v) {
+    GMatrix4<T>& load_rotation (T angle, const GVector3<T> &v) {
         return this->load_rotation(angle, v[0], v[1], v[2]);
     }
 
@@ -591,7 +562,7 @@ public:
     /**
      *  Replaces current matrix with the perspective projection matrix.
      */
-    GMatrix4x4<T>& load_perspective (T fovy, T aspect, T z_near, T z_far) {
+    GMatrix4<T>& load_perspective (T fovy, T aspect, T z_near, T z_far) {
         this->reset();
         fovy = deg_to_rad(fovy);
 
@@ -612,7 +583,7 @@ public:
     /**
      *  Replaces current matrix with the perspective projection matrix.
      */
-    GMatrix4x4<T>& load_ortho (T left, T right, T bottom, T top, T z_near, T z_far) {
+    GMatrix4<T>& load_ortho (T left, T right, T bottom, T top, T z_near, T z_far) {
         this->reset();
 
         const T

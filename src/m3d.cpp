@@ -45,7 +45,7 @@ template GArray<GLdouble, 4*4>::~GArray();
  *  GArray deep comparision "==".
  */
 template <typename T, std::size_t N>
-bool operator== (const GArray<T, N> &l, const GArray<T, N> &r) {
+inline bool operator== (const GArray<T, N> &l, const GArray<T, N> &r) {
     for (std::size_t i = 0;  i < N;  i++) {
         if (l[i] != r[i]) { return false; }
     }
@@ -90,7 +90,7 @@ template bool operator== <GLdouble, 4*4> (
  *  GArray deep comparision "!=".
  */
 template <typename T, std::size_t N>
-bool operator!= (const GArray<T, N> &l, const GArray<T, N> &r) {
+inline bool operator!= (const GArray<T, N> &l, const GArray<T, N> &r) {
     return !(l == r);
 }
 
