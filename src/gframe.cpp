@@ -37,10 +37,8 @@ template <typename T>
 void GFrame<T>::normalize () {
     vec3 right;
 
-    this->forward.cross(
-        right.cross(this->up, this->forward),
-        this->up
-    );
+    right.cross(this->up, this->forward);
+    this->forward.cross(right, this->up);
     this->up.normalize();
     this->forward.normalize();
 }
@@ -54,7 +52,9 @@ void GFrame<T>::normalize () {
 template <typename T>
 m3d::GMatrix4<T> GFrame<T>::get_transformation_matrix () const {
     mat4 m;
-    vec3 right; right.cross(this->up, this->forward);
+    vec3 right;
+
+    right.cross(this->up, this->forward);
 
     #define set(i, val) m[i] = val
     #define up this->up
