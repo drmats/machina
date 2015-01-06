@@ -10,9 +10,9 @@
 #ifndef __CAMERA_HPP_
 #define __CAMERA_HPP_ 1
 
-#include "sdl_opengl.hpp"
 #include <vector>
 #include "m3d.hpp"
+#include "gframe.hpp"
 
 namespace machina {
 
@@ -27,12 +27,12 @@ class PerspectiveProjection {
 
 private:
 
-    using Matrix = m3d::GMatrix4<T>;
+    using mat4 = m3d::GMatrix4<T>;
 
     /**
      *  Perspective projection matrix.
      */
-    Matrix projection;
+    mat4 projection;
 
     /**
      *  Helper vars.
@@ -61,7 +61,7 @@ public:
     /**
      *  Return projection matrix.
      */
-    inline const Matrix& get_matrix () const {
+    inline const mat4& get_matrix () const {
         return this->projection;
     }
 
@@ -83,7 +83,7 @@ public:
     /**
      *  Set all parameters from a given vector.
      */
-    inline const Matrix& set_all (const std::vector<T> &all) {
+    inline const mat4& set_all (const std::vector<T> &all) {
         this->fovy = all[0];
         this->aspect = all[1];
         this->z_near = all[2];
@@ -109,8 +109,8 @@ class Camera {
 
 public:
 
-    using Matrix = m3d::GMatrix4<T>;
-    using Vector3 = m3d::GVector3<T>;
+    using mat4 = m3d::GMatrix4<T>;
+    using vec3 = m3d::GVector3<T>;
 
 
     /**
@@ -122,13 +122,13 @@ public:
     /**
      *  Camera rotation representation.
      */
-    Matrix rotation;
+    mat4 rotation;
 
 
     /**
      *  Camera translation representation.
      */
-    Vector3 translation;
+    vec3 translation;
 
 
     /**

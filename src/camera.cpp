@@ -34,7 +34,7 @@ Camera<T>::Camera () {
  */
 template <typename T>
 void Camera<T>::recompute_rotation () {
-    Matrix op, tmp;
+    mat4 op, tmp;
     this->rotation.load_translation(0.0, 0.0, -this->dist);
     this->rotation = op.multiply(
         this->rotation,
@@ -54,7 +54,7 @@ void Camera<T>::recompute_rotation () {
  */
 template <typename T>
 void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
-    Matrix op, relative_rotation;
+    mat4 op, relative_rotation;
     this->rotation = op.multiply(
         relative_rotation.load_rotation(delta, x, y, z),
         this->rotation
@@ -135,7 +135,7 @@ void Camera<GLdouble>::establish_projection () const {
  */
 template <>
 void Camera<GLfloat>::establish_modelview () const {
-    static Matrix op, translation;
+    static mat4 op, translation;
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(
         *op.multiply(
@@ -153,7 +153,7 @@ void Camera<GLfloat>::establish_modelview () const {
  */
 template <>
 void Camera<GLdouble>::establish_modelview () const {
-    static Matrix op, translation;
+    static mat4 op, translation;
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(
         *op.multiply(
