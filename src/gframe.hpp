@@ -10,10 +10,9 @@
 #ifndef __GFRAME_HPP_
 #define __GFRAME_HPP_ 1
 
-#include "sdl_opengl.hpp"
 #include "m3d.hpp"
 
-namespace machina {
+namespace m3d {
 
 
 
@@ -43,6 +42,13 @@ public:
      *  GFrame initialization.
      */
     GFrame ();
+
+
+    /**
+     *  Frame normalization
+     *  ("forward" and "up" vectors should be perpendicular and of unit length).
+     */
+    void normalize ();
 
 
     /**
@@ -95,13 +101,13 @@ public:
     /**
      *  Assemble the transformation matrix.
      */
-     m3d::GMatrix4<T> get_matrix () const;
+     m3d::GMatrix4<T> get_transformation_matrix () const;
 
 };
 
 
 
 
-} // namespace machina
+} // namespace m3d
 
 #endif

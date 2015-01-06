@@ -12,7 +12,7 @@
 
 #include "gframe.hpp"
 
-namespace machina {
+namespace m3d {
 
 
 
@@ -30,10 +30,29 @@ GFrame<T>::GFrame ():
 
 
 /**
+ *  Frame normalization
+ *  ("forward" and "up" vectors should be perpendicular and of unit length).
+ */
+template <typename T>
+void GFrame<T>::normalize () {
+    vec3 right;
+
+    this->forward.cross(
+        right.cross(this->up, this->forward),
+        this->up
+    );
+    this->up.normalize();
+    this->forward.normalize();
+}
+
+
+
+
+/**
  *  Assemble the transformation matrix.
  */
 template <typename T>
-m3d::GMatrix4<T> GFrame<T>::get_matrix () const {
+m3d::GMatrix4<T> GFrame<T>::get_transformation_matrix () const {
     mat4 m;
     vec3 right; right.cross(this->up, this->forward);
 
@@ -71,6 +90,6 @@ template class GFrame<GLdouble>;
 
 
 
-} // namespace machina
+} // namespace m3d
 
 #endif
