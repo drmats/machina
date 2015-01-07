@@ -114,7 +114,7 @@ typename GFrame<T>::mat4 GFrame<T>::get_view_matrix () const {
 
 
 /**
- *  Rebuild this GFrame on a given matrix basis.
+ *  Rebuild this frame of reference on a given matrix basis.
  */
 template <typename T>
 GFrame<T>& GFrame<T>::rebuild_from_matrix (const mat4 m) {

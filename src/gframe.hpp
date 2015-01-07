@@ -122,10 +122,7 @@ public:
 
 
     inline GFrame<T>& translate_local (const vec3 &v) {
-        this->translate_local_x(v[0]);
-        this->translate_local_y(v[1]);
-        this->translate_local_z(v[2]);
-        return *this;
+        return this->translate_local(v[0], v[1], v[2]);
     }
 
 
@@ -135,7 +132,7 @@ public:
     inline GFrame<T>& rotate_world (T angle, T x, T y, T z) {
         mat4 rotation(mat4().load_rotation(angle, x, y, z));
         this->up.assign(rotation * vec4(this->up, 0));
-        this->forward.assign(rotation * vec4(this->up, 0));
+        this->forward.assign(rotation * vec4(this->forward, 0));
         return *this;
     }
 
@@ -146,17 +143,58 @@ public:
 
 
     inline GFrame<T>& rotate_world_x (T angle) {
-        return this->rotate_world (angle, 1, 0, 0);
+        return this->rotate_world(angle, 1, 0, 0);
     }
 
 
     inline GFrame<T>& rotate_world_y (T angle) {
-        return this->rotate_world (angle, 0, 1, 0);
+        return this->rotate_world(angle, 0, 1, 0);
     }
 
 
     inline GFrame<T>& rotate_world_z (T angle) {
-        return this->rotate_world (angle, 0, 0, 1);
+        return this->rotate_world(angle, 0, 0, 1);
+    }
+
+
+    /**
+     *  Rotate this frame of reference in the local coordinates.
+     */
+    inline GFrame<T>& rotate_local_x (T angle) {
+        mat4 rotation(mat4().load_rotation(
+            angle, vec3().cross(this->up, this->forward)
+        ));
+        this->up.assign(rotation * vec4(this->up, 0));
+        this->forward.assign(rotation * vec4(this->forward, 0));
+        return *this;
+    }
+
+
+    inline GFrame<T>& rotate_local_y (T angle) {
+        this->forward.assign(
+            mat4().load_rotation(angle, this->up) *
+                vec4(this->forward, 0));
+        return *this;
+    }
+
+
+    inline GFrame<T>& rotate_local_z (T angle) {
+        this->up.assign(
+            mat4().load_rotation(angle, this->forward) *
+                vec4(this->up, 0));
+        return *this;
+    }
+
+
+    inline GFrame<T>& rotate_local (T angle, const vec3 &v) {
+        return this->rotate_world(angle, vec3(
+            this->get_transformation_matrix() * vec4(v, 0)
+        ));
+    }
+
+
+    inline GFrame<T>& rotate_local (T angle, T x, T y, T z) {
+        return this->rotate_local(angle, vec3(x, y, z));
     }
 
 
@@ -173,7 +211,7 @@ public:
 
 
     /**
-     *  Rebuild this GFrame on a given matrix basis.
+     *  Rebuild this frame of reference on a given matrix basis.
      */
     GFrame<T>& rebuild_from_matrix (const mat4);
 
