@@ -457,7 +457,7 @@ public:
     /**
      *  Multiply two matrices and store the result in the current matrix.
      */
-    GMatrix<T, N>& multiply (const GMatrix<T, N> &a, const GMatrix<T, N> &b) {
+    GMatrix<T, N>& multiply (const GArray<T, N*N> &a, const GArray<T, N*N> &b) {
         T val;
         std::size_t row, column;
         for (std::size_t i = 0;  i < N*N;  i++) {
@@ -479,8 +479,8 @@ public:
 /**
  *  Multiply two matrices creating new one.
  */
-template <typename T, std::size_t N>
-inline GMatrix<T, N> operator* (const GMatrix<T, N> &a, const GMatrix<T, N> &b) {
+template <typename T, std::size_t N = 4>
+inline GMatrix<T, N> operator* (const GArray<T, N*N> &a, const GArray<T, N*N> &b) {
     return GMatrix<T, N>().multiply(a, b);
 }
 

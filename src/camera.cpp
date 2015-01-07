@@ -40,6 +40,7 @@ void Camera<T>::recompute_transform () {
         mat4().load_translation(0, 0, this->dist)
     );
 
+
     // mat4 tm, m2, m3;
     // tm.multiply(
     //     m2.load_translation(this->target),
