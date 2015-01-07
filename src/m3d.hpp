@@ -48,8 +48,6 @@ inline bool close_to (T a, T b) {
 }
 
 
-
-
 /**
  *  Square root.
  */
@@ -59,22 +57,22 @@ inline T sqr (T x) {
 }
 
 
-
-
 /**
- *  Angle conversions.
+ *  Angle conversion (degrees to radians).
  */
 template <typename T>
 inline T deg_to_rad (T x) {
     return x * static_cast<T>(m3d_pi180);
 }
 
+
+/**
+ *  Angle conversion (radians to degrees).
+ */
 template <typename T>
 inline T rad_to_deg (T x) {
     return x * static_cast<T>(m3d_invpi180);
 }
-
-
 
 
 /**
@@ -84,24 +82,6 @@ template <typename T>
 inline T linear_interpolation (T x1, T x2, T x3, T y1, T y3) {
     return (((x2 - x1) * (y3 - y1)) / (x3 - x1)) + y1;
 }
-
-
-
-
-/**
- *  Forward declarations for GArray friend operators.
- */
-template <typename T, std::size_t N>
-class GArray;
-
-template <typename T, std::size_t N>
-bool operator== (const GArray<T, N> &, const GArray<T, N> &);
-
-template <typename T, std::size_t N>
-bool operator!= (const GArray<T, N> &, const GArray<T, N> &);
-
-template <typename T, std::size_t N>
-std::ostream& operator<< (std::ostream &, const GArray<T, N> &);
 
 
 
@@ -119,7 +99,6 @@ protected:
 
 public:
 
-    virtual ~GArray () = 0;
     inline GArray<T, N>& operator= (const GArray<T, N> &a) { return this->assign(a); }
     inline GArray<T, N>& operator= (const T d[]) { return this->assign(d); }
 
@@ -133,6 +112,7 @@ public:
         }
         return this->data[i];
     }
+
 
     inline const T& operator[] (std::size_t i) const throw (std::out_of_range) {
         if (i >= N) {
@@ -149,7 +129,7 @@ public:
 
 
     /**
-     *  Return size of array.
+     *  Return the size of this array.
      */
     inline std::size_t size () const { return N; }
 
@@ -170,6 +150,7 @@ public:
         std::memcpy(this->data, *a, N*sizeof(T));
         return *this;
     }
+
 
     inline GArray<T, N>& assign (const T d[]) {
         std::memcpy(this->data, d, N*sizeof(T));
@@ -200,38 +181,88 @@ public:
 
 
     /**
-     *  Scale current array (multiply each component by a given value).
+     *  Scale the current array (multiply each component by a given value).
      */
-    inline GArray<T, N>& scale (T s) {
+    inline GArray<T, N>& scale (const T s) {
         for (std::size_t i = 0;  i < N;  i++) {
             this->data[i] *= s;
         }
         return *this;
     }
 
-
-    /**
-     *  GArray deep comparision.
-     */
-    friend bool operator== <> (const GArray<T, N> &, const GArray<T, N> &);
-    friend bool operator!= <> (const GArray<T, N> &, const GArray<T, N> &);
-
-
-    /**
-     *  GArray to string serialization.
-     */
-    friend std::ostream& operator<< <> (std::ostream &, const GArray<T, N> &);
-
 };
 
 
+/**
+ *  Add two arrays yielding the new one.
+ */
+template <typename T, std::size_t N>
+inline GArray<T, N> operator+ (const GArray<T, N> &a, const GArray<T, N> &b) {
+    return GArray<T, N>(a).add(b);
+}
 
 
 /**
- *  Forward declaration for GVector<T, N>::transform.
+ *  Subtract two arrays yielding the new one.
  */
 template <typename T, std::size_t N>
-class GMatrix;
+inline GArray<T, N> operator- (const GArray<T, N> &a, const GArray<T, N> &b) {
+    return GArray<T, N>(a).sub(b);
+}
+
+
+/**
+ *  Scale array by a scalar yielding the new array (Array * Scalar).
+ */
+template <typename T, std::size_t N>
+inline GArray<T, N> operator* (const GArray<T, N> &a, const T s) {
+    return GArray<T, N>(a).scale(s);
+}
+
+
+/**
+ *  Scale array by a scalar yielding the new array (Scalar * Array).
+ */
+template <typename T, std::size_t N>
+inline GArray<T, N> operator* (const T s, const GArray<T, N> &a) {
+    return GArray<T, N>(a).scale(s);
+}
+
+
+/**
+ *  GArray deep comparision "==".
+ */
+template <typename T, std::size_t N>
+inline bool operator== (const GArray<T, N> &a, const GArray<T, N> &b) {
+    for (std::size_t i = 0;  i < N;  i++) {
+        if (a[i] != b[i]) { return false; }
+    }
+    return true;
+}
+
+
+/**
+ *  GArray deep comparision "!=".
+ */
+template <typename T, std::size_t N>
+inline bool operator!= (const GArray<T, N> &l, const GArray<T, N> &r) {
+    return !(l == r);
+}
+
+
+/**
+ *  GArray to string serialization.
+ */
+template <typename T, std::size_t N>
+std::ostream& operator<< (std::ostream &os, const GArray<T, N> &gv) {
+    os << "[";
+    for (std::size_t i = 0;  i < N;  i++) {
+        os << gv[i];
+        if (i < N-1) { os << ", "; }
+    }
+    os << "]";
+    return os;
+}
 
 
 
@@ -243,9 +274,6 @@ template <typename T, std::size_t N>
 class GVector : public GArray<T, N> {
 
 public:
-
-    virtual ~GVector () = 0;
-
 
     /**
      *  Compute square length of the current vector.
@@ -311,7 +339,7 @@ public:
     /**
      *  Compute dot product based on the current vector and one passed in parameter.
      */
-    T dot (const GVector<T, N> &v) const {
+    T dot (const GArray<T, N> &v) const {
         T result = static_cast<T>(0);
         for (std::size_t i = 0;  i < N;  i++) {
             result += this->data[i] * v[i];
@@ -323,7 +351,7 @@ public:
     /**
      *  Transform given vector by a matrix and store the result in current vector.
      */
-    GVector<T, N>& transform (const GMatrix<T, N> &m, const GVector<T, N> &v) {
+    GVector<T, N>& transform (const GArray<T, N*N> &m, const GArray<T, N> &v) {
         T val;
         for (std::size_t i = 0;  i < N;  i++) {
             val = static_cast<T>(0);
@@ -474,10 +502,8 @@ public:
 };
 
 
-
-
 /**
- *  Multiply two matrices creating new one.
+ *  Multiply two matrices yielding the new one.
  */
 template <typename T, std::size_t N = 4>
 inline GMatrix<T, N> operator* (const GArray<T, N*N> &a, const GArray<T, N*N> &b) {
