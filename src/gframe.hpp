@@ -48,53 +48,82 @@ public:
      *  Frame normalization
      *  ("forward" and "up" vectors should be perpendicular and of unit length).
      */
-    void normalize ();
+    GFrame<T>& normalize ();
 
 
     /**
      *  Translate this frame of reference in the world coordinates.
      */
-    inline void translate_x (T delta) { this->origin[0] += delta; }
-    inline void translate_y (T delta) { this->origin[1] += delta; }
-    inline void translate_z (T delta) { this->origin[2] += delta; }
-    inline void translate_world (T delta_x, T delta_y, T delta_z) {
+    inline GFrame<T>& translate_x (T delta) {
+        this->origin[0] += delta;
+        return *this;
+    }
+
+
+    inline GFrame<T>& translate_y (T delta) {
+        this->origin[1] += delta;
+        return *this;
+    }
+
+
+    inline GFrame<T>& translate_z (T delta) {
+        this->origin[2] += delta;
+        return *this;
+    }
+
+
+    inline GFrame<T>& translate_world (T delta_x, T delta_y, T delta_z) {
         this->translate_x(delta_x);
         this->translate_y(delta_y);
         this->translate_z(delta_z);
+        return *this;
     }
-    inline void translate_world (const vec3 &v) {
+
+
+    inline GFrame<T>& translate_world (const vec3 &v) {
         this->origin.add(v);
+        return *this;
     }
 
 
     /**
      *  Translate this frame of reference in the local coordinates.
      */
-    inline void translate_right (T delta) {
-        vec3 right;
+    inline GFrame<T>& translate_right (T delta) {
         this->origin.add(
-            right
+            vec3()
                 .cross(this->up, this->forward)
                 .scale(delta)
         );
+        return *this;
     }
-    inline void translate_up (T delta) {
-        vec3 up(this->up);
-        this->origin.add(up.scale(delta));
+
+
+    inline GFrame<T>& translate_up (T delta) {
+        this->origin.add(this->up * delta);
+        return *this;
     }
-    inline void translate_forward (T delta) {
-        vec3 forward(this->forward);
-        this->origin.add(forward.scale(delta));
+
+
+    inline GFrame<T>& translate_forward (T delta) {
+        this->origin.add(this->forward * delta);
+        return *this;
     }
-    inline void translate_local (T delta_x, T delta_y, T delta_z) {
+
+
+    inline GFrame<T>& translate_local (T delta_x, T delta_y, T delta_z) {
         this->translate_right(delta_x);
         this->translate_up(delta_y);
         this->translate_forward(delta_z);
+        return *this;
     }
-    inline void translate_local (const vec3 &v) {
+
+
+    inline GFrame<T>& translate_local (const vec3 &v) {
         this->translate_right(v[0]);
         this->translate_up(v[1]);
         this->translate_forward(v[2]);
+        return *this;
     }
 
 

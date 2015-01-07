@@ -111,6 +111,7 @@ public:
 
     using mat4 = m3d::GMatrix4<T>;
     using vec3 = m3d::GVector3<T>;
+    using vec4 = m3d::GVector4<T>;
     using frame = m3d::GFrame<T>;
 
 

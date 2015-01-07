@@ -11,7 +11,7 @@
 #define __CAMERA_CPP_ 1
 
 #include "camera.hpp"
-#include <iostream>
+
 namespace machina {
 
 
@@ -40,42 +40,9 @@ void Camera<T>::recompute_transform () {
         mat4().load_translation(0, 0, this->dist)
     );
 
-
-    // mat4 tm, m2, m3;
-    // tm.multiply(
-    //     m2.load_translation(this->target),
-    //     m3.multiply(
-    //         tm.load_rotation(this->yaw, 0.0, 1.0, 0.0),
-    //         m2.multiply(
-    //             m3.load_rotation(this->pitch, 1.0, 0.0, 0.0),
-    //             tm.load_translation(0.0, 0.0, this->dist)
-    //         )
-    //     )
-    // );
-
-    // m3d::GVector4<T> u, v;
-    // u.transform(tm, v.assign(0, 1, 0, 0));
-    // this->transform.up[0] = u[0];
-    // this->transform.up[1] = u[1];
-    // this->transform.up[2] = u[2];
-    // u.transform(tm, v.assign(0, 0, -1, 0));
-    // this->transform.forward[0] = u[0];
-    // this->transform.forward[1] = u[1];
-    // this->transform.forward[2] = u[2];
-    // u.transform(tm, v.assign(0, 0, 0, 1));
-    // this->transform.origin[0] = u[0];
-    // this->transform.origin[1] = u[1];
-    // this->transform.origin[2] = u[2];
-
-    this->transform.up[0] = transform_matrix[4];
-    this->transform.up[1] = transform_matrix[5];
-    this->transform.up[2] = transform_matrix[6];
-    this->transform.forward[0] = -transform_matrix[8];
-    this->transform.forward[1] = -transform_matrix[9];
-    this->transform.forward[2] = -transform_matrix[10];
-    this->transform.origin[0] = transform_matrix[12];
-    this->transform.origin[1] = transform_matrix[13];
-    this->transform.origin[2] = transform_matrix[14];
+    this->transform.up = *(transform_matrix * vec4(0, 1, 0, 0));
+    this->transform.forward = *(transform_matrix * vec4(0, 0, -1, 0));
+    this->transform.origin = *(transform_matrix * vec4(0, 0, 0, 1));
 }
 
 

@@ -60,7 +60,7 @@ void MainLoop::default_handler_t::move_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
-    m3d::GVector3<GLfloat> tmp_vec;
+    using vec3 = m3d::GVector3<GLfloat>;
 
     // ml->camera.transform.translate_right(
     //     e.motion.xrel * ml->camera.dist * 0.00215f
@@ -76,20 +76,18 @@ void MainLoop::default_handler_t::move_around_camera (
     // }
 
     ml->camera.target.add(
-        tmp_vec
+        vec3()
             .cross(ml->camera.transform.up, ml->camera.transform.forward)
             .scale(e.motion.xrel * ml->camera.dist * 0.00215f)
     );
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
-        tmp_vec = ml->camera.transform.forward;
         ml->camera.target.add(
-            tmp_vec
+            vec3(ml->camera.transform.forward)
                 .scale(e.motion.yrel * ml->camera.dist * 0.00215f)
         );
     } else {
-        tmp_vec = ml->camera.transform.up;
         ml->camera.target.add(
-            tmp_vec
+            vec3(ml->camera.transform.up)
                 .scale(e.motion.yrel * ml->camera.dist * 0.00215f)
         );
     }
@@ -106,6 +104,7 @@ void MainLoop::default_handler_t::mouse_wheel (
     MainLoop *ml, const SDL_Event &e
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    using vec2 = m3d::GVector2<GLfloat>;
 
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
 
@@ -119,13 +118,13 @@ void MainLoop::default_handler_t::mouse_wheel (
     } else if (keystate[SDL_SCANCODE_LSHIFT] == 1) {
 
         // move camera on a x-z plane (forward/backward)
-        m3d::GVector2<GLfloat> dir;
-        auto delta = e.wheel.y * 0.1 * ml->camera.dist;
-        dir.assign(
-            ml->camera.transform.forward[0],
-            ml->camera.transform.forward[2]
+        vec2 dir(
+            vec2(
+                ml->camera.transform.forward[0],
+                ml->camera.transform.forward[2]
+            ).normalize()
         );
-        dir.normalize();
+        auto delta = e.wheel.y * 0.1 * ml->camera.dist;
         ml->camera.target[0] += delta*dir[0];
         ml->camera.target[2] += delta*dir[1];
         ml->camera.recompute_transform();
@@ -453,13 +452,10 @@ inline void MainLoop::draw () const {
     primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
 
     // ...
-    static m3d::GMatrix4<GLfloat> vp;
     static GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     this->shader.use(
-        vp.multiply(
-            this->camera.projection.get_matrix(),
-            this->camera.transform.get_view_matrix()
-        ),
+        this->camera.projection.get_matrix() *
+            this->camera.transform.get_view_matrix(),
         yellow
     );
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
