@@ -349,7 +349,7 @@ public:
 
 
     /**
-     *  Transform given vector by a matrix and store the result in current vector.
+     *  Transform given vector by a matrix and store the result in the current vector.
      */
     GVector<T, N>& transform (const GArray<T, N*N> &m, const GArray<T, N> &v) {
         T val;
@@ -366,6 +366,15 @@ public:
 };
 
 
+/**
+ *  Transform given vector by a matrix and store the result in the new vector
+ */
+template <typename T, std::size_t N>
+inline GVector<T, N> operator* (const GArray<T, N*N> &m, const GArray<T, N> &v) {
+    return GVector<T, N>().transform(m, v);
+}
+
+
 
 
 /**
@@ -379,7 +388,13 @@ public:
     GVector2 () {}
     GVector2 (T x0, T x1) { this->assign(x0, x1); }
     GVector2 (const GArray<T, 2> &a) { GArray<T, 2>::assign(a); }
+    GVector2 (const T d[]) { GArray<T, 2>::assign(d); }
+
+
     using GArray<T, 2>::operator=;
+
+
+    using GArray<T, 2>::assign;
 
 
     GVector2<T>& assign (T x0, T x1) {
@@ -405,7 +420,13 @@ public:
     GVector3 () {}
     GVector3 (T x0, T x1, T x2) { this->assign(x0, x1, x2); }
     GVector3 (const GArray<T, 3> &a) { GArray<T, 3>::assign(a); }
+    GVector3 (const T d[]) { GArray<T, 3>::assign(d); }
+
+
     using GArray<T, 3>::operator=;
+
+
+    using GArray<T, 3>::assign;
 
 
     GVector3<T>& assign (T x0, T x1, T x2) {
@@ -442,7 +463,13 @@ public:
     GVector4 () {}
     GVector4 (T x0, T x1, T x2, T x3) { this->assign(x0, x1, x2, x3); }
     GVector4 (const GArray<T, 4> &a) { GArray<T, 4>::assign(a); }
+    GVector4 (const T d[]) { GArray<T, 4>::assign(d); }
+
+
     using GArray<T, 4>::operator=;
+
+
+    using GArray<T, 4>::assign;
 
 
     GVector4<T>& assign (T x0, T x1, T x2, T x3) {
