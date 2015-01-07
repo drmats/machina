@@ -198,24 +198,6 @@ template GVector<GLdouble, 4>::~GVector();
 
 
 
-/**
- *  GMatrix destructor.
- */
-template <typename T, std::size_t N>
-inline GMatrix<T, N>::~GMatrix () {}
-
-
-
-
-/**
- *  Instantiation of GMatrix destructor for allowed types.
- */
-template GMatrix<GLfloat, 4>::~GMatrix();
-template GMatrix<GLdouble, 4>::~GMatrix();
-
-
-
-
 } // namespace m3d
 
 #endif

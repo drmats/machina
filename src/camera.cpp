@@ -33,14 +33,12 @@ Camera<T>::Camera () {
  */
 template <typename T>
 void Camera<T>::recompute_transform () {
-    mat4 tm, op, tmp;
-
-    // translation(target) * rotation(yaw) * rotation(pitch) * translation(dist)
-
-    tm.load_translation(0.0, 0.0, this->dist);
-    tm = op.multiply(tmp.load_rotation(this->pitch, 1.0, 0.0, 0.0), tm);
-    tm = op.multiply(tmp.load_rotation(this->yaw, 0.0, 1.0, 0.0), tm);
-    tm = op.multiply(tmp.load_translation(this->target), tm);
+    mat4 transform_matrix(
+        mat4().load_translation(this->target) *
+        mat4().load_rotation(this->yaw, 0, 1, 0) *
+        mat4().load_rotation(this->pitch, 1, 0, 0) *
+        mat4().load_translation(0, 0, this->dist)
+    );
 
     // mat4 tm, m2, m3;
     // tm.multiply(
@@ -68,15 +66,15 @@ void Camera<T>::recompute_transform () {
     // this->transform.origin[1] = u[1];
     // this->transform.origin[2] = u[2];
 
-    this->transform.up[0] = tm[4];
-    this->transform.up[1] = tm[5];
-    this->transform.up[2] = tm[6];
-    this->transform.forward[0] = -tm[8];
-    this->transform.forward[1] = -tm[9];
-    this->transform.forward[2] = -tm[10];
-    this->transform.origin[0] = tm[12];
-    this->transform.origin[1] = tm[13];
-    this->transform.origin[2] = tm[14];
+    this->transform.up[0] = transform_matrix[4];
+    this->transform.up[1] = transform_matrix[5];
+    this->transform.up[2] = transform_matrix[6];
+    this->transform.forward[0] = -transform_matrix[8];
+    this->transform.forward[1] = -transform_matrix[9];
+    this->transform.forward[2] = -transform_matrix[10];
+    this->transform.origin[0] = transform_matrix[12];
+    this->transform.origin[1] = transform_matrix[13];
+    this->transform.origin[2] = transform_matrix[14];
 }
 
 

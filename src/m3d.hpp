@@ -437,7 +437,9 @@ class GMatrix : public GArray<T, N*N> {
 
 public:
 
-    virtual ~GMatrix () = 0;
+    GMatrix () {}
+    GMatrix (const GArray<T, N*N> &a) { GArray<T, N*N>::assign(a); }
+    using GArray<T, N*N>::operator=;
 
 
     /**
@@ -455,14 +457,14 @@ public:
     /**
      *  Multiply two matrices and store the result in the current matrix.
      */
-    GMatrix<T, N>& multiply (const GMatrix<T, N> &l, const GMatrix<T, N> &r) {
+    GMatrix<T, N>& multiply (const GMatrix<T, N> &a, const GMatrix<T, N> &b) {
         T val;
         std::size_t row, column;
         for (std::size_t i = 0;  i < N*N;  i++) {
             val = static_cast<T>(0);
             row = i % N;  column = (i / N) * N;
             for (std::size_t j = 0;  j < N;  j++) {
-                val += l[row + j*N] * r[column + j];
+                val += a[row + j*N] * b[column + j];
             }
             this->data[i] = val;
         }
@@ -470,6 +472,17 @@ public:
     }
 
 };
+
+
+
+
+/**
+ *  Multiply two matrices creating new one.
+ */
+template <typename T, std::size_t N>
+inline GMatrix<T, N> operator* (const GMatrix<T, N> &a, const GMatrix<T, N> &b) {
+    return GMatrix<T, N>().multiply(a, b);
+}
 
 
 
@@ -544,10 +557,10 @@ public:
 
         #define set(i, val) this->data[i] = static_cast<T>(val)
 
-        set(0, sqr(X)*nc+c);  set(4, xync-zs);      set(8 , xznc+ys);      set(12, 0);
-        set(1, xync+zs);      set(5, sqr(Y)*nc+c);  set(9 , yznc-xs);      set(13, 0);
-        set(2, xznc-ys);      set(6, yznc+xs);      set(10, sqr(Z)*nc+c);  set(14, 0);
-        set(3, 0);            set(7, 0);            set(11, 0);            set(15, 1);
+        set(0, sqr(X)*nc+c);  set(4,     xync-zs);  set( 8,     xznc+ys);  set(12, 0);
+        set(1,     xync+zs);  set(5, sqr(Y)*nc+c);  set( 9,     yznc-xs);  set(13, 0);
+        set(2,     xznc-ys);  set(6,     yznc+xs);  set(10, sqr(Z)*nc+c);  set(14, 0);
+        set(3,           0);  set(7,           0);  set(11,           0);  set(15, 1);
 
         #undef set
 
