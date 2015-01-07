@@ -11,7 +11,7 @@
 #define __CAMERA_CPP_ 1
 
 #include "camera.hpp"
-
+#include <iostream>
 namespace machina {
 
 
@@ -22,8 +22,7 @@ namespace machina {
  */
 template <typename T>
 Camera<T>::Camera () {
-    this->rotation.load_identity();
-    this->recompute_rotation();
+    this->recompute_transform();
 }
 
 
@@ -33,17 +32,51 @@ Camera<T>::Camera () {
  *  Recompute rotation matrix from dist/pitch/yaw.
  */
 template <typename T>
-void Camera<T>::recompute_rotation () {
-    mat4 op, tmp;
-    this->rotation.load_translation(0.0, 0.0, -this->dist);
-    this->rotation = op.multiply(
-        this->rotation,
-        tmp.load_rotation(this->pitch, 1.0, 0.0, 0.0)
-    );
-    this->rotation = op.multiply(
-        this->rotation,
-        tmp.load_rotation(this->yaw, 0.0, 1.0, 0.0)
-    );
+void Camera<T>::recompute_transform () {
+    mat4 tm, op, tmp;
+
+    // translation(target) * rotation(yaw) * rotation(pitch) * translation(dist)
+
+    tm.load_translation(0.0, 0.0, this->dist);
+    tm = op.multiply(tmp.load_rotation(this->pitch, 1.0, 0.0, 0.0), tm);
+    tm = op.multiply(tmp.load_rotation(this->yaw, 0.0, 1.0, 0.0), tm);
+    tm = op.multiply(tmp.load_translation(this->target), tm);
+
+    // mat4 tm, m2, m3;
+    // tm.multiply(
+    //     m2.load_translation(this->target),
+    //     m3.multiply(
+    //         tm.load_rotation(this->yaw, 0.0, 1.0, 0.0),
+    //         m2.multiply(
+    //             m3.load_rotation(this->pitch, 1.0, 0.0, 0.0),
+    //             tm.load_translation(0.0, 0.0, this->dist)
+    //         )
+    //     )
+    // );
+
+    // m3d::GVector4<T> u, v;
+    // u.transform(tm, v.assign(0, 1, 0, 0));
+    // this->transform.up[0] = u[0];
+    // this->transform.up[1] = u[1];
+    // this->transform.up[2] = u[2];
+    // u.transform(tm, v.assign(0, 0, -1, 0));
+    // this->transform.forward[0] = u[0];
+    // this->transform.forward[1] = u[1];
+    // this->transform.forward[2] = u[2];
+    // u.transform(tm, v.assign(0, 0, 0, 1));
+    // this->transform.origin[0] = u[0];
+    // this->transform.origin[1] = u[1];
+    // this->transform.origin[2] = u[2];
+
+    this->transform.up[0] = tm[4];
+    this->transform.up[1] = tm[5];
+    this->transform.up[2] = tm[6];
+    this->transform.forward[0] = -tm[8];
+    this->transform.forward[1] = -tm[9];
+    this->transform.forward[2] = -tm[10];
+    this->transform.origin[0] = tm[12];
+    this->transform.origin[1] = tm[13];
+    this->transform.origin[2] = tm[14];
 }
 
 
@@ -52,56 +85,14 @@ void Camera<T>::recompute_rotation () {
 /**
  *  Rotate camera (look-around).
  */
-template <typename T>
-void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
-    mat4 op, relative_rotation;
-    this->rotation = op.multiply(
-        relative_rotation.load_rotation(delta, x, y, z),
-        this->rotation
-    );
-}
-
-
-
-
-/**
- *  Relative translate camera (move).
- */
-template <typename T>
-void Camera<T>::relative_translate (
-    const std::vector<char> &direction,
-    T heading,
-    T delta
-) {
-    this->translation[0] += delta*this->rotation[direction[0]]*heading;
-    this->translation[1] += delta*this->rotation[direction[1]]*heading;
-    this->translation[2] += delta*this->rotation[direction[2]]*heading;
-}
-
-template <typename T>
-void Camera<T>::relative_translate_on_xz (
-    const std::vector<char> &direction,
-    T heading,
-    T delta
-) {
-    static m3d::GVector2<T> dir;
-    dir.assign(
-        this->rotation[direction[0]]*heading,
-        this->rotation[direction[2]]*heading
-    );
-    dir.normalize();
-    this->translation[0] += delta*dir[0];
-    this->translation[2] += delta*dir[1];
-}
-
-template <typename T>
-const std::vector<char> Camera<T>::strafe = { 0, 4, 8 };
-
-template <typename T>
-const std::vector<char> Camera<T>::up = { 1, 5, 9 };
-
-template <typename T>
-const std::vector<char> Camera<T>::out = { 2, 6, 10 };
+// template <typename T>
+// void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
+//     mat4 op, relative_rotation;
+//     this->rotation = op.multiply(
+//         relative_rotation.load_rotation(delta, x, y, z),
+//         this->rotation
+//     );
+// }
 
 
 
@@ -135,14 +126,8 @@ void Camera<GLdouble>::establish_projection () const {
  */
 template <>
 void Camera<GLfloat>::establish_modelview () const {
-    static mat4 op, translation;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(
-        *op.multiply(
-            this->rotation,
-            translation.load_translation(this->translation)
-        )
-    );
+    glLoadMatrixf(*this->transform.get_view_matrix());
 }
 
 
@@ -153,14 +138,8 @@ void Camera<GLfloat>::establish_modelview () const {
  */
 template <>
 void Camera<GLdouble>::establish_modelview () const {
-    static mat4 op, translation;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixd(
-        *op.multiply(
-            this->rotation,
-            translation.load_translation(this->translation)
-        )
-    );
+    glLoadMatrixd(*this->transform.get_view_matrix());
 }
 
 

@@ -111,6 +111,7 @@ public:
 
     using mat4 = m3d::GMatrix4<T>;
     using vec3 = m3d::GVector3<T>;
+    using frame = m3d::GFrame<T>;
 
 
     /**
@@ -120,15 +121,15 @@ public:
 
 
     /**
-     *  Camera rotation representation.
+     *  Camera's frame of reference.
      */
-    mat4 rotation;
+    frame transform;
 
 
     /**
-     *  Camera translation representation.
+     *  Camera target ("look at" point).
      */
-    vec3 translation;
+    vec3 target;
 
 
     /**
@@ -137,9 +138,9 @@ public:
      *  pitch -- angle on x-axe
      */
     T
-        dist = static_cast<T>(80.0f),
-        yaw = static_cast<T>(30.0f),
-        pitch = static_cast<T>(15.0f);
+        dist = static_cast<T>(80),
+        yaw = static_cast<T>(330),
+        pitch = static_cast<T>(345);
 
 
     /**
@@ -149,25 +150,15 @@ public:
 
 
     /**
-     *  Recompute rotation matrix from dist/pitch/yaw.
+     *  Recompute frame of reference from target/dist/pitch/yaw.
      */
-    void recompute_rotation ();
+    void recompute_transform ();
 
 
     /**
      *  Rotate camera (look-around).
      */
-    void relative_rotate (T, T, T, T);
-
-
-    /**
-     *  Relative translate camera (move).
-     */
-    void relative_translate (const std::vector<char> &, T, T);
-    void relative_translate_on_xz (const std::vector<char> &, T, T);
-    static const std::vector<char> strafe;
-    static const std::vector<char> up;
-    static const std::vector<char> out;
+    // void relative_rotate (T, T, T, T);
 
 
     /**

@@ -42,12 +42,12 @@ void MainLoop::default_handler_t::look_around_camera (
             return std::fmod(std::fmod(val, denom) + denom, denom);
         };
     ml->camera.pitch = positive_fmod(
-        ml->camera.pitch + e.motion.yrel * 0.3f, 360.0f
+        ml->camera.pitch - e.motion.yrel * 0.3f, 360.0f
     );
     ml->camera.yaw = positive_fmod(
         ml->camera.yaw + yaw_direction * e.motion.xrel * 0.3f, 360.0f
     );
-    ml->camera.recompute_rotation();
+    ml->camera.recompute_transform();
 }
 
 
@@ -60,22 +60,40 @@ void MainLoop::default_handler_t::move_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    m3d::GVector3<GLfloat> tmp_vec;
 
-    ml->camera.relative_translate(
-        ml->camera.strafe, 1.0,
-        e.motion.xrel * ml->camera.dist * 0.00215f
+    // ml->camera.transform.translate_right(
+    //     e.motion.xrel * ml->camera.dist * 0.00215f
+    // );
+    // if (keystate[SDL_SCANCODE_LCTRL] == 1) {
+    //     ml->camera.transform.translate_forward(
+    //         e.motion.yrel * ml->camera.dist * 0.00215f
+    //     );
+    // } else {
+    //     ml->camera.transform.translate_up(
+    //         e.motion.yrel * ml->camera.dist * 0.00215f
+    //     );
+    // }
+
+    ml->camera.target.add(
+        tmp_vec
+            .cross(ml->camera.transform.up, ml->camera.transform.forward)
+            .scale(e.motion.xrel * ml->camera.dist * 0.00215f)
     );
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
-        ml->camera.relative_translate(
-            ml->camera.out, 1.0,
-            e.motion.yrel * ml->camera.dist * 0.00215f
+        tmp_vec = ml->camera.transform.forward;
+        ml->camera.target.add(
+            tmp_vec
+                .scale(e.motion.yrel * ml->camera.dist * 0.00215f)
         );
     } else {
-        ml->camera.relative_translate(
-            ml->camera.up, -1.0,
-            e.motion.yrel * ml->camera.dist * 0.00215f
+        tmp_vec = ml->camera.transform.up;
+        ml->camera.target.add(
+            tmp_vec
+                .scale(e.motion.yrel * ml->camera.dist * 0.00215f)
         );
     }
+    ml->camera.recompute_transform();
 }
 
 
@@ -101,10 +119,16 @@ void MainLoop::default_handler_t::mouse_wheel (
     } else if (keystate[SDL_SCANCODE_LSHIFT] == 1) {
 
         // move camera on a x-z plane (forward/backward)
-        ml->camera.relative_translate_on_xz(
-            ml->camera.out, 1.0,
-            e.wheel.y * 0.1 * ml->camera.dist
+        m3d::GVector2<GLfloat> dir;
+        auto delta = e.wheel.y * 0.1 * ml->camera.dist;
+        dir.assign(
+            ml->camera.transform.forward[0],
+            ml->camera.transform.forward[2]
         );
+        dir.normalize();
+        ml->camera.target[0] += delta*dir[0];
+        ml->camera.target[2] += delta*dir[1];
+        ml->camera.recompute_transform();
 
     } else {
 
@@ -113,7 +137,7 @@ void MainLoop::default_handler_t::mouse_wheel (
             10.0f + std::exp2(std::fabs(
                 std::log2(ml->camera.dist - 10.0f) - e.wheel.y*0.2f
             ));
-        ml->camera.recompute_rotation();
+        ml->camera.recompute_transform();
 
     }
 }
@@ -140,14 +164,14 @@ void MainLoop::default_handler_t::mouse_buttons (
                     ml->handle.mouse_motion =
                         [ml] (const SDL_Event &e) -> void {
                             return ml->default_handler.look_around_camera(
-                                ml, e, -1.0f
+                                ml, e, 1.0f
                             );
                         };
                 } else {
                     ml->handle.mouse_motion =
                         [ml] (const SDL_Event &e) -> void {
                             return ml->default_handler.look_around_camera(
-                                ml, e, 1.0f
+                                ml, e, -1.0f
                             );
                         };
                 }
@@ -200,7 +224,6 @@ void MainLoop::default_handler_t::keyboard (
         // quit program
         case SDLK_q:
             if (e.key.state == SDL_PRESSED) {
-
                 ml->terminate();
             }
             break;
@@ -209,7 +232,8 @@ void MainLoop::default_handler_t::keyboard (
         case SDLK_c:
             if (e.key.state == SDL_PRESSED) {
                 // reset position
-                ml->camera.translation.reset();
+                ml->camera.target.reset();
+                ml->camera.recompute_transform();
                 // reset camera.projection.fovy
                 ml->camera.projection.set_all([ml] () {
                     auto all = ml->camera.projection.get_all();
@@ -223,6 +247,18 @@ void MainLoop::default_handler_t::keyboard (
         case SDLK_l:
             if (e.key.state == SDL_PRESSED) {
                 ml->root->list_gl_extensions();
+            }
+            break;
+
+        // display camera position
+        case SDLK_x:
+            if (e.key.state == SDL_PRESSED) {
+                std::cout
+                    << "cam origin: "
+                    << ml->camera.transform.origin << " "
+                    << "cam target: "
+                    << ml->camera.target
+                    << std::endl;
             }
             break;
 
@@ -249,8 +285,7 @@ void MainLoop::default_handler_t::window (
         case SDL_WINDOWEVENT_RESIZED:
             std::cout
                 << "Resized surface: "
-                << e.window.data1 << "x"
-                << e.window.data2
+                << e.window.data1 << "x" << e.window.data2
                 << std::endl;
             break;
         default:
@@ -418,15 +453,12 @@ inline void MainLoop::draw () const {
     primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
 
     // ...
-    static m3d::GMatrix4<GLfloat> translation, mv, mvp;
+    static m3d::GMatrix4<GLfloat> vp;
     static GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     this->shader.use(
-        mvp.multiply(
+        vp.multiply(
             this->camera.projection.get_matrix(),
-            mv.multiply(
-                this->camera.rotation,
-                translation.load_translation(this->camera.translation)
-            )
+            this->camera.transform.get_view_matrix()
         ),
         yellow
     );
@@ -452,9 +484,14 @@ void MainLoop::run () {
         100, 100, 100,
         -100, 100, 100,
         100, 100, -100,
-        -100, 100, -100
+        -100, 100, -100,
+
+        90, 110, 100,
+        100, 100, 100,
+        90, 90, 100,
+        100, 100, 100
     };
-    this->model.prepare(GL_LINES, 4, verts);
+    this->model.prepare(GL_LINES, 8, verts);
     // ...
 
     while (this->running) {
