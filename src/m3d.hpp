@@ -420,6 +420,7 @@ public:
     GVector3 () {}
     GVector3 (T x0, T x1, T x2) { this->assign(x0, x1, x2); }
     GVector3 (const GArray<T, 3> &a) { GArray<T, 3>::assign(a); }
+    GVector3 (const GArray<T, 4> &a) { this->assign(a); }
     GVector3 (const T d[]) { GArray<T, 3>::assign(d); }
 
 
@@ -429,7 +430,12 @@ public:
     using GArray<T, 3>::assign;
 
 
-    GVector3<T>& assign (T x0, T x1, T x2) {
+    inline GVector3<T>& assign (const GArray<T, 4> &a) {
+        return static_cast<GVector3<T>&>(this->assign(*a));
+    }
+
+
+    inline GVector3<T>& assign (T x0, T x1, T x2) {
         #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1); set(2, x2);
         #undef set
@@ -462,6 +468,7 @@ public:
 
     GVector4 () {}
     GVector4 (T x0, T x1, T x2, T x3) { this->assign(x0, x1, x2, x3); }
+    GVector4 (const GArray<T, 3> &a, T w) { this->assign(a, w); }
     GVector4 (const GArray<T, 4> &a) { GArray<T, 4>::assign(a); }
     GVector4 (const T d[]) { GArray<T, 4>::assign(d); }
 
@@ -472,9 +479,17 @@ public:
     using GArray<T, 4>::assign;
 
 
-    GVector4<T>& assign (T x0, T x1, T x2, T x3) {
+    inline GVector4<T>& assign (T x0, T x1, T x2, T x3) {
         #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1); set(2, x2); set(3, x3);
+        #undef set
+        return *this;
+    }
+
+
+    inline GVector4<T>& assign (const GArray<T, 3> &a, T w) {
+        #define set(i, v) this->data[i] = v
+        set(0, a[0]); set(1, a[1]); set(2, a[2]); set(3, w);
         #undef set
         return *this;
     }
