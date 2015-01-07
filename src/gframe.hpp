@@ -25,9 +25,9 @@ class GFrame {
 
 public:
 
-    using vec3 = m3d::GVector3<T>;
-    using vec4 = m3d::GVector4<T>;
-    using mat4 = m3d::GMatrix4<T>;
+    using vec3 = GVector3<T>;
+    using vec4 = GVector4<T>;
+    using mat4 = GMatrix4<T>;
 
 
     /**
@@ -43,6 +43,7 @@ public:
      *  GFrame initialization.
      */
     GFrame ();
+    GFrame (const mat4);
 
 
     /**
@@ -162,13 +163,19 @@ public:
     /**
      *  Assemble the transformation matrix.
      */
-     m3d::GMatrix4<T> get_transformation_matrix () const;
+    mat4 get_transformation_matrix () const;
 
 
     /**
      *  Assemble the view matrix.
      */
-     m3d::GMatrix4<T> get_view_matrix () const;
+    mat4 get_view_matrix () const;
+
+
+    /**
+     *  Rebuild this GFrame on a given matrix basis.
+     */
+    GFrame<T>& rebuild_from_matrix (const mat4);
 
 };
 

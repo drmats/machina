@@ -33,16 +33,12 @@ Camera<T>::Camera () {
  */
 template <typename T>
 void Camera<T>::recompute_transform () {
-    mat4 transform_matrix(
+    this->transform.rebuild_from_matrix(
         mat4().load_translation(this->target) *
         mat4().load_rotation(this->yaw, 0, 1, 0) *
         mat4().load_rotation(this->pitch, 1, 0, 0) *
         mat4().load_translation(0, 0, this->dist)
     );
-
-    this->transform.up = *(transform_matrix * vec4(0, 1, 0, 0));
-    this->transform.forward = *(transform_matrix * vec4(0, 0, -1, 0));
-    this->transform.origin = *(transform_matrix * vec4(0, 0, 0, 1));
 }
 
 

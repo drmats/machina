@@ -27,6 +27,12 @@ GFrame<T>::GFrame ():
     {}
 
 
+template <typename T>
+GFrame<T>::GFrame (const mat4 m) {
+    this->rebuild_from_matrix(m);
+}
+
+
 
 
 /**
@@ -52,7 +58,7 @@ GFrame<T>& GFrame<T>::normalize () {
  *  Assemble the transformation matrix.
  */
 template <typename T>
-m3d::GMatrix4<T> GFrame<T>::get_transformation_matrix () const {
+typename GFrame<T>::mat4 GFrame<T>::get_transformation_matrix () const {
     vec3 right(vec3().cross(this->up, this->forward));
     mat4 m;
 
@@ -81,7 +87,7 @@ m3d::GMatrix4<T> GFrame<T>::get_transformation_matrix () const {
  *  Assemble the view matrix.
  */
 template <typename T>
-m3d::GMatrix4<T> GFrame<T>::get_view_matrix () const {
+typename GFrame<T>::mat4 GFrame<T>::get_view_matrix () const {
     vec3
         forward(vec3(this->forward).flip()),
         right(vec3().cross(this->up, forward)),
@@ -102,6 +108,20 @@ m3d::GMatrix4<T> GFrame<T>::get_view_matrix () const {
     #undef set
 
     return rotation * translation;
+}
+
+
+
+
+/**
+ *  Rebuild this GFrame on a given matrix basis.
+ */
+template <typename T>
+GFrame<T>& GFrame<T>::rebuild_from_matrix (const mat4 m) {
+    this->origin.assign(m * vec4(0, 0, 0, 1));
+    this->up.assign(m * vec4(0, 1, 0, 0));
+    this->forward.assign(m * vec4(0, 0, -1, 0));
+    return *this;
 }
 
 
