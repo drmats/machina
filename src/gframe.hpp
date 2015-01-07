@@ -26,6 +26,7 @@ class GFrame {
 public:
 
     using vec3 = m3d::GVector3<T>;
+    using vec4 = m3d::GVector4<T>;
     using mat4 = m3d::GMatrix4<T>;
 
 
@@ -34,8 +35,8 @@ public:
      */
     vec3
         origin,
-        forward,
-        up;
+        up,
+        forward;
 
 
     /**
@@ -54,28 +55,28 @@ public:
     /**
      *  Translate this frame of reference in the world coordinates.
      */
-    inline GFrame<T>& translate_x (T delta) {
+    inline GFrame<T>& translate_world_x (T delta) {
         this->origin[0] += delta;
         return *this;
     }
 
 
-    inline GFrame<T>& translate_y (T delta) {
+    inline GFrame<T>& translate_world_y (T delta) {
         this->origin[1] += delta;
         return *this;
     }
 
 
-    inline GFrame<T>& translate_z (T delta) {
+    inline GFrame<T>& translate_world_z (T delta) {
         this->origin[2] += delta;
         return *this;
     }
 
 
     inline GFrame<T>& translate_world (T delta_x, T delta_y, T delta_z) {
-        this->translate_x(delta_x);
-        this->translate_y(delta_y);
-        this->translate_z(delta_z);
+        this->translate_world_x(delta_x);
+        this->translate_world_y(delta_y);
+        this->translate_world_z(delta_z);
         return *this;
     }
 
@@ -89,7 +90,7 @@ public:
     /**
      *  Translate this frame of reference in the local coordinates.
      */
-    inline GFrame<T>& translate_right (T delta) {
+    inline GFrame<T>& translate_local_x (T delta) {
         this->origin.add(
             vec3()
                 .cross(this->up, this->forward)
@@ -99,31 +100,62 @@ public:
     }
 
 
-    inline GFrame<T>& translate_up (T delta) {
+    inline GFrame<T>& translate_local_y (T delta) {
         this->origin.add(this->up * delta);
         return *this;
     }
 
 
-    inline GFrame<T>& translate_forward (T delta) {
+    inline GFrame<T>& translate_local_z (T delta) {
         this->origin.add(this->forward * delta);
         return *this;
     }
 
 
     inline GFrame<T>& translate_local (T delta_x, T delta_y, T delta_z) {
-        this->translate_right(delta_x);
-        this->translate_up(delta_y);
-        this->translate_forward(delta_z);
+        this->translate_local_x(delta_x);
+        this->translate_local_y(delta_y);
+        this->translate_local_z(delta_z);
         return *this;
     }
 
 
     inline GFrame<T>& translate_local (const vec3 &v) {
-        this->translate_right(v[0]);
-        this->translate_up(v[1]);
-        this->translate_forward(v[2]);
+        this->translate_local_x(v[0]);
+        this->translate_local_y(v[1]);
+        this->translate_local_z(v[2]);
         return *this;
+    }
+
+
+    /**
+     *  Rotate this frame of reference in the world coordinates.
+     */
+    inline GFrame<T>& rotate_world (T angle, T x, T y, T z) {
+        mat4 rotation(mat4().load_rotation(angle, x, y, z));
+        this->up.assign(rotation * vec4(this->up, 0));
+        this->forward.assign(rotation * vec4(this->up, 0));
+        return *this;
+    }
+
+
+    inline GFrame<T>& rotate_world (T angle, const vec3 &v) {
+        return this->rotate_world(angle, v[0], v[1], v[2]);
+    }
+
+
+    inline GFrame<T>& rotate_world_x (T angle) {
+        return this->rotate_world (angle, 1, 0, 0);
+    }
+
+
+    inline GFrame<T>& rotate_world_y (T angle) {
+        return this->rotate_world (angle, 0, 1, 0);
+    }
+
+
+    inline GFrame<T>& rotate_world_z (T angle) {
+        return this->rotate_world (angle, 0, 0, 1);
     }
 
 

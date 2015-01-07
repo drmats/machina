@@ -22,8 +22,8 @@ namespace m3d {
  */
 template <typename T>
 GFrame<T>::GFrame ():
-    forward { static_cast<T>(0), static_cast<T>(0), static_cast<T>(-1) },
-    up { static_cast<T>(0), static_cast<T>(1), static_cast<T>(0) }
+    up { static_cast<T>(0), static_cast<T>(1), static_cast<T>(0) },
+    forward { static_cast<T>(0), static_cast<T>(0), static_cast<T>(-1) }
     {}
 
 
@@ -35,12 +35,13 @@ GFrame<T>::GFrame ():
  */
 template <typename T>
 GFrame<T>& GFrame<T>::normalize () {
-    this->forward.cross(
-        vec3().cross(this->up, this->forward),
-        this->up
-    );
+    this->forward
+        .cross(
+            vec3().cross(this->up, this->forward),
+            this->up
+        )
+        .normalize();
     this->up.normalize();
-    this->forward.normalize();
     return *this;
 }
 
