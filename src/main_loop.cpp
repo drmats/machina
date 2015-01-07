@@ -32,9 +32,9 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 
 
 /**
- *  Mouse-motion event handler (look-around).
+ *  Mouse-motion event handler (look-around-target).
  */
-void MainLoop::default_handler_t::look_around_camera (
+void MainLoop::default_handler_t::look_around_target_camera (
     MainLoop *ml, const SDL_Event &e, const GLfloat yaw_direction
 ) {
     static const auto positive_fmod =
@@ -48,6 +48,19 @@ void MainLoop::default_handler_t::look_around_camera (
         ml->camera.yaw + yaw_direction * e.motion.xrel * 0.3f, 360.0f
     );
     ml->camera.recompute_transform();
+}
+
+
+
+
+/**
+ *  Mouse-motion event handler (look-around-target).
+ */
+void MainLoop::default_handler_t::look_around_camera (
+    MainLoop *ml, const SDL_Event &e
+) {
+    ml->camera.relative_rotate_y(e.motion.xrel * -0.2f);
+    ml->camera.relative_rotate_x(e.motion.yrel * 0.2f);
 }
 
 
@@ -150,29 +163,40 @@ void MainLoop::default_handler_t::mouse_wheel (
 void MainLoop::default_handler_t::mouse_buttons (
     MainLoop *ml, const SDL_Event &e
 ) {
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
     switch (e.button.button) {
 
         // look-around camera
         case SDL_BUTTON_MIDDLE:
         case SDL_BUTTON_RIGHT:
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                if (
-                    ml->camera.pitch > 90.0f  &&
-                    ml->camera.pitch <= 270.0f
-                ) {
+                if (keystate[SDL_SCANCODE_LCTRL] == 1) {
                     ml->handle.mouse_motion =
                         [ml] (const SDL_Event &e) -> void {
                             return ml->default_handler.look_around_camera(
-                                ml, e, 1.0f
+                                ml, e
                             );
                         };
                 } else {
-                    ml->handle.mouse_motion =
-                        [ml] (const SDL_Event &e) -> void {
-                            return ml->default_handler.look_around_camera(
-                                ml, e, -1.0f
-                            );
-                        };
+                    if (
+                        ml->camera.pitch > 90.0f  &&
+                        ml->camera.pitch <= 270.0f
+                    ) {
+                        ml->handle.mouse_motion =
+                            [ml] (const SDL_Event &e) -> void {
+                                return ml->default_handler.look_around_target_camera(
+                                    ml, e, 1.0f
+                                );
+                            };
+                    } else {
+                        ml->handle.mouse_motion =
+                            [ml] (const SDL_Event &e) -> void {
+                                return ml->default_handler.look_around_target_camera(
+                                    ml, e, -1.0f
+                                );
+                            };
+                    }
                 }
             } else if (e.type == SDL_MOUSEBUTTONUP) {
                 ml->handle.mouse_motion =

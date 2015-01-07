@@ -159,7 +159,8 @@ public:
     /**
      *  Rotate camera (look-around).
      */
-    // void relative_rotate (T, T, T, T);
+    void relative_rotate_x (T);
+    void relative_rotate_y (T);
 
 
     /**

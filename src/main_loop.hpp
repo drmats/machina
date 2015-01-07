@@ -65,7 +65,8 @@ private:
     // default event handlers
     struct default_handler_t {
         void empty_mouse_motion (MainLoop *, const SDL_Event &);
-        void look_around_camera (MainLoop *, const SDL_Event &, const GLfloat);
+        void look_around_target_camera (MainLoop *, const SDL_Event &, const GLfloat);
+        void look_around_camera (MainLoop *, const SDL_Event &);
         void move_around_camera (MainLoop *, const SDL_Event &);
         void mouse_wheel (MainLoop *, const SDL_Event &);
         void mouse_buttons (MainLoop *, const SDL_Event &);

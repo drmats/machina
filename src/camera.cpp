@@ -47,15 +47,16 @@ void Camera<T>::recompute_transform () {
 /**
  *  Rotate camera (look-around).
  */
-// template <typename T>
-// void Camera<T>::relative_rotate (T delta, T x, T y, T z) {
-//     mat4 op, relative_rotation;
-//     this->rotation = op.multiply(
-//         relative_rotation.load_rotation(delta, x, y, z),
-//         this->rotation
-//     );
-// }
-
+template <typename T>
+void Camera<T>::relative_rotate_x (T angle) {
+    this->transform.rotate_local_x(angle);
+    // recompute yaw, pitch, target...
+}
+template <typename T>
+void Camera<T>::relative_rotate_y (T angle) {
+    this->transform.rotate_world_y(angle);
+    // recompute yaw, pitch, target...
+}
 
 
 
