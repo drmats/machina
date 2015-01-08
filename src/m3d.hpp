@@ -94,7 +94,7 @@ inline T positive_fmod (T val, T denom) {
 
 
 /**
- *  Base abstract class for Points, Vectors and Matrices.
+ *  Base class for Points, Vectors and Matrices.
  */
 template <typename T, std::size_t N>
 class GArray {
@@ -453,7 +453,7 @@ public:
     /**
      *  Compute cross product and store the result in the current vector.
      */
-    GVector3<T>& cross (const GVector3<T> &u, const GVector3<T> &v) {
+    GVector3<T>& cross (const GArray<T, 3> &u, const GArray<T, 3> &v) {
         this->data[0] = u[1] * v[2] - v[1] * u[2];
         this->data[1] = u[2] * v[0] - v[2] * u[0];
         this->data[2] = u[0] * v[1] - v[0] * u[1];
@@ -590,7 +590,7 @@ public:
     /**
      *  Replaces current matrix with the translation matrix (built from vector).
      */
-    GMatrix4<T>& load_translation (const GVector3<T> &v) {
+    GMatrix4<T>& load_translation (const GArray<T, 3> &v) {
         return this->load_translation(v[0], v[1], v[2]);
     }
 
@@ -610,7 +610,7 @@ public:
     /**
      *  Replaces current matrix with the scale matrix (built from vector).
      */
-    GMatrix4<T>& load_scale (const GVector3<T> &v) {
+    GMatrix4<T>& load_scale (const GArray<T, 3> &v) {
         return this->load_scale(v[0], v[1], v[2]);
     }
 
@@ -646,7 +646,7 @@ public:
     /**
      *  Replaces current matrix with the rotation matrix (built from angle and vector).
      */
-    GMatrix4<T>& load_rotation (T angle, const GVector3<T> &v) {
+    GMatrix4<T>& load_rotation (T angle, const GArray<T, 3> &v) {
         return this->load_rotation(angle, v[0], v[1], v[2]);
     }
 
