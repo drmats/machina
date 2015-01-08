@@ -84,6 +84,13 @@ inline T linear_interpolation (T x1, T x2, T x3, T y1, T y3) {
 }
 
 
+/**
+ *  Computes the positive remainder of the division operation val/denom.
+ */
+template <typename T>
+inline T positive_fmod (T val, T denom) {
+    return std::fmod(std::fmod(val, denom) + denom, denom);
+}
 
 
 /**
