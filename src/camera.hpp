@@ -157,6 +157,12 @@ public:
 
 
     /**
+     *  Recompute yaw/pitch/target from frame of reference and dist.
+     */
+    void recompute_ypt ();
+
+
+    /**
      *  Rotate camera (look-around).
      */
     void relative_rotate_x (T);

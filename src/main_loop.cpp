@@ -277,10 +277,16 @@ void MainLoop::default_handler_t::keyboard (
         case SDLK_x:
             if (e.key.state == SDL_PRESSED) {
                 std::cout
-                    << "cam origin: "
+                    << "origin: "
                     << ml->camera.transform.origin << " "
-                    << "cam target: "
-                    << ml->camera.target
+                    << "target: "
+                    << ml->camera.target << " "
+                    << "forward: "
+                    << ml->camera.transform.forward << " "
+                    << "yaw: "
+                    << ml->camera.yaw << " "
+                    << "pitch: "
+                    << ml->camera.pitch
                     << std::endl;
             }
             break;
