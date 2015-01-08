@@ -75,9 +75,7 @@ public:
 
 
     inline GFrame<T>& translate_world (T delta_x, T delta_y, T delta_z) {
-        this->translate_world_x(delta_x);
-        this->translate_world_y(delta_y);
-        this->translate_world_z(delta_z);
+        this->origin.add(vec3(delta_x, delta_y, delta_z));
         return *this;
     }
 
@@ -173,7 +171,8 @@ public:
     inline GFrame<T>& rotate_local_y (T angle) {
         this->forward.assign(
             mat4().load_rotation(angle, this->up) *
-                vec4(this->forward, 0));
+                vec4(this->forward, 0)
+        );
         return *this;
     }
 
@@ -181,7 +180,8 @@ public:
     inline GFrame<T>& rotate_local_z (T angle) {
         this->up.assign(
             mat4().load_rotation(angle, this->forward) *
-                vec4(this->up, 0));
+                vec4(this->up, 0)
+        );
         return *this;
     }
 
