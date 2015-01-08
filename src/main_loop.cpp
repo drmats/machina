@@ -37,14 +37,10 @@ void MainLoop::default_handler_t::empty_mouse_motion (
 void MainLoop::default_handler_t::look_around_target_camera (
     MainLoop *ml, const SDL_Event &e, const GLfloat yaw_direction
 ) {
-    static const auto positive_fmod =
-        [] (GLfloat val, GLfloat denom) -> GLfloat {
-            return std::fmod(std::fmod(val, denom) + denom, denom);
-        };
-    ml->camera.pitch = positive_fmod(
+    ml->camera.pitch = m3d::positive_fmod(
         ml->camera.pitch - e.motion.yrel * 0.3f, 360.0f
     );
-    ml->camera.yaw = positive_fmod(
+    ml->camera.yaw = m3d::positive_fmod(
         ml->camera.yaw + yaw_direction * e.motion.xrel * 0.3f, 360.0f
     );
     ml->camera.recompute_transform();
@@ -73,7 +69,6 @@ void MainLoop::default_handler_t::move_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
-    using vec3 = m3d::GVector3<GLfloat>;
 
     // ml->camera.transform.translate_right(
     //     e.motion.xrel * ml->camera.dist * 0.00215f
@@ -117,7 +112,6 @@ void MainLoop::default_handler_t::mouse_wheel (
     MainLoop *ml, const SDL_Event &e
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
-    using vec2 = m3d::GVector2<GLfloat>;
 
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
 
@@ -274,19 +268,18 @@ void MainLoop::default_handler_t::keyboard (
             break;
 
         // display camera position
-        case SDLK_x:
+        case SDLK_SPACE:
             if (e.key.state == SDL_PRESSED) {
                 std::cout
-                    << "origin: "
-                    << ml->camera.transform.origin << " "
-                    << "target: "
-                    << ml->camera.target << " "
-                    << "forward: "
-                    << ml->camera.transform.forward << " "
-                    << "yaw: "
-                    << ml->camera.yaw << " "
-                    << "pitch: "
-                    << ml->camera.pitch
+                    << "---------------- cam props. ----------------" << std::endl
+                    << "    origin: " << ml->camera.transform.origin << std::endl
+                    << "    target: " << ml->camera.target << std::endl
+                    << "   forward: " << ml->camera.transform.forward << std::endl
+                    << "projection: "
+                    << vec4(ml->camera.projection.get_all().data()) << std::endl
+                    << "      dist: " << ml->camera.dist << " "
+                    << "yaw: " << ml->camera.yaw << " "
+                    << "pitch: " << ml->camera.pitch
                     << std::endl;
             }
             break;

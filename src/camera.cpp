@@ -45,49 +45,22 @@ void Camera<T>::recompute_transform () {
 
 
 /**
- *  Recompute yaw/pitch/target from frame of reference and dist.
- */
-template <typename T>
-void Camera<T>::recompute_ypt () {
-    using vec2 = m3d::GVector2<T>;
-
-    this->target =
-        this->transform.origin + this->transform.forward * this->dist;
-
-    #define forward this->transform.forward
-
-    if (forward[0] > 0) {
-        this->yaw = m3d::rad_to_deg(std::acos(
-            forward[2] / vec2(forward[0], forward[2]).length()
-        ) - m3d_pi);
-    } else {
-        this->yaw = m3d::rad_to_deg(m3d_pi - std::acos(
-            forward[2] / vec2(forward[0], forward[2]).length()
-        ));
-    }
-
-    this->pitch = m3d::rad_to_deg(std::acos(
-        forward[2] / vec2(forward[1], forward[2]).length()
-    ) + m3d_pi);
-
-    #undef forward
-}
-
-
-
-
-/**
  *  Rotate camera (look-around).
  */
 template <typename T>
 void Camera<T>::relative_rotate_x (T angle) {
     this->transform.rotate_local_x(angle);
-    this->recompute_ypt();
+    this->pitch = m3d::positive_fmod(this->pitch - angle, (T)360);
+    this->target =
+        this->transform.origin + this->transform.forward * this->dist;
+
 }
 template <typename T>
 void Camera<T>::relative_rotate_y (T angle) {
     this->transform.rotate_world_y(angle);
-    this->recompute_ypt();
+    this->yaw = m3d::positive_fmod(this->yaw + angle, (T)360);
+    this->target =
+        this->transform.origin + this->transform.forward * this->dist;
 }
 
 

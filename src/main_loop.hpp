@@ -39,6 +39,11 @@ class MainLoop {
 
 private:
 
+    using vec2 = m3d::GVector2<GLfloat>;
+    using vec3 = m3d::GVector3<GLfloat>;
+    using vec4 = m3d::GVector3<GLfloat>;
+
+
     // program root
     Machina *root;
 
