@@ -215,7 +215,31 @@ public:
      */
     GFrame<T>& rebuild_from_matrix (const mat4);
 
+
+    /**
+     *  Transform this frame of reference by the given matrix.
+     */
+    GFrame<T>& transform_by_matrix (const mat4);
+
 };
+
+
+/**
+ *  Multiply matrix by a frame of reference yielding the new frame of reference.
+ */
+template <typename T, std::size_t N = 4>
+inline GFrame<T> operator* (const GArray<T, N*N> &m, const GFrame<T> &f) {
+    return GFrame<T>(f).transform_by_matrix(m);
+}
+
+
+/**
+ *  Multiply a frame of reference by the matrix yielding the new matrix.
+ */
+template <typename T, std::size_t N = 4>
+inline GMatrix<T, N> operator* (const GFrame<T> &f, const GArray<T, N*N> &m) {
+    return f.get_transformation_matrix() * m;
+}
 
 
 
