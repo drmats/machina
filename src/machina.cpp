@@ -199,6 +199,9 @@ void Machina::initialize_surface () {
  *  Print known OpenGL extenstions to stdout.
  */
 void Machina::list_gl_extensions () {
+    std::cout
+        << "------ available OpenGL extension names ------"
+        << std::endl;
     for (int i = 0;  i < this->opengl_num_extensions;  i++) {
         std::cout
             << reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i))
