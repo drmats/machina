@@ -83,21 +83,18 @@ void MainLoop::default_handler_t::move_around_camera (
     //     );
     // }
 
-    ml->camera.target.add(
+    ml->camera.target +=
         vec3()
             .cross(ml->camera.transform.up, ml->camera.transform.forward)
-            .scale(e.motion.xrel * ml->camera.dist * 0.00215f)
-    );
+            .scale(e.motion.xrel * ml->camera.dist * 0.00215f);
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
-        ml->camera.target.add(
+        ml->camera.target +=
             vec3(ml->camera.transform.forward)
-                .scale(e.motion.yrel * ml->camera.dist * 0.00215f)
-        );
+                .scale(e.motion.yrel * ml->camera.dist * 0.00215f);
     } else {
-        ml->camera.target.add(
+        ml->camera.target +=
             vec3(ml->camera.transform.up)
-                .scale(e.motion.yrel * ml->camera.dist * 0.00215f)
-        );
+                .scale(e.motion.yrel * ml->camera.dist * 0.00215f);
     }
     ml->camera.recompute_transform();
 }

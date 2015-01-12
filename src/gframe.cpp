@@ -121,9 +121,9 @@ typename GFrame<T>::mat4 GFrame<T>::get_view_matrix () const {
  */
 template <typename T>
 GFrame<T>& GFrame<T>::rebuild_from_matrix (const mat4 m) {
-    this->origin.assign(m * vec4(0, 0, 0, 1));
-    this->up.assign(m * vec4(0, 1, 0, 0));
-    this->forward.assign(m * vec4(0, 0, -1, 0));
+    this->origin = m * vec4(0, 0, 0, 1);
+    this->up = m * vec4(0, 1, 0, 0);
+    this->forward = m * vec4(0, 0, -1, 0);
     return *this;
 }
 
@@ -135,9 +135,9 @@ GFrame<T>& GFrame<T>::rebuild_from_matrix (const mat4 m) {
  */
 template <typename T>
 GFrame<T>& GFrame<T>::transform_by_matrix (const mat4 m) {
-    this->origin.assign(m * vec4(this->origin, 1));
-    this->up.assign(m * vec4(this->up, 0));
-    this->forward.assign(m * vec4(this->forward, 0));
+    this->origin = m * vec4(this->origin, 1);
+    this->up = m * vec4(this->up, 0);
+    this->forward = m * vec4(this->forward, 0);
     return *this;
 }
 

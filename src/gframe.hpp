@@ -75,13 +75,13 @@ public:
 
 
     inline GFrame<T>& translate_world (T delta_x, T delta_y, T delta_z) {
-        this->origin.add(vec3(delta_x, delta_y, delta_z));
+        this->origin += vec3(delta_x, delta_y, delta_z);
         return *this;
     }
 
 
     inline GFrame<T>& translate_world (const vec3 &v) {
-        this->origin.add(v);
+        this->origin += v;
         return *this;
     }
 
@@ -90,23 +90,22 @@ public:
      *  Translate this frame of reference in the local coordinates.
      */
     inline GFrame<T>& translate_local_x (T delta) {
-        this->origin.add(
+        this->origin +=
             vec3()
                 .cross(this->up, this->forward)
-                .scale(delta)
-        );
+                .scale(delta);
         return *this;
     }
 
 
     inline GFrame<T>& translate_local_y (T delta) {
-        this->origin.add(this->up * delta);
+        this->origin += this->up * delta;
         return *this;
     }
 
 
     inline GFrame<T>& translate_local_z (T delta) {
-        this->origin.add(this->forward * delta);
+        this->origin += this->forward * delta;
         return *this;
     }
 
@@ -129,8 +128,8 @@ public:
      */
     inline GFrame<T>& rotate_world (T angle, T x, T y, T z) {
         mat4 rotation(mat4().load_rotation(angle, x, y, z));
-        this->up.assign(rotation * vec4(this->up, 0));
-        this->forward.assign(rotation * vec4(this->forward, 0));
+        this->up = rotation * vec4(this->up, 0);
+        this->forward = rotation * vec4(this->forward, 0);
         return *this;
     }
 
@@ -162,26 +161,22 @@ public:
         mat4 rotation(mat4().load_rotation(
             angle, vec3().cross(this->up, this->forward)
         ));
-        this->up.assign(rotation * vec4(this->up, 0));
-        this->forward.assign(rotation * vec4(this->forward, 0));
+        this->up = rotation * vec4(this->up, 0);
+        this->forward = rotation * vec4(this->forward, 0);
         return *this;
     }
 
 
     inline GFrame<T>& rotate_local_y (T angle) {
-        this->forward.assign(
-            mat4().load_rotation(angle, this->up) *
-                vec4(this->forward, 0)
-        );
+        this->forward =
+            mat4().load_rotation(angle, this->up) * vec4(this->forward, 0);
         return *this;
     }
 
 
     inline GFrame<T>& rotate_local_z (T angle) {
-        this->up.assign(
-            mat4().load_rotation(angle, this->forward) *
-                vec4(this->up, 0)
-        );
+        this->up =
+            mat4().load_rotation(angle, this->forward) * vec4(this->up, 0);
         return *this;
     }
 

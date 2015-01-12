@@ -106,10 +106,6 @@ protected:
 
 public:
 
-    inline GArray<T, N>& operator= (const GArray<T, N> &a) { return this->assign(a); }
-    inline GArray<T, N>& operator= (const T d[]) { return this->assign(d); }
-
-
     /**
      *  Array indexers.
      */
@@ -165,6 +161,16 @@ public:
     }
 
 
+    inline GArray<T, N>& operator= (const GArray<T, N> &a) {
+        return this->assign(a);
+    }
+
+
+    inline GArray<T, N>& operator= (const T d[]) {
+        return this->assign(d);
+    }
+
+
     /**
      *  Add to current array.
      */
@@ -173,6 +179,11 @@ public:
             this->data[i] += a[i];
         }
         return *this;
+    }
+
+
+    inline GArray<T, N>& operator+= (const GArray<T, N> &a) {
+        return this->add(a);
     }
 
 
@@ -187,6 +198,11 @@ public:
     }
 
 
+    inline GArray<T, N>& operator-= (const GArray<T, N> &a) {
+        return this->sub(a);
+    }
+
+
     /**
      *  Scale the current array (multiply each component by a given value).
      */
@@ -195,6 +211,11 @@ public:
             this->data[i] *= s;
         }
         return *this;
+    }
+
+
+    inline GArray<T, N>& operator*= (const T s) {
+        return this->scale(s);
     }
 
 };
@@ -374,7 +395,7 @@ public:
 
 
 /**
- *  Transform given vector by a matrix and store the result in the new vector
+ *  Transform given vector by a matrix and store the result in the new vector.
  */
 template <typename T, std::size_t N>
 inline GVector<T, N> operator* (const GArray<T, N*N> &m, const GArray<T, N> &v) {
