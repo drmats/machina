@@ -61,7 +61,7 @@ inline T sqr (T x) {
  *  Angle conversion (degrees to radians).
  */
 template <typename T>
-inline T deg_to_rad (T x) {
+inline T radians (T x) {
     return x * static_cast<T>(m3d_pi180);
 }
 
@@ -70,7 +70,7 @@ inline T deg_to_rad (T x) {
  *  Angle conversion (radians to degrees).
  */
 template <typename T>
-inline T rad_to_deg (T x) {
+inline T degrees (T x) {
     return x * static_cast<T>(m3d_invpi180);
 }
 
@@ -619,7 +619,7 @@ public:
      *  Replaces current matrix with the rotation matrix.
      */
     inline GMatrix4<T>& load_rotation (T angle, T x, T y, T z) {
-        angle = deg_to_rad(angle);
+        angle = radians(angle);
 
         GVector3<T> v(x, y, z); v.normalize();
         const T
@@ -656,7 +656,7 @@ public:
      */
     GMatrix4<T>& load_perspective (T fovy, T aspect, T z_near, T z_far) {
         this->reset();
-        fovy = deg_to_rad(fovy);
+        fovy = radians(fovy);
 
         const T
             f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
