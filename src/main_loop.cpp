@@ -462,26 +462,20 @@ inline void MainLoop::draw () const {
         GL_DEPTH_BUFFER_BIT
     );
 
-    this->camera.establish_projection();
-    this->camera.establish_modelview();
-
-    primitives::axes_grid(160.0f, 10.0f);
-
-    primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f);
-    primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, 1.0f, GL_POINTS);
-    primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
-
-    // ...
     this->shader.use(
         this->camera.projection.get_matrix() *
             this->camera.transform.get_view_matrix()
     );
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glLineWidth(1.5f);
-    this->model.draw();
 
-    glUseProgram(0);
-    // ...
+    glLineWidth(2.2f);
+    this->scene[0]->draw();
+    glLineWidth(1.4f);
+    this->scene[1]->draw();
+    glPointSize(1.0f);
+    this->scene[2]->draw();
+    this->scene[3]->draw();
+    glLineWidth(1.0f);
+    this->scene[4]->draw();
 }
 
 
@@ -493,32 +487,12 @@ inline void MainLoop::draw () const {
 void MainLoop::run () {
     this->running = true;
 
-    // ...
-    std::vector<vec3> verts = {
-        vec3( 100, 100,  100),
-        vec3(-100, 100,  100),
-        vec3( 100, 100, -100),
-        vec3(-100, 100, -100),
-        vec3(  90, 110,  100),
-        vec3( 100, 100,  100),
-        vec3(  90,  90,  100),
-        vec3( 100, 100,  100)
-
-    };
-
-    std::vector<vec4> colors = {
-        vec4(1, 1, 1, 1  ),
-        vec4(1, 1, 0, 1  ),
-        vec4(1, 0, 0, 1  ),
-        vec4(0, 1, 1, 1  ),
-        vec4(0, 0, 1, 0.2),
-        vec4(1, 1, 1, 1  ),
-        vec4(0, 0, 1, 0.2),
-        vec4(1, 1, 1, 1  )
-    };
-
-    this->model.prepare(GL_LINES, verts, colors);
-    // ...
+    // prepare "scene"
+    this->scene.push_back(primitives::axes(160.0f, 10.0f));
+    this->scene.push_back(primitives::grid(160.0f, 10.0f));
+    this->scene.push_back(primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f));
+    this->scene.push_back(primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, GL_POINTS));
+    this->scene.push_back(primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 0.1f, GL_LINES));
 
     while (this->running) {
         this->process_events();

@@ -19,198 +19,171 @@ namespace machina {
 
 
 
+using vec3 = m3d::GVector3<GLfloat>;
+using vec4 = m3d::GVector4<GLfloat>;
+
+
+
+
 /**
- *  Draw an axe-grid.
+ *  Axes.
  */
-void axes_grid (GLfloat dim, GLfloat space) {
-    const GLfloat intensity = 0.55f;
+std::shared_ptr<SimpleBatch> axes (GLfloat dim, GLfloat s) {
+    std::vector<vec3> v;
+    std::vector<vec4> c;
+    auto batch = std::make_shared<SimpleBatch>();
+    const GLfloat i = 0.7;
 
-    dim = dim * 0.5f;
+    dim = dim * 0.5;
 
-    #define line(x1, y1, z1, x2, y2, z2) \
-        glVertex3f(x1, y1, z1); \
-        glVertex3f(x2, y2, z2)
+    #define line(x1, y1, z1, x2, y2, z2, r1, g1, b1, a1, r2, g2, b2, a2) \
+        v.push_back(vec3(x1, y1, z1)); c.push_back(vec4(r1, g1, b1, a1)); \
+        v.push_back(vec3(x2, y2, z2)); c.push_back(vec4(r2, g2, b2, a2));
 
-    glPushAttrib(
-        GL_CURRENT_BIT |
-        GL_ENABLE_BIT |
-        GL_LIGHTING_BIT
-    );
+    // red axis
+    line(-dim-2*s,   0,  0, dim+2*s, 0, 0,   i-0.2, 0, 0, 0.5, i, 0, 0, 1);
+    line( dim+2*s-4, 0,  2, dim+2*s, 0, 0,   i    , 0, 0, 1  , i, 0, 0, 1);
+    line( dim+2*s-4, 0, -2, dim+2*s, 0, 0,   i    , 0, 0, 1  , i, 0, 0, 1);
 
-    glDisable(GL_LIGHTING);
-    glLineWidth(2.2f);
+    // green axis
+    line( 0, -s*2,   0, 0, s*2, 0,   0, i-0.2, 0, 0.5, 0, i, 0, 1);
+    line( 2,  s*2-4, 0, 0, s*2, 0,   0, i    , 0, 1  , 0, i, 0, 1);
+    line(-2,  s*2-4, 0, 0, s*2, 0,   0, i    , 0, 1  , 0, i, 0, 1);
 
-    glBegin(GL_LINES);
+    // blue axis
+    line( 0, 0, -dim-2*s,   0, 0, dim+2*s,   0, 0, i-0.2, 0.5, 0, 0, i, 1);
+    line( 2, 0,  dim+2*s-4, 0, 0, dim+2*s,   0, 0, i    , 1  , 0, 0, i, 1);
+    line(-2, 0,  dim+2*s-4, 0, 0, dim+2*s,   0, 0, i    , 1  , 0, 0, i, 1);
 
-    glColor3f(intensity, 0.0f, 0.0f);
-    line(-dim-2.0f*space,      0.0f,  0.0f,    dim+2.0f*space, 0.0f, 0.0f);
-    line( dim+2.0f*space-4.0f, 0.0f,  2.0f,    dim+2.0f*space, 0.0f, 0.0f);
-    line( dim+2.0f*space-4.0f, 0.0f, -2.0f,    dim+2.0f*space, 0.0f, 0.0f);
-
-    glColor3f(0.0f, intensity, 0.0f);
-    line( 0.0f, -space*2.0f,       0.0f,    0.0f, space*2.0f, 0.0f);
-    line( 2.0f,  space*2.0f-4.0f,  0.0f,    0.0f, space*2.0f, 0.0f);
-    line(-2.0f,  space*2.0f-4.0f,  0.0f,    0.0f, space*2.0f, 0.0f);
-
-    glColor3f(0.0f, 0.0f, intensity);
-    line( 0.0f, 0.0f, -dim-2.0f*space,         0.0f, 0.0f, dim+2.0f*space);
-    line( 2.0f, 0.0f,  dim+2.0f*space-4.0f,    0.0f, 0.0f, dim+2.0f*space);
-    line(-2.0f, 0.0f,  dim+2.0f*space-4.0f,    0.0f, 0.0f, dim+2.0f*space);
-
-    glEnd();
-
-    glLineWidth(1.4f);
-
-    glBegin(GL_LINES);
-
-    glColor3f(0.15f, 0.15f, 0.25f);
-    for (
-        GLfloat d = space;
-        d <= dim;
-        d += space
-    ) {
-        line(-dim, 0.0f,  d,       dim, 0.0f,  d);
-        line(-dim, 0.0f, -d,       dim, 0.0f, -d);
-        line( d,   0.0f, -dim,     d,   0.0f,  dim);
-        line(-d,   0.0f, -dim,    -d,   0.0f,  dim);
-    }
-
-    glEnd();
-
-    glPopAttrib();
+    batch->prepare(GL_LINES, v, c);
 
     #undef line
+
+    return batch;
 }
 
 
 
 
 /**
- *  Draw an axe-grid.
+ *  Grid.
  */
-void grid (GLfloat dim, GLfloat space) {
-    dim = dim * 0.5f;
+std::shared_ptr<SimpleBatch> grid (GLfloat dim, GLfloat s) {
+    std::vector<vec3> v;
+    std::vector<vec4> c;
+    auto batch = std::make_shared<SimpleBatch>();
 
-    glPushAttrib(
-        GL_CURRENT_BIT |
-        GL_ENABLE_BIT |
-        GL_LIGHTING_BIT
-    );
+    dim = dim * 0.5;
 
-    glDisable(GL_LIGHTING);
-    glLineWidth(1.0);
-    glColor4f(0.11f, 0.22f, 0.44f, 0.2f);
+    #define line(x1, y1, z1, x2, y2, z2) \
+        v.push_back(vec3(x1, y1, z1)); c.push_back(vec4(0.15f, 0.15f, 0.25f, 1)); \
+        v.push_back(vec3(x2, y2, z2)); c.push_back(vec4(0.15f, 0.15f, 0.25f, 1));
 
-    glBegin(GL_LINES);
-    for (
-        GLfloat d = -dim;
-        d <= dim;
-        d += space
-    ) {
-        glVertex3f(-dim, 0.0f,    d);  glVertex3f(dim, 0.0f,    d);
-        glVertex3f(   d, 0.0f, -dim);  glVertex3f(  d, 0.0f,  dim);
+    for (GLfloat d = s;  d <= dim;  d += s) {
+        line(-dim, 0,  d,    dim, 0,    d);
+        line(-dim, 0, -d,    dim, 0,   -d);
+        line( d,   0, -dim,  d,   0,  dim);
+        line(-d,   0, -dim, -d,   0,  dim);
     }
-    glEnd();
 
-    glPopAttrib();
+    #undef line
+
+    batch->prepare(GL_LINES, v, c);
+
+    return batch;
 }
 
 
 
 
 /**
- *  Draw a point-cube.
+ *  Point-cube.
  */
-void point_cube (GLfloat dim, GLfloat space, GLfloat a) {
+std::shared_ptr<SimpleBatch> point_cube (GLfloat dim, GLfloat s, GLfloat a) {
+    std::vector<vec3> v;
+    std::vector<vec4> c;
+    auto batch = std::make_shared<SimpleBatch>();
     const GLfloat cstep = (1.0/(2.0f*dim));
     const GLfloat cshift = 0.5f;
 
-    std::srand(0);
-
     dim = dim * 0.5f;
 
-    glPushAttrib(
-        GL_CURRENT_BIT |
-        GL_ENABLE_BIT |
-        GL_LIGHTING_BIT
-    );
-
-    glDisable(GL_LIGHTING);
-    glPointSize(1.0);
-
-    glBegin(GL_POINTS);
-    for (GLfloat x = -dim; x <= dim; x += space) {
-        for (GLfloat y = -dim; y <= dim; y += space) {
-            for (GLfloat z = -dim; z <= dim; z += space) {
-                glColor4f(cstep*x+cshift, cstep*y+cshift, cstep*z+cshift, a);
-                glVertex3f(
-                    x + (std::rand() % static_cast<int>(space)) - space/2.0f,
-                    y + (std::rand() % static_cast<int>(space)) - space/2.0f,
-                    z + (std::rand() % static_cast<int>(space)) - space/2.0f
-                );
+    for (GLfloat x = -dim; x <= dim; x += s) {
+        for (GLfloat y = -dim; y <= dim; y += s) {
+            for (GLfloat z = -dim; z <= dim; z += s) {
+                v.push_back(vec3(
+                    x + (std::rand() % static_cast<int>(s)) - s/2.0f,
+                    y + (std::rand() % static_cast<int>(s)) - s/2.0f,
+                    z + (std::rand() % static_cast<int>(s)) - s/2.0f
+                ));
+                c.push_back(vec4(
+                    cstep*x+cshift,
+                    cstep*y+cshift,
+                    cstep*z+cshift,
+                    a
+                ));
             }
         }
     }
-    glEnd();
 
-    glPopAttrib();
+    batch->prepare(GL_POINTS, v, c);
+
+    return batch;
 }
 
 
 
 
 /**
- *  Draw this thing...
+ *  This thing...
  */
-void this_thing (
+std::shared_ptr<SimpleBatch> this_thing (
     GLfloat dim, GLfloat space,
-    GLfloat cfull, GLfloat psize, GLfloat a, Uint8 what
+    GLfloat cfull, GLfloat a, GLenum what
 ) {
+    std::vector<vec3> verts;
+    std::vector<vec4> colors;
+    auto batch = std::make_shared<SimpleBatch>();
     const GLfloat cstep = (cfull/(2.0f*dim));
     const GLfloat cshift = cfull/2.0f;
 
     dim = dim * 0.5f;
 
-    glPushAttrib(
-        GL_CURRENT_BIT |
-        GL_ENABLE_BIT |
-        GL_LIGHTING_BIT
-    );
+    #define v(x, y, z) verts.push_back(vec3(x, y, z))
+    #define c(r, g, b, a) colors.push_back(vec4(r, g, b, a))
 
-    glDisable(GL_LIGHTING);
-    glPointSize(psize);
-    glLineWidth(psize);
-
-    glBegin(what);
     for (
         GLfloat d = -dim;
         d <= dim;
         d += space
     ) {
-        glColor4f( 0.0f, cstep*d+cshift, cstep*d+cshift, a); glVertex3f(-1*dim,  1*d, 1*d);
-        glColor4f(cfull, cshift-cstep*d, cstep*d+cshift, a); glVertex3f( 1*dim, -1*d, 1*d);
-        glColor4f(cstep*d+cshift, cstep*d+cshift,  0.0f, a); glVertex3f(1*d,  1*d, -1*dim);
-        glColor4f(cstep*d+cshift, cshift-cstep*d, cfull, a); glVertex3f(1*d, -1*d,  1*dim);
+        v(-1*dim,  1*d, 1*d); c( 0.0f, cstep*d+cshift, cstep*d+cshift, a);
+        v( 1*dim, -1*d, 1*d); c(cfull, cshift-cstep*d, cstep*d+cshift, a);
+        v(1*d,  1*d, -1*dim); c(cstep*d+cshift, cstep*d+cshift,  0.0f, a);
+        v(1*d, -1*d,  1*dim); c(cstep*d+cshift, cshift-cstep*d, cfull, a);
 
-        glColor4f( 0.0f, cshift-cstep*d, cstep*d+cshift, a); glVertex3f(-1*dim, -1*d, 1*d);
-        glColor4f(cfull, cstep*d+cshift, cstep*d+cshift, a); glVertex3f( 1*dim,  1*d, 1*d);
-        glColor4f(cstep*d+cshift, cshift-cstep*d,  0.0f, a); glVertex3f(1*d, -1*d, -1*dim);
-        glColor4f(cstep*d+cshift, cstep*d+cshift, cfull, a); glVertex3f(1*d,  1*d,  1*dim);
+        v(-1*dim, -1*d, 1*d); c( 0.0f, cshift-cstep*d, cstep*d+cshift, a);
+        v( 1*dim,  1*d, 1*d); c(cfull, cstep*d+cshift, cstep*d+cshift, a);
+        v(1*d, -1*d, -1*dim); c(cstep*d+cshift, cshift-cstep*d,  0.0f, a);
+        v(1*d,  1*d,  1*dim); c(cstep*d+cshift, cstep*d+cshift, cfull, a);
 
-        glColor4f(cstep*d+cshift,  0.0f, cstep*d+cshift, a); glVertex3f( 1*d, -1*dim, 1*d);
-        glColor4f(cshift-cstep*d, cfull, cstep*d+cshift, a); glVertex3f(-1*d,  1*dim, 1*d);
-        glColor4f(cstep*d+cshift, cstep*d+cshift,  0.0f, a); glVertex3f(1*d,  1*d, -1*dim);
-        glColor4f(cshift-cstep*d, cstep*d+cshift, cfull, a); glVertex3f(-1*d, 1*d,  1*dim);
+        v( 1*d, -1*dim, 1*d); c(cstep*d+cshift,  0.0f, cstep*d+cshift, a);
+        v(-1*d,  1*dim, 1*d); c(cshift-cstep*d, cfull, cstep*d+cshift, a);
+        v(1*d,  1*d, -1*dim); c(cstep*d+cshift, cstep*d+cshift,  0.0f, a);
+        v(-1*d, 1*d,  1*dim); c(cshift-cstep*d, cstep*d+cshift, cfull, a);
 
-        glColor4f(cshift-cstep*d,  0.0f, cstep*d+cshift, a); glVertex3f(-1*d, -1*dim, 1*d);
-        glColor4f(cstep*d+cshift, cfull, cstep*d+cshift, a); glVertex3f( 1*d,  1*dim, 1*d);
-        glColor4f(cshift-cstep*d, cstep*d+cshift,  0.0f, a); glVertex3f(-1*d, 1*d, -1*dim);
-        glColor4f(cstep*d+cshift, cstep*d+cshift, cfull, a); glVertex3f( 1*d, 1*d,  1*dim);
-
+        v(-1*d, -1*dim, 1*d); c(cshift-cstep*d,  0.0f, cstep*d+cshift, a);
+        v( 1*d,  1*dim, 1*d); c(cstep*d+cshift, cfull, cstep*d+cshift, a);
+        v(-1*d, 1*d, -1*dim); c(cshift-cstep*d, cstep*d+cshift,  0.0f, a);
+        v( 1*d, 1*d,  1*dim); c(cstep*d+cshift, cstep*d+cshift, cfull, a);
     }
-    glEnd();
 
-    glPopAttrib();
+    #undef c
+    #undef v
+
+    batch->prepare(what, verts, colors);
+
+    return batch;
 }
 
 

@@ -14,6 +14,7 @@
 #include <iostream>
 #include <functional>
 #include <vector>
+#include <memory>
 #include "camera.hpp"
 #include "batch.hpp"
 #include "shader.hpp"
@@ -83,8 +84,8 @@ private:
     Camera<GLfloat> camera;
 
 
-    // batch
-    SimpleBatch model;
+    // simple "scene"
+    std::vector<std::shared_ptr<Batch>> scene;
 
 
     // shader

@@ -10,7 +10,9 @@
 #ifndef __PRIMITIVES_HPP_
 #define __PRIMITIVES_HPP_ 1
 
-#include "sdl_opengl.hpp"
+#include "batch.hpp"
+#include <vector>
+#include <memory>
 
 namespace machina {
     namespace primitives {
@@ -19,29 +21,29 @@ namespace machina {
 
 
 /**
- *  Draw an axes-grid.
+ *  Axes.
  */
-void axes_grid (GLfloat dim, GLfloat space);
+std::shared_ptr<SimpleBatch> axes (GLfloat, GLfloat);
 
 
 /**
- *  Draw a grid.
+ *  Grid.
  */
-void grid (GLfloat dim, GLfloat space);
+std::shared_ptr<SimpleBatch> grid (GLfloat, GLfloat);
 
 
 /**
- *  Draw a point-cube.
+ *  Point-cube.
  */
-void point_cube (GLfloat dim, GLfloat space, GLfloat a);
+std::shared_ptr<SimpleBatch> point_cube (GLfloat, GLfloat, GLfloat);
 
 
 /**
- *  Draw this thing...
+ *  This thing...
  */
-void this_thing (
-    GLfloat dim, GLfloat space,
-    GLfloat cfull, GLfloat psize, GLfloat a, Uint8 what
+std::shared_ptr<SimpleBatch> this_thing (
+    GLfloat, GLfloat,
+    GLfloat, GLfloat, GLenum
 );
 
 
