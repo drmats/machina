@@ -23,7 +23,7 @@ static const GLchar *vs_basic = GLSL(330 core,
     uniform mat4 mvp_matrix;
     in vec4 vertex_position;
     in vec4 vertex_color;
-    out vec4 vertex_fragment_color;
+    smooth out vec4 vertex_fragment_color;
     void main (void) {
         vertex_fragment_color = vertex_color;
         gl_Position = mvp_matrix * vertex_position;
@@ -33,7 +33,7 @@ static const GLchar *vs_basic = GLSL(330 core,
 
 // basic fragment shader -- care about fragment color
 static const GLchar *fs_basic = GLSL(330 core,
-    in vec4 vertex_fragment_color;
+    smooth in vec4 vertex_fragment_color;
     out vec4 fragment_color;
     void main (void) {
         fragment_color = vertex_fragment_color;

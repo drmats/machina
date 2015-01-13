@@ -512,13 +512,13 @@ void MainLoop::run () {
             1, 0, 0, 1,
             0, 1, 1, 1,
 
-            1, 1, 1, 0,
+            0, 0, 1, 0.2,
             1, 1, 1, 1,
-            1, 1, 1, 0,
+            0, 0, 1, 0.2,
             1, 1, 1, 1
         };
     this->model.prepare(
-        GL_LINES, //GL_TRIANGLES,
+        GL_LINES, /*GL_TRIANGLES,*/
         sizeof(verts) / sizeof(vec3),
         verts, colors
     );

@@ -96,6 +96,7 @@ void SimpleBatch::draw () const {
     glDrawArrays(this->draw_mode, 0, this->num_verts);
 
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
 }
 
 
