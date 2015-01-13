@@ -48,9 +48,8 @@ SimpleBatch::~SimpleBatch () {
  */
 void SimpleBatch::prepare (
     GLenum draw_mode,
-    GLuint num_verts,
-    GLfloat *verts,
-    GLfloat *colors
+    const std::vector<vec3> &verts,
+    const std::vector<vec4> &colors
 ) {
     this->draw_mode = draw_mode;
     this->num_verts = num_verts;
@@ -60,8 +59,8 @@ void SimpleBatch::prepare (
     glBindBuffer(GL_ARRAY_BUFFER, this->vertex_array);
     glBufferData(
         GL_ARRAY_BUFFER,
-        sizeof(m3d::GVector3<GLfloat>) * num_verts,
-        verts,
+        verts.size() * sizeof(vec3),
+        verts.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -70,8 +69,8 @@ void SimpleBatch::prepare (
     glBindBuffer(GL_ARRAY_BUFFER, this->color_array);
     glBufferData(
         GL_ARRAY_BUFFER,
-        sizeof(m3d::GVector4<GLfloat>) * num_verts,
-        colors,
+        colors.size() * sizeof(vec4),
+        colors.data(),
         GL_DYNAMIC_DRAW
     );
 }

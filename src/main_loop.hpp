@@ -13,7 +13,6 @@
 #include "sdl_opengl.hpp"
 #include <iostream>
 #include <functional>
-#include <memory>
 #include <vector>
 #include "camera.hpp"
 #include "batch.hpp"
@@ -37,12 +36,12 @@ class Machina;
  */
 class MainLoop {
 
-private:
-
     using vec2 = m3d::GVector2<GLfloat>;
     using vec3 = m3d::GVector3<GLfloat>;
-    using vec4 = m3d::GVector3<GLfloat>;
+    using vec4 = m3d::GVector4<GLfloat>;
 
+
+private:
 
     // program root
     Machina *root;

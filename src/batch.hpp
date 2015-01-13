@@ -12,6 +12,7 @@
 
 #include "sdl_opengl.hpp"
 #include "m3d.hpp"
+#include <vector>
 
 namespace machina {
 
@@ -39,6 +40,10 @@ public:
  *  Simple batch (just vertices).
  */
 class SimpleBatch : public Batch {
+
+    using vec3 = m3d::GVector3<GLfloat>;
+    using vec4 = m3d::GVector4<GLfloat>;
+
 
 protected:
 
@@ -74,7 +79,7 @@ public:
     /**
      *  ...
      */
-    void prepare (GLenum, GLuint, GLfloat *, GLfloat *);
+    void prepare (GLenum, const std::vector<vec3> &, const std::vector<vec4> &);
 
 
     /**

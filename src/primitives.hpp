@@ -18,31 +18,31 @@ namespace machina {
 
 
 
-    /**
-     *  Draw an axes-grid.
-     */
-    void axes_grid (GLfloat dim, GLfloat space);
+/**
+ *  Draw an axes-grid.
+ */
+void axes_grid (GLfloat dim, GLfloat space);
 
 
-    /**
-     *  Draw a grid.
-     */
-    void grid (GLfloat dim, GLfloat space);
+/**
+ *  Draw a grid.
+ */
+void grid (GLfloat dim, GLfloat space);
 
 
-    /**
-     *  Draw a point-cube.
-     */
-    void point_cube (GLfloat dim, GLfloat space, GLfloat a);
+/**
+ *  Draw a point-cube.
+ */
+void point_cube (GLfloat dim, GLfloat space, GLfloat a);
 
 
-    /**
-     *  Draw this thing...
-     */
-    void this_thing (
-        GLfloat dim, GLfloat space,
-        GLfloat cfull, GLfloat psize, GLfloat a, Uint8 what
-    );
+/**
+ *  Draw this thing...
+ */
+void this_thing (
+    GLfloat dim, GLfloat space,
+    GLfloat cfull, GLfloat psize, GLfloat a, Uint8 what
+);
 
 
 

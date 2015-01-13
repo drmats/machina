@@ -477,7 +477,7 @@ inline void MainLoop::draw () const {
             this->camera.transform.get_view_matrix()
     );
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glLineWidth(2.0f);
+    glLineWidth(1.5f);
     this->model.draw();
 
     glUseProgram(0);
@@ -494,34 +494,30 @@ void MainLoop::run () {
     this->running = true;
 
     // ...
-    GLfloat
-        verts[] = {
-            100, 100, 100,
-            -100, 100, 100,
-            100, 100, -100,
-            -100, 100, -100,
+    std::vector<vec3> verts = {
+        vec3( 100, 100,  100),
+        vec3(-100, 100,  100),
+        vec3( 100, 100, -100),
+        vec3(-100, 100, -100),
+        vec3(  90, 110,  100),
+        vec3( 100, 100,  100),
+        vec3(  90,  90,  100),
+        vec3( 100, 100,  100)
 
-            90, 110, 100,
-            100, 100, 100,
-            90, 90, 100,
-            100, 100, 100
-        },
-        colors[] = {
-            1, 1, 1, 1,
-            1, 1, 0, 1,
-            1, 0, 0, 1,
-            0, 1, 1, 1,
+    };
 
-            0, 0, 1, 0.2,
-            1, 1, 1, 1,
-            0, 0, 1, 0.2,
-            1, 1, 1, 1
-        };
-    this->model.prepare(
-        GL_LINES, /*GL_TRIANGLES,*/
-        sizeof(verts) / sizeof(vec3),
-        verts, colors
-    );
+    std::vector<vec4> colors = {
+        vec4(1, 1, 1, 1  ),
+        vec4(1, 1, 0, 1  ),
+        vec4(1, 0, 0, 1  ),
+        vec4(0, 1, 1, 1  ),
+        vec4(0, 0, 1, 0.2),
+        vec4(1, 1, 1, 1  ),
+        vec4(0, 0, 1, 0.2),
+        vec4(1, 1, 1, 1  )
+    };
+
+    this->model.prepare(GL_LINES, verts, colors);
     // ...
 
     while (this->running) {

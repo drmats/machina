@@ -23,12 +23,12 @@ namespace m3d {
 template <typename T>
 class GFrame {
 
-public:
-
     using vec3 = GVector3<T>;
     using vec4 = GVector4<T>;
     using mat4 = GMatrix4<T>;
 
+
+public:
 
     /**
      *  Vectors defining this frame.
