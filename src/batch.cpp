@@ -52,7 +52,7 @@ void SimpleBatch::prepare (
     const std::vector<vec4> &colors
 ) {
     this->draw_mode = draw_mode;
-    this->num_verts = num_verts;
+    this->num_verts = verts.size();
 
     // vertex positions
     glGenBuffers(1, &this->vertex_array);
