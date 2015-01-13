@@ -19,7 +19,7 @@ namespace machina {
 
 
 // basic vertex shader -- care about vertex position and color
-static const GLchar *vs_basic = GLSL(330 core,
+static const GLchar *vs_basic = GLSL(130,
     uniform mat4 mvp_matrix;
     in vec4 vertex_position;
     in vec4 vertex_color;
@@ -32,7 +32,7 @@ static const GLchar *vs_basic = GLSL(330 core,
 
 
 // basic fragment shader -- care about fragment color
-static const GLchar *fs_basic = GLSL(330 core,
+static const GLchar *fs_basic = GLSL(130,
     smooth in vec4 vertex_fragment_color;
     out vec4 fragment_color;
     void main (void) {
