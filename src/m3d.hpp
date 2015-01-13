@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <ostream>
 #include <cmath>
+#include <initializer_list>
 #include "m3d_message.hpp"
 
 namespace m3d {
@@ -592,7 +593,24 @@ class GMatrix4 : public GMatrix<T, 4> {
 public:
 
     GMatrix4 () {}
+
+
+    GMatrix4 (std::initializer_list<T> init_list) {
+        typename std::initializer_list<T>::iterator it;
+        std::size_t i;
+        for (
+            it = init_list.begin(), i = 0;
+            it != init_list.end()  &&  i < 4*4;
+            it++, i++
+        ) {
+            this->data[i] = *it;
+        }
+    }
+
+
     GMatrix4 (const GArray<T, 4*4> &a) { GArray<T, 4*4>::assign(a); }
+
+
     using GArray<T, 4*4>::operator=;
 
 
