@@ -18,21 +18,27 @@ namespace machina {
 
 
 
-// basic vertex shader -- care about vertex position
-static const GLchar *vs_basic =
-    "uniform mat4 mvp_matrix;\n"
-    "attribute vec4 vertex_position;\n"
-    "void main (void) {\n"
-        "gl_Position = mvp_matrix * vertex_position;\n"
-    "}\n";
+// basic vertex shader -- care about vertex position and color
+static const GLchar *vs_basic = GLSL(330 core,
+    uniform mat4 mvp_matrix;
+    in vec4 vertex_position;
+    in vec4 vertex_color;
+    out vec4 vertex_fragment_color;
+    void main (void) {
+        vertex_fragment_color = vertex_color;
+        gl_Position = mvp_matrix * vertex_position;
+    }
+);
 
 
 // basic fragment shader -- care about fragment color
-static const GLchar *fs_basic =
-    "uniform vec4 color;\n"
-    "void main (void) {\n"
-        "gl_FragColor = color;\n"
-    "}\n";
+static const GLchar *fs_basic = GLSL(330 core,
+    in vec4 vertex_fragment_color;
+    out vec4 fragment_color;
+    void main (void) {
+        fragment_color = vertex_fragment_color;
+    }
+);
 
 
 
@@ -40,7 +46,7 @@ static const GLchar *fs_basic =
 /**
  *  ...
  */
-Shader::Shader () {
+Shader::Shader () throw (std::runtime_error) {
 
     // temporary shader objects (load and compile from sources)
     GLuint
@@ -57,6 +63,7 @@ Shader::Shader () {
 
     // bind attributes to the gl program
     glBindAttribLocation(this->program, 0, "vertex_position");
+    glBindAttribLocation(this->program, 1, "vertex_color");
 
     // link gl program
     glLinkProgram(this->program);
@@ -68,7 +75,9 @@ Shader::Shader () {
     // check for link errors
     glGetProgramiv(this->program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE) {
+        std::string error_message(this->get_program_info_log(this->program));
         glDeleteProgram(this->program);
+        throw std::runtime_error(error_message);
     }
 }
 
@@ -91,15 +100,11 @@ Shader::~Shader () {
 /**
  *  ...
  */
-void Shader::use (const m3d::GMatrix4<GLfloat> &mvp, const GLfloat *color) const {
+void Shader::use (const mat4 &mvp) const {
     glUseProgram(this->program);
     glUniformMatrix4fv(
         glGetUniformLocation(this->program, "mvp_matrix"),
         1, GL_FALSE, *mvp
-    );
-    glUniform4fv(
-        glGetUniformLocation(this->program, "color"),
-        1, color
     );
 }
 
@@ -120,11 +125,38 @@ GLuint Shader::load_shader (
     glCompileShader(shader);
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
+        std::string error_message(this->get_shader_info_log(shader));
         glDeleteShader(shader);
-        throw std::runtime_error("Shader compilation failure.");
+        throw std::runtime_error(error_message);
     }
 
     return shader;
+}
+
+
+
+
+/**
+ *  Get shader compilation log message.
+ */
+std::string Shader::get_shader_info_log (GLuint shader) {
+    const GLsizei max_length = 256;
+    static GLchar buffer[max_length];
+    glGetShaderInfoLog(shader, max_length, NULL, buffer);
+    return "GLSL shader: " + std::string(buffer);
+}
+
+
+
+
+/**
+ *  Get program linking log.
+ */
+std::string Shader::get_program_info_log (GLuint program) {
+    const GLsizei max_length = 256;
+    static GLchar buffer[max_length];
+    glGetProgramInfoLog(program, max_length, NULL, buffer);
+    return "GLSL program: " + std::string(buffer);
 }
 
 

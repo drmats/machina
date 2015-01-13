@@ -13,6 +13,7 @@
 #include "sdl_opengl.hpp"
 #include "m3d.hpp"
 #include <stdexcept>
+#include <string>
 
 namespace machina {
     namespace shader {
@@ -21,9 +22,20 @@ namespace machina {
 
 
 /**
+ *  Shader source helper macro.
+ */
+#define GLSL(version, src) "#version " #version "\n" #src
+
+
+
+
+/**
  *  ...
  */
 class Shader {
+
+    using mat4 = m3d::GMatrix4<GLfloat>;
+
 
 protected:
 
@@ -36,7 +48,7 @@ public:
     /**
      *  Initialization.
      */
-    Shader ();
+    Shader () throw (std::runtime_error);
 
 
     /**
@@ -48,16 +60,28 @@ public:
     /**
      *  ...
      */
-    void use (const m3d::GMatrix4<GLfloat> &mvp, const GLfloat *color) const;
+    void use (const mat4 &) const;
 
 
     /**
      *  Compile shader from a given source.
      */
     GLuint load_shader (
-        GLenum shader_type,
-        const GLchar *shader_src
+        GLenum,
+        const GLchar *
     ) throw (std::runtime_error);
+
+
+    /**
+     *  Get shader compilation log.
+     */
+    std::string get_shader_info_log (GLuint);
+
+
+    /**
+     *  Get program linking log.
+     */
+    std::string get_program_info_log (GLuint);
 
 };
 

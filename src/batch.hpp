@@ -51,8 +51,10 @@ protected:
     /**
      *  ...
      */
-    GLuint vertex_array;
-    GLuint num_verts;
+    GLuint
+        vertex_array,
+        color_array,
+        num_verts;
 
 
 public:
@@ -72,7 +74,7 @@ public:
     /**
      *  ...
      */
-    void prepare (GLenum, GLuint, GLfloat *);
+    void prepare (GLenum, GLuint, GLfloat *, GLfloat *);
 
 
     /**

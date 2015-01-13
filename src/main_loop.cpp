@@ -385,15 +385,15 @@ void MainLoop::setup_opengl () {
     this->adjust_camera_aspect();
 
     glClearColor(0.05f, 0.05f, 0.15f, 0.0f);
-    glPolygonMode(GL_FRONT, GL_FILL);
+    // glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
+    // glFrontFace(GL_CCW);
 
     glEnable(GL_POINT_SMOOTH);
     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
@@ -472,13 +472,11 @@ inline void MainLoop::draw () const {
     primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 1.0f, 0.1f, GL_LINES);
 
     // ...
-    static GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     this->shader.use(
         this->camera.projection.get_matrix() *
-            this->camera.transform.get_view_matrix(),
-        yellow
+            this->camera.transform.get_view_matrix()
     );
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(2.0f);
     this->model.draw();
 
@@ -496,18 +494,34 @@ void MainLoop::run () {
     this->running = true;
 
     // ...
-    GLfloat verts[] = {
-        100, 100, 100,
-        -100, 100, 100,
-        100, 100, -100,
-        -100, 100, -100,
+    GLfloat
+        verts[] = {
+            100, 100, 100,
+            -100, 100, 100,
+            100, 100, -100,
+            -100, 100, -100,
 
-        90, 110, 100,
-        100, 100, 100,
-        90, 90, 100,
-        100, 100, 100
-    };
-    this->model.prepare(GL_LINES, 8, verts);
+            90, 110, 100,
+            100, 100, 100,
+            90, 90, 100,
+            100, 100, 100
+        },
+        colors[] = {
+            1, 1, 1, 1,
+            1, 1, 0, 1,
+            1, 0, 0, 1,
+            0, 1, 1, 1,
+
+            1, 1, 1, 0,
+            1, 1, 1, 1,
+            1, 1, 1, 0,
+            1, 1, 1, 1
+        };
+    this->model.prepare(
+        GL_LINES, //GL_TRIANGLES,
+        sizeof(verts) / sizeof(vec3),
+        verts, colors
+    );
     // ...
 
     while (this->running) {
