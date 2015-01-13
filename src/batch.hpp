@@ -79,7 +79,7 @@ public:
     /**
      *  ...
      */
-    void prepare (GLenum, const std::vector<vec3> &, const std::vector<vec4> &);
+    SimpleBatch& prepare (GLenum, const std::vector<vec3> &, const std::vector<vec4> &);
 
 
     /**

@@ -46,7 +46,7 @@ SimpleBatch::~SimpleBatch () {
 /**
  *  ...
  */
-void SimpleBatch::prepare (
+SimpleBatch& SimpleBatch::prepare (
     GLenum draw_mode,
     const std::vector<vec3> &verts,
     const std::vector<vec4> &colors
@@ -73,6 +73,8 @@ void SimpleBatch::prepare (
         colors.data(),
         GL_DYNAMIC_DRAW
     );
+
+    return *this;
 }
 
 
