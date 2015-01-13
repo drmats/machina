@@ -107,13 +107,13 @@ public:
 template <typename T>
 class Camera {
 
-public:
-
-    using mat4 = m3d::GMatrix4<T>;
     using vec3 = m3d::GVector3<T>;
     using vec4 = m3d::GVector4<T>;
+    using mat4 = m3d::GMatrix4<T>;
     using frame = m3d::GFrame<T>;
 
+
+public:
 
     /**
      *  Perspective projection matrix.
@@ -164,15 +164,9 @@ public:
 
 
     /**
-     *  Establish camera projection in a viewport.
+     *  Get View-Projection matrix.
      */
-    void establish_projection () const;
-
-
-    /**
-     *  Establish camera modelview in a viewport.
-     */
-    void establish_modelview () const;
+    mat4 get_vp_matrix () const;
 
 };
 

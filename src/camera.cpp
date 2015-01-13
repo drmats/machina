@@ -67,48 +67,11 @@ void Camera<T>::relative_rotate_y (T angle) {
 
 
 /**
- *  Establish camera projection in a viewport (GLfloat specialization).
+ *  Get View-Projection matrix.
  */
-template <>
-void Camera<GLfloat>::establish_projection () const {
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(*this->projection.get_matrix());
-}
-
-
-
-
-/**
- *  Establish camera projection in a viewport (GLdouble specialization).
- */
-template <>
-void Camera<GLdouble>::establish_projection () const {
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixd(*this->projection.get_matrix());
-}
-
-
-
-
-/**
- *  Establish camera modelview in a viewport (GLfloat specialization).
- */
-template <>
-void Camera<GLfloat>::establish_modelview () const {
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(*this->transform.get_view_matrix());
-}
-
-
-
-
-/**
- *  Establish camera modelview in a viewport (GLdouble specialization).
- */
-template <>
-void Camera<GLdouble>::establish_modelview () const {
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixd(*this->transform.get_view_matrix());
+template <typename T>
+typename Camera<T>::mat4 Camera<T>::get_vp_matrix () const {
+    return this->projection.get_matrix() * this->transform.get_view_matrix();
 }
 
 

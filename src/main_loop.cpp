@@ -462,10 +462,7 @@ inline void MainLoop::draw () const {
         GL_DEPTH_BUFFER_BIT
     );
 
-    this->shader.use(
-        this->camera.projection.get_matrix() *
-            this->camera.transform.get_view_matrix()
-    );
+    this->shader.use(this->camera.get_vp_matrix());
 
     glLineWidth(2.2f);
     this->scene[0]->draw();
