@@ -45,7 +45,7 @@ void Camera<T>::recompute_transform () {
 
 
 /**
- *  Rotate camera (look-around).
+ *  Rotate camera around target using local-x axis.
  */
 template <typename T>
 void Camera<T>::relative_rotate_x (T angle) {
@@ -55,12 +55,76 @@ void Camera<T>::relative_rotate_x (T angle) {
         this->transform.origin + this->transform.forward * this->dist;
 
 }
+
+
+
+
+/**
+ *  Rotate camera around target using global-y axis.
+ */
 template <typename T>
 void Camera<T>::relative_rotate_y (T angle) {
     this->transform.rotate_world_y(angle);
     this->yaw = m3d::positive_fmod(this->yaw + angle, (T)360);
     this->target =
         this->transform.origin + this->transform.forward * this->dist;
+}
+
+
+
+/**
+ *  Move camera relatively to it's direction on (local-x, local-z) surface.
+ */
+template <typename T>
+void Camera<T>::move_on_xz (T strafe, T forward) {
+    vec3 right =
+        vec3()
+            .cross(this->transform.up, this->transform.forward);
+    vec2
+        right_flat =
+            vec2(right[0], right[2])
+                .normalize(),
+        forward_flat =
+            vec2(this->transform.forward[0], this->transform.forward[2])
+                .normalize();
+
+    if (forward_flat.is_zero()) {
+        forward_flat =
+            vec2(this->transform.up[0], this->transform.up[2])
+                .normalize();
+    }
+
+    right_flat.scale(strafe);
+    forward_flat.scale(forward);
+
+    this->target[0] += right_flat[0] + forward_flat[0];
+    this->target[2] += right_flat[1] + forward_flat[1];
+
+    this->recompute_transform();
+}
+
+
+
+
+/**
+ *  Move camera relatively to it's direction on (local-x,global-y) surface.
+ */
+template <typename T>
+void Camera<T>::move_on_xy (T strafe, T up) {
+    vec3 right =
+        vec3()
+            .cross(this->transform.up, this->transform.forward);
+    vec2 right_flat =
+            vec2(right[0], right[2])
+                .normalize();
+
+    right_flat.scale(strafe);
+
+    this->target[0] += right_flat[0];
+    this->target[1] += up;
+    this->target[2] += right_flat[1];
+
+    this->recompute_transform();
 }
 
 

@@ -70,33 +70,17 @@ void MainLoop::default_handler_t::move_around_camera (
 ) {
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
-    // ml->camera.transform.translate_right(
-    //     e.motion.xrel * ml->camera.dist * 0.00215f
-    // );
-    // if (keystate[SDL_SCANCODE_LCTRL] == 1) {
-    //     ml->camera.transform.translate_forward(
-    //         e.motion.yrel * ml->camera.dist * 0.00215f
-    //     );
-    // } else {
-    //     ml->camera.transform.translate_up(
-    //         e.motion.yrel * ml->camera.dist * 0.00215f
-    //     );
-    // }
-
-    ml->camera.target +=
-        vec3()
-            .cross(ml->camera.transform.up, ml->camera.transform.forward)
-            .scale(e.motion.xrel * ml->camera.dist * 0.00215f);
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
-        ml->camera.target +=
-            vec3(ml->camera.transform.forward)
-                .scale(e.motion.yrel * ml->camera.dist * 0.00215f);
+        ml->camera.move_on_xy(
+            e.motion.xrel * ml->camera.dist * 0.00215f,
+            e.motion.yrel * ml->camera.dist * 0.00215f
+        );
     } else {
-        ml->camera.target +=
-            vec3(ml->camera.transform.up)
-                .scale(e.motion.yrel * ml->camera.dist * 0.00215f);
+        ml->camera.move_on_xz(
+            e.motion.xrel * ml->camera.dist * 0.00215f,
+            e.motion.yrel * ml->camera.dist * 0.00215f
+        );
     }
-    ml->camera.recompute_transform();
 }
 
 
@@ -462,8 +446,10 @@ inline void MainLoop::draw () const {
         GL_DEPTH_BUFFER_BIT
     );
 
+    // pass projection-view matrix to shader
     this->shader.use(this->camera.get_vp_matrix());
 
+    // draw scene
     glLineWidth(2.2f);
     this->scene[0]->draw();
     glLineWidth(1.4f);
@@ -473,6 +459,8 @@ inline void MainLoop::draw () const {
     this->scene[3]->draw();
     glLineWidth(1.0f);
     this->scene[4]->draw();
+    glLineWidth(1.4f);
+    this->scene[5]->draw();
 }
 
 
@@ -486,10 +474,11 @@ void MainLoop::run () {
 
     // prepare "scene"
     this->scene.push_back(primitives::axes(160.0f, 10.0f));
-    this->scene.push_back(primitives::grid(160.0f, 10.0f));
+    this->scene.push_back(primitives::grid(160.0f, 10.0f, vec4(0.15f, 0.15f, 0.25f, 1)));
     this->scene.push_back(primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f));
     this->scene.push_back(primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, GL_POINTS));
     this->scene.push_back(primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 0.1f, GL_LINES));
+    this->scene.push_back(primitives::grid(1100.0f, 5.0f, vec4(0.35f, 0.35f, 0.45f, 0.05)));
 
     while (this->running) {
         this->process_events();

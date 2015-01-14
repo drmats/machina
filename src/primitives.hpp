@@ -29,7 +29,7 @@ std::shared_ptr<VertexBatch> axes (GLfloat, GLfloat);
 /**
  *  Grid.
  */
-std::shared_ptr<VertexBatch> grid (GLfloat, GLfloat);
+std::shared_ptr<VertexBatch> grid (GLfloat, GLfloat, m3d::GVector4<GLfloat>);
 
 
 /**

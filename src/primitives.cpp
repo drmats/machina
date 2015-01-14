@@ -68,7 +68,7 @@ std::shared_ptr<VertexBatch> axes (GLfloat dim, GLfloat s) {
 /**
  *  Grid.
  */
-std::shared_ptr<VertexBatch> grid (GLfloat dim, GLfloat s) {
+std::shared_ptr<VertexBatch> grid (GLfloat dim, GLfloat s, vec4 color) {
     std::vector<vec3> v;
     std::vector<vec4> c;
     auto batch = std::make_shared<VertexBatch>();
@@ -76,8 +76,8 @@ std::shared_ptr<VertexBatch> grid (GLfloat dim, GLfloat s) {
     dim = dim * 0.5;
 
     #define line(x1, y1, z1, x2, y2, z2) \
-        v.push_back(vec3(x1, y1, z1)); c.push_back(vec4(0.15f, 0.15f, 0.25f, 1)); \
-        v.push_back(vec3(x2, y2, z2)); c.push_back(vec4(0.15f, 0.15f, 0.25f, 1));
+        v.push_back(vec3(x1, y1, z1)); c.push_back(color); \
+        v.push_back(vec3(x2, y2, z2)); c.push_back(color);
 
     for (GLfloat d = s;  d <= dim;  d += s) {
         line(-dim, 0,  d,    dim, 0,    d);

@@ -108,6 +108,7 @@ public:
 template <typename T>
 class Camera {
 
+    using vec2 = m3d::GVector2<T>;
     using vec3 = m3d::GVector3<T>;
     using vec4 = m3d::GVector4<T>;
     using mat4 = m3d::GMatrix4<T>;
@@ -158,10 +159,27 @@ public:
 
 
     /**
-     *  Rotate camera (look-around).
+     *  Rotate camera around target using local-x axis.
      */
     void relative_rotate_x (T);
+
+
+    /**
+     *  Rotate camera around target using global-y axis.
+     */
     void relative_rotate_y (T);
+
+
+    /**
+     *  Move camera relatively to it's direction on (local-x, local-z) surface.
+     */
+     void move_on_xz (T, T);
+
+
+    /**
+     *  Move camera relatively to it's direction on (local-x,global-y) surface.
+     */
+     void move_on_xy (T, T);
 
 
     /**
