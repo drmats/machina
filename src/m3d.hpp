@@ -16,9 +16,21 @@
 #include <ostream>
 #include <cmath>
 #include <initializer_list>
-#include "m3d_message.hpp"
+#include <string>
 
 namespace m3d {
+
+
+
+
+/**
+ *  Messages.
+ */
+namespace msg {
+
+    const std::string out_of_range = "Index out of range.";
+
+}
 
 
 
@@ -112,7 +124,7 @@ public:
      */
     inline T& operator[] (std::size_t i) throw (std::out_of_range) {
         if (i >= N) {
-            throw std::out_of_range(m3d_message::out_of_range);
+            throw std::out_of_range(msg::out_of_range);
         }
         return this->data[i];
     }
@@ -120,7 +132,7 @@ public:
 
     inline const T& operator[] (std::size_t i) const throw (std::out_of_range) {
         if (i >= N) {
-            throw std::out_of_range(m3d_message::out_of_range);
+            throw std::out_of_range(msg::out_of_range);
         }
         return this->data[i];
     }

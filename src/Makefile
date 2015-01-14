@@ -6,7 +6,7 @@
 #
 
 PNAME            =  machina
-PLIBS            =  m3d_message.o batch.o shader.o gframe.o camera.o primitives.o main_loop.o machina.o main.o
+PLIBS            =  batch.o shader.o gframe.o camera.o primitives.o main_loop.o machina.o main.o
 GNUCPP           =  g++
 CROSSCPP32       =  i686-w64-mingw32-g++
 CROSSCPP64       =  x86_64-w64-mingw32-g++
