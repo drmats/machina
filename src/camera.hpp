@@ -25,9 +25,10 @@ namespace machina {
 template <typename T>
 class PerspectiveProjection {
 
-private:
-
     using mat4 = m3d::GMatrix4<T>;
+
+
+private:
 
     /**
      *  Perspective projection matrix.

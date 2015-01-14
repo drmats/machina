@@ -36,6 +36,7 @@ class Shader {
 
     using mat4 = m3d::GMatrix4<GLfloat>;
 
+
 private:
 
     /**

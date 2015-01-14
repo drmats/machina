@@ -37,9 +37,9 @@ public:
 
 
 /**
- *  Simple batch (just vertices).
+ *  Simple batch (just vertices with colors).
  */
-class SimpleBatch : public Batch {
+class VertexBatch : public Batch {
 
     using vec3 = m3d::GVector3<GLfloat>;
     using vec4 = m3d::GVector4<GLfloat>;
@@ -48,7 +48,7 @@ class SimpleBatch : public Batch {
 protected:
 
     /**
-     *  One of GL_POINTS, GL_LINES, ...
+     *  One of GL_POINTS or GL_LINES.
      */
     GLenum draw_mode;
 
@@ -65,25 +65,29 @@ protected:
 public:
 
     /**
-     *  SimpleBatch initialization.
+     *  VertexBatch initialization.
      */
-    SimpleBatch ();
+    VertexBatch ();
 
 
     /**
      *  Clean-up.
      */
-    virtual ~SimpleBatch ();
+    virtual ~VertexBatch ();
 
 
     /**
      *  ...
      */
-    SimpleBatch& prepare (GLenum, const std::vector<vec3> &, const std::vector<vec4> &);
+    VertexBatch& prepare (
+        GLenum,
+        const std::vector<vec3> &,
+        const std::vector<vec4> &
+    );
 
 
     /**
-     *  Draw SimpleBatch contents.
+     *  Draw VertexBatch contents.
      */
     virtual void draw () const;
 

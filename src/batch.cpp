@@ -18,9 +18,9 @@ namespace machina {
 
 
 /**
- *  SimpleBatch initialization.
+ *  VertexBatch initialization.
  */
-SimpleBatch::SimpleBatch ():
+VertexBatch::VertexBatch ():
     vertex_array(0),
     color_array(0)
     {}
@@ -31,7 +31,7 @@ SimpleBatch::SimpleBatch ():
 /**
  *  Clean-up.
  */
-SimpleBatch::~SimpleBatch () {
+VertexBatch::~VertexBatch () {
     if (this->vertex_array != 0) {
         glDeleteBuffers(1, &this->vertex_array);
     }
@@ -46,7 +46,7 @@ SimpleBatch::~SimpleBatch () {
 /**
  *  ...
  */
-SimpleBatch& SimpleBatch::prepare (
+VertexBatch& VertexBatch::prepare (
     GLenum draw_mode,
     const std::vector<vec3> &verts,
     const std::vector<vec4> &colors
@@ -81,9 +81,9 @@ SimpleBatch& SimpleBatch::prepare (
 
 
 /**
- *  Draw SimpleBatch contents.
+ *  Draw VertexBatch contents.
  */
-void SimpleBatch::draw () const {
+void VertexBatch::draw () const {
     // vertex positions buffer
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, this->vertex_array);
