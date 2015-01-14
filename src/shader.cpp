@@ -44,6 +44,14 @@ static const GLchar *fs_basic = GLSL(130,
 
 
 /**
+ *  OpenGL messages buffer.
+ */
+GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
+
+
+
+
+/**
  *  ...
  */
 Shader::Shader () throw (std::runtime_error) {
@@ -140,10 +148,8 @@ GLuint Shader::load_shader (
  *  Get shader compilation log message.
  */
 std::string Shader::get_shader_info_log (GLuint shader) {
-    const GLsizei max_length = 256;
-    static GLchar buffer[max_length];
-    glGetShaderInfoLog(shader, max_length, NULL, buffer);
-    return "GLSL shader: " + std::string(buffer);
+    glGetShaderInfoLog(shader, GL_INFO_LOG_LENGTH, NULL, Shader::message_buffer);
+    return "GLSL shader: " + std::string(Shader::message_buffer);
 }
 
 
@@ -153,10 +159,8 @@ std::string Shader::get_shader_info_log (GLuint shader) {
  *  Get program linking log.
  */
 std::string Shader::get_program_info_log (GLuint program) {
-    const GLsizei max_length = 256;
-    static GLchar buffer[max_length];
-    glGetProgramInfoLog(program, max_length, NULL, buffer);
-    return "GLSL program: " + std::string(buffer);
+    glGetProgramInfoLog(program, GL_INFO_LOG_LENGTH, NULL, Shader::message_buffer);
+    return "GLSL program: " + std::string(Shader::message_buffer);
 }
 
 

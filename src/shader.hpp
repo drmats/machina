@@ -36,6 +36,13 @@ class Shader {
 
     using mat4 = m3d::GMatrix4<GLfloat>;
 
+private:
+
+    /**
+     *  OpenGL messages buffer.
+     */
+     static GLchar message_buffer[GL_INFO_LOG_LENGTH];
+
 
 protected:
 
