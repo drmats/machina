@@ -57,8 +57,9 @@ protected:
      *  ...
      */
     GLuint
-        vertex_array,
-        color_array,
+        vertex_array_object,
+        vertex_buffer,
+        color_buffer,
         num_verts;
 
 

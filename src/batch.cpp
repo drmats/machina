@@ -21,8 +21,9 @@ namespace machina {
  *  VertexBatch initialization.
  */
 VertexBatch::VertexBatch ():
-    vertex_array(0),
-    color_array(0)
+    vertex_array_object{0},
+    vertex_buffer{0},
+    color_buffer{0}
     {}
 
 
@@ -32,11 +33,14 @@ VertexBatch::VertexBatch ():
  *  Clean-up.
  */
 VertexBatch::~VertexBatch () {
-    if (this->vertex_array != 0) {
-        glDeleteBuffers(1, &this->vertex_array);
+    if (this->color_buffer != 0) {
+        glDeleteBuffers(1, &this->color_buffer);
     }
-    if (this->color_array != 0) {
-        glDeleteBuffers(1, &this->color_array);
+    if (this->vertex_buffer != 0) {
+        glDeleteBuffers(1, &this->vertex_buffer);
+    }
+    if (this->vertex_array_object != 0) {
+        glDeleteVertexArrays(1, &this->vertex_array_object);
     }
 }
 
@@ -54,25 +58,35 @@ VertexBatch& VertexBatch::prepare (
     this->draw_mode = draw_mode;
     this->num_verts = verts.size();
 
+    // VAO
+    glGenVertexArrays(1, &this->vertex_array_object);
+    glBindVertexArray(this->vertex_array_object);
+
     // vertex positions
-    glGenBuffers(1, &this->vertex_array);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vertex_array);
+    glGenBuffers(1, &this->vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->vertex_buffer);
     glBufferData(
         GL_ARRAY_BUFFER,
         verts.size() * sizeof(vec3),
         verts.data(),
         GL_DYNAMIC_DRAW
     );
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     // vertex colors
-    glGenBuffers(1, &this->color_array);
-    glBindBuffer(GL_ARRAY_BUFFER, this->color_array);
+    glGenBuffers(1, &this->color_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->color_buffer);
     glBufferData(
         GL_ARRAY_BUFFER,
         colors.size() * sizeof(vec4),
         colors.data(),
         GL_DYNAMIC_DRAW
     );
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glBindVertexArray(0);
 
     return *this;
 }
@@ -84,20 +98,8 @@ VertexBatch& VertexBatch::prepare (
  *  Draw VertexBatch contents.
  */
 void VertexBatch::draw () const {
-    // vertex positions buffer
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vertex_array);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    // vertex colors buffer
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, this->color_array);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
+    glBindVertexArray(this->vertex_array_object);
     glDrawArrays(this->draw_mode, 0, this->num_verts);
-
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
 }
 
 
