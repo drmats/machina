@@ -80,7 +80,10 @@ protected:
 
 
     // OpenGL extensions
-    GLint opengl_num_extensions;
+    GLint
+        opengl_num_extensions,
+        total_gpu_memory,
+        available_gpu_memory;
 
 
     // viewport parameters

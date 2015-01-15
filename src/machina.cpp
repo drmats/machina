@@ -190,6 +190,23 @@ void Machina::initialize_surface () {
         << "OpenGL extensions available: "
         << this->opengl_num_extensions
         << std::endl;
+
+    // NV available GPU memory
+    if (glewIsSupported("GL_NVX_gpu_memory_info")) {
+        glGetIntegerv(
+            GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX,
+            &this->total_gpu_memory
+        );
+        glGetIntegerv(
+            GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX,
+            &this->available_gpu_memory
+        );
+        std::cout
+            << "Total GPU memory: "
+            << this->total_gpu_memory << "kB" << std::endl
+            << "Available GPU memory: "
+            << this->available_gpu_memory << "kB" << std::endl;
+    }
 }
 
 
