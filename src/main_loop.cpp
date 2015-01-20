@@ -13,6 +13,7 @@
 #include "main_loop.hpp"
 #include "machina.hpp"
 #include "primitives.hpp"
+#include "test_mesh.hpp"
 
 namespace machina {
 
@@ -106,12 +107,10 @@ void MainLoop::default_handler_t::mouse_wheel (
     } else if (keystate[SDL_SCANCODE_LSHIFT] == 1) {
 
         // move camera on a x-z plane (forward/backward)
-        vec2 dir(
-            vec2(
-                ml->camera.transform.forward[0],
-                ml->camera.transform.forward[2]
-            ).normalize()
-        );
+        vec2 dir(vec2(
+            ml->camera.transform.forward[0],
+            ml->camera.transform.forward[2]
+        ).normalize());
         auto delta = e.wheel.y * 0.1 * ml->camera.dist;
         ml->camera.target[0] += delta*dir[0];
         ml->camera.target[2] += delta*dir[1];
@@ -121,8 +120,8 @@ void MainLoop::default_handler_t::mouse_wheel (
 
         // set camera distance-to-target
         ml->camera.dist =
-            10.0f + std::exp2(std::fabs(
-                std::log2(ml->camera.dist - 10.0f) - e.wheel.y*0.2f
+            std::exp2(std::fabs(
+                std::log2(ml->camera.dist) - e.wheel.y*0.2f
             ));
         ml->camera.recompute_transform();
 
@@ -303,7 +302,9 @@ void MainLoop::default_handler_t::window (
  *  Initialize vital components.
  */
 MainLoop::MainLoop (Machina *root):
-    root{root}
+    root{root},
+    vertex_color_attrib_shader{shader::vs_basic_attribute_color, shader::fs_basic_color_in},
+    vertex_color_uniform_shader{shader::vs_basic, shader::fs_basic_color_uniform}
 {
     this->assign_default_handlers();
     this->setup_opengl();
@@ -369,15 +370,14 @@ void MainLoop::setup_opengl () {
     this->adjust_camera_aspect();
 
     glClearColor(0.05f, 0.05f, 0.15f, 0.0f);
-    // glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
 
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
-    // glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     glEnable(GL_POINT_SMOOTH);
     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
@@ -387,6 +387,8 @@ void MainLoop::setup_opengl () {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); 
 }
 
 
@@ -441,15 +443,21 @@ inline void MainLoop::process_events () {
  *  Drawing.
  */
 inline void MainLoop::draw () const {
+    mat4 vp_matrix(this->camera.get_vp_matrix());
+
     glClear(
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
     );
 
-    // pass projection-view matrix to shader
-    this->shader.use(this->camera.get_vp_matrix());
+    // load first shader and ...
+    this->vertex_color_attrib_shader.use(vp_matrix);
 
-    // draw scene
+    // ... draw things with it
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_LINE_SMOOTH);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     glLineWidth(2.2f);
     this->scene[0]->draw();
     glLineWidth(1.4f);
@@ -460,7 +468,32 @@ inline void MainLoop::draw () const {
     glLineWidth(1.0f);
     this->scene[4]->draw();
     glLineWidth(1.4f);
-    this->scene[5]->draw();
+    this->scene[2]->draw();
+
+    glEnable(GL_CULL_FACE);
+
+    // load second shader and ...
+    this->vertex_color_uniform_shader.use_with_uniform_color(
+        vp_matrix, vec4(0.3f, 0.3f, 0.3f, 1.0f)
+    );
+
+    // ... draw things with it
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    this->scene[6]->draw();
+
+    glDisable(GL_CULL_FACE);
+
+    // wireframe ...
+    this->vertex_color_uniform_shader.use_with_uniform_color(
+        vp_matrix, vec4(0.8f, 0.6f, 0.0f, 1.0f)
+    );
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(1.0f);
+    glPolygonOffset(-1.0f, -1.0f);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glDisable(GL_LINE_SMOOTH);
+    this->scene[6]->draw();
+    glDisable(GL_POLYGON_OFFSET_LINE);
 }
 
 
@@ -479,6 +512,7 @@ void MainLoop::run () {
     this->scene.push_back(primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, GL_POINTS));
     this->scene.push_back(primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 0.1f, GL_LINES));
     this->scene.push_back(primitives::grid(1100.0f, 5.0f, vec4(0.35f, 0.35f, 0.45f, 0.05)));
+    this->scene.push_back(primitives::test_mesh());
 
     while (this->running) {
         this->process_events();

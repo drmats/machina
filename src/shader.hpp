@@ -42,10 +42,22 @@ enum attrib_index {
 
 
 /**
+ *  Shader sources (C strings).
+ */
+extern const GLchar *vs_basic;
+extern const GLchar *fs_basic_color_uniform;
+extern const GLchar *vs_basic_attribute_color;
+extern const GLchar *fs_basic_color_in;
+
+
+
+
+/**
  *  ...
  */
 class Shader {
 
+    using vec4 = m3d::GVector4<GLfloat>;
     using mat4 = m3d::GMatrix4<GLfloat>;
 
 
@@ -68,7 +80,7 @@ public:
     /**
      *  Initialization.
      */
-    Shader () throw (std::runtime_error);
+    Shader (const GLchar *, const GLchar *) throw (std::runtime_error);
 
 
     /**
@@ -81,6 +93,12 @@ public:
      *  ...
      */
     void use (const mat4 &) const;
+
+
+    /**
+     *  ...
+     */
+    void use_with_uniform_color (const mat4 &, const vec4 &) const;
 
 
     /**

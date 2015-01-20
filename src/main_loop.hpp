@@ -40,6 +40,7 @@ class MainLoop {
     using vec2 = m3d::GVector2<GLfloat>;
     using vec3 = m3d::GVector3<GLfloat>;
     using vec4 = m3d::GVector4<GLfloat>;
+    using mat4 = m3d::GMatrix4<GLfloat>;
 
 
 private:
@@ -88,8 +89,10 @@ private:
     std::vector<std::shared_ptr<Batch>> scene;
 
 
-    // shader
-    shader::Shader shader;
+    // shaders
+    shader::Shader
+        vertex_color_attrib_shader,
+        vertex_color_uniform_shader;
 
 
     // loop sustaining variable
