@@ -388,7 +388,7 @@ void MainLoop::setup_opengl () {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); 
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 
@@ -443,7 +443,36 @@ inline void MainLoop::process_events () {
  *  Drawing.
  */
 inline void MainLoop::draw () const {
-    mat4 vp_matrix(this->camera.get_vp_matrix());
+    mat4
+        vp_matrix(this->camera.get_vp_matrix()),
+        m_matrix;
+    auto draw_test_mesh = [this] (
+        const std::shared_ptr<Batch> &batch,
+        const mat4 &mvp_matrix,
+        vec4 color
+    ) {
+        color *= 0.25f;  color[3] = 1.0;
+        // load shader and ... draw things with it
+        this->vertex_color_uniform_shader.use_with_uniform_color(
+            mvp_matrix, color
+        );
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        batch->draw();
+
+        color *= 4.0f;  color[3] = 1.0;
+        // wireframe ...
+        this->vertex_color_uniform_shader.use_with_uniform_color(
+            mvp_matrix*mat4().load_scale(1.003, 1.003, 1.003), color
+        );
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glLineWidth(1.0f);
+        glPolygonOffset(-1.0f, -1.0f);
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glDisable(GL_LINE_SMOOTH);
+        batch->draw();
+        glEnable(GL_LINE_SMOOTH);
+        glDisable(GL_POLYGON_OFFSET_LINE);
+    };
 
     glClear(
         GL_COLOR_BUFFER_BIT |
@@ -454,8 +483,6 @@ inline void MainLoop::draw () const {
     this->vertex_color_attrib_shader.use(vp_matrix);
 
     // ... draw things with it
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_LINE_SMOOTH);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glLineWidth(2.2f);
@@ -470,30 +497,29 @@ inline void MainLoop::draw () const {
     glLineWidth(1.4f);
     this->scene[2]->draw();
 
-    glEnable(GL_CULL_FACE);
+    for (int i = 0;  i < 12;  i++) {
+        m_matrix =
+            mat4().load_rotation(i * 30, 0, 1, 0) *
+            mat4().load_translation(0, 5.5, 65) *
+            mat4().load_rotation(-35, 1, 0, 0);
+        draw_test_mesh(
+            this->scene[6],
+            vp_matrix * m_matrix,
+            vec4(
+                (m_matrix * vec4(1, 0, 0, 0)).normalize() * 0.5f +
+                vec4(1, 1, 1, 0)
+            ).normalize()
+        );
+    }
 
-    // load second shader and ...
-    this->vertex_color_uniform_shader.use_with_uniform_color(
-        vp_matrix, vec4(0.3f, 0.3f, 0.3f, 1.0f)
+    draw_test_mesh(
+        this->scene[6],
+        vp_matrix * (
+            mat4().load_translation(0, 40, 0) *
+            mat4().load_scale(4, 4, 4)
+        ),
+        vec4(0.7, 0.7, 0.9, 1.0)
     );
-
-    // ... draw things with it
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    this->scene[6]->draw();
-
-    glDisable(GL_CULL_FACE);
-
-    // wireframe ...
-    this->vertex_color_uniform_shader.use_with_uniform_color(
-        vp_matrix, vec4(0.8f, 0.6f, 0.0f, 1.0f)
-    );
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glLineWidth(1.0f);
-    glPolygonOffset(-1.0f, -1.0f);
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glDisable(GL_LINE_SMOOTH);
-    this->scene[6]->draw();
-    glDisable(GL_POLYGON_OFFSET_LINE);
 }
 
 
