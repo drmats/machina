@@ -23,25 +23,27 @@ namespace machina {
 /**
  *  Axes.
  */
-std::shared_ptr<VertexBatch> axes (GLfloat, GLfloat);
+std::shared_ptr<VertexColorBatch> axes (GLfloat, GLfloat);
 
 
 /**
  *  Grid.
  */
-std::shared_ptr<VertexBatch> grid (GLfloat, GLfloat, m3d::GVector4<GLfloat>);
+std::shared_ptr<VertexColorBatch> grid (
+    GLfloat, GLfloat, m3d::GVector4<GLfloat>
+);
 
 
 /**
  *  Point-cube.
  */
-std::shared_ptr<VertexBatch> point_cube (GLfloat, GLfloat, GLfloat);
+std::shared_ptr<VertexColorBatch> point_cube (GLfloat, GLfloat, GLfloat);
 
 
 /**
  *  This thing...
  */
-std::shared_ptr<VertexBatch> this_thing (
+std::shared_ptr<VertexColorBatch> this_thing (
     GLfloat, GLfloat,
     GLfloat, GLfloat, GLenum
 );

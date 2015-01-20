@@ -28,10 +28,10 @@ using vec4 = m3d::GVector4<GLfloat>;
 /**
  *  Axes.
  */
-std::shared_ptr<VertexBatch> axes (GLfloat dim, GLfloat s) {
+std::shared_ptr<VertexColorBatch> axes (GLfloat dim, GLfloat s) {
     std::vector<vec3> v;
     std::vector<vec4> c;
-    auto batch = std::make_shared<VertexBatch>();
+    auto batch = std::make_shared<VertexColorBatch>();
     const GLfloat i = 0.7;
 
     dim = dim * 0.5;
@@ -68,10 +68,10 @@ std::shared_ptr<VertexBatch> axes (GLfloat dim, GLfloat s) {
 /**
  *  Grid.
  */
-std::shared_ptr<VertexBatch> grid (GLfloat dim, GLfloat s, vec4 color) {
+std::shared_ptr<VertexColorBatch> grid (GLfloat dim, GLfloat s, vec4 color) {
     std::vector<vec3> v;
     std::vector<vec4> c;
-    auto batch = std::make_shared<VertexBatch>();
+    auto batch = std::make_shared<VertexColorBatch>();
 
     dim = dim * 0.5;
 
@@ -99,10 +99,10 @@ std::shared_ptr<VertexBatch> grid (GLfloat dim, GLfloat s, vec4 color) {
 /**
  *  Point-cube.
  */
-std::shared_ptr<VertexBatch> point_cube (GLfloat dim, GLfloat s, GLfloat a) {
+std::shared_ptr<VertexColorBatch> point_cube (GLfloat dim, GLfloat s, GLfloat a) {
     std::vector<vec3> v;
     std::vector<vec4> c;
-    auto batch = std::make_shared<VertexBatch>();
+    auto batch = std::make_shared<VertexColorBatch>();
     const GLfloat cstep = (1.0/(2.0f*dim));
     const GLfloat cshift = 0.5f;
 
@@ -137,13 +137,13 @@ std::shared_ptr<VertexBatch> point_cube (GLfloat dim, GLfloat s, GLfloat a) {
 /**
  *  This thing...
  */
-std::shared_ptr<VertexBatch> this_thing (
+std::shared_ptr<VertexColorBatch> this_thing (
     GLfloat dim, GLfloat space,
     GLfloat cfull, GLfloat a, GLenum what
 ) {
     std::vector<vec3> verts;
     std::vector<vec4> colors;
-    auto batch = std::make_shared<VertexBatch>();
+    auto batch = std::make_shared<VertexColorBatch>();
     const GLfloat cstep = (cfull/(2.0f*dim));
     const GLfloat cshift = cfull/2.0f;
 

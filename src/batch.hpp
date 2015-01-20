@@ -10,7 +10,6 @@
 #ifndef __BATCH_HPP_
 #define __BATCH_HPP_ 1
 
-#include "sdl_opengl.hpp"
 #include "m3d.hpp"
 #include <vector>
 
@@ -39,7 +38,7 @@ public:
 /**
  *  Simple batch (just vertices with colors).
  */
-class VertexBatch : public Batch {
+class VertexColorBatch : public Batch {
 
     using vec3 = m3d::GVector3<GLfloat>;
     using vec4 = m3d::GVector4<GLfloat>;
@@ -60,27 +59,27 @@ protected:
         vertex_array_object,
         vertex_buffer,
         color_buffer,
-        num_verts;
+        verts_length;
 
 
 public:
 
     /**
-     *  VertexBatch initialization.
+     *  VertexColorBatch initialization.
      */
-    VertexBatch ();
+    VertexColorBatch ();
 
 
     /**
      *  Clean-up.
      */
-    virtual ~VertexBatch ();
+    virtual ~VertexColorBatch ();
 
 
     /**
      *  ...
      */
-    VertexBatch& prepare (
+    VertexColorBatch& prepare (
         GLenum,
         const std::vector<vec3> &,
         const std::vector<vec4> &
@@ -88,7 +87,68 @@ public:
 
 
     /**
-     *  Draw VertexBatch contents.
+     *  Draw VertexColorBatch contents.
+     */
+    virtual void draw () const;
+
+};
+
+
+
+
+/**
+ *  Triangle batch.
+ */
+class TriangleBatch : public Batch {
+
+    using vec3 = m3d::GVector3<GLfloat>;
+    using vec3i = m3d::GVector3<GLushort>;
+
+
+protected:
+
+    // number of allocated VBOs
+    static const GLushort buff_amount = 2;
+
+
+    /**
+     *  ...
+     */
+    GLuint
+        vertex_array_object,
+        buffer[buff_amount],
+        length[buff_amount];
+
+
+public:
+
+    // ...
+    enum buf_index : GLushort { verts = 0, faces = 1 };
+
+
+    /**
+     *  TriangleBatch initialization.
+     */
+    TriangleBatch ();
+
+
+    /**
+     *  Clean-up.
+     */
+    virtual ~TriangleBatch ();
+
+
+    /**
+     *  ...
+     */
+    TriangleBatch& prepare (
+        const std::vector<vec3> &,
+        const std::vector<vec3i> &
+    );
+
+
+    /**
+     *  Draw TriangleBatch contents.
      */
     virtual void draw () const;
 

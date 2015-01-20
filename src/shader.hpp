@@ -30,6 +30,18 @@ namespace machina {
 
 
 /**
+ *  Generic attribute index names.
+ */
+enum attrib_index {
+    vertex = 0,
+    color = 1,
+    normal = 2
+};
+
+
+
+
+/**
  *  ...
  */
 class Shader {

@@ -70,8 +70,8 @@ Shader::Shader () throw (std::runtime_error) {
     glAttachShader(this->program, fragment_shader);
 
     // bind attributes to the gl program
-    glBindAttribLocation(this->program, 0, "vertex_position");
-    glBindAttribLocation(this->program, 1, "vertex_color");
+    glBindAttribLocation(this->program, attrib_index::vertex, "vertex_position");
+    glBindAttribLocation(this->program, attrib_index::color, "vertex_color");
 
     // link gl program
     glLinkProgram(this->program);
