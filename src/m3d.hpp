@@ -185,6 +185,17 @@ public:
 
 
     /**
+     *  Replace all values with their corresponding absolute values.
+     */
+    inline GArray<T, N>& abs () {
+        for (std::size_t i = 0;  i < N;  i++) {
+            this->data[i] = std::fabs(this->data[i]);
+        }
+        return *this;
+    }
+
+
+    /**
      *  Add to current array.
      */
     inline GArray<T, N>& add (const GArray<T, N> &a) {
