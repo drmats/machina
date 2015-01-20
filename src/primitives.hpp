@@ -11,7 +11,6 @@
 #define __PRIMITIVES_HPP_ 1
 
 #include "batch.hpp"
-#include <vector>
 #include <memory>
 
 namespace machina {

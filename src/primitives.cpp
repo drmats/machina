@@ -11,6 +11,7 @@
 #define __PRIMITIVES_CPP_ 1
 
 #include "primitives.hpp"
+#include <vector>
 #include <cstdlib>
 
 namespace machina {
