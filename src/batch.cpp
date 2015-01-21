@@ -73,9 +73,9 @@ VertexColorBatch& VertexColorBatch::prepare (
         verts.data(),
         GL_DYNAMIC_DRAW
     );
-    glEnableVertexAttribArray(shader::attrib_index::vertex);
+    glEnableVertexAttribArray(Shader::attrib_index::vertex);
     glVertexAttribPointer(
-        shader::attrib_index::vertex,
+        Shader::attrib_index::vertex,
         3, GL_FLOAT, GL_FALSE, 0, 0
     );
 
@@ -88,9 +88,9 @@ VertexColorBatch& VertexColorBatch::prepare (
         colors.data(),
         GL_DYNAMIC_DRAW
     );
-    glEnableVertexAttribArray(shader::attrib_index::color);
+    glEnableVertexAttribArray(Shader::attrib_index::color);
     glVertexAttribPointer(
-        shader::attrib_index::color,
+        Shader::attrib_index::color,
         4, GL_FLOAT, GL_FALSE, 0, 0
     );
 
@@ -145,8 +145,8 @@ TriangleBatch& TriangleBatch::prepare (
     const std::vector<vec3i> &faces
 ) {
 
-    this->length[this->buf_index::verts] = verts.size();
-    this->length[this->buf_index::faces] = faces.size();
+    this->length[Batch::buf_index::verts] = verts.size();
+    this->length[Batch::buf_index::faces] = faces.size();
 
     // VAO -- generate and bind
     glGenVertexArrays(1, &this->vertex_array_object);
@@ -156,24 +156,24 @@ TriangleBatch& TriangleBatch::prepare (
     glGenBuffers(this->buff_amount, this->buffer);
 
     // vertex positions
-    glBindBuffer(GL_ARRAY_BUFFER, this->buffer[this->buf_index::verts]);
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::verts]);
     glBufferData(
         GL_ARRAY_BUFFER,
-        this->length[this->buf_index::verts] * sizeof(vec3),
+        this->length[Batch::buf_index::verts] * sizeof(vec3),
         verts.data(),
         GL_STATIC_DRAW
     );
-    glEnableVertexAttribArray(shader::attrib_index::vertex);
+    glEnableVertexAttribArray(Shader::attrib_index::vertex);
     glVertexAttribPointer(
-        shader::attrib_index::vertex,
+        Shader::attrib_index::vertex,
         3, GL_FLOAT, GL_FALSE, 0, 0
     );
 
     // faces
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffer[this->buf_index::faces]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffer[Batch::buf_index::faces]);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        this->length[this->buf_index::faces] * sizeof(vec3i),
+        this->length[Batch::buf_index::faces] * sizeof(vec3i),
         faces.data(),
         GL_STATIC_DRAW
     );
@@ -194,7 +194,7 @@ void TriangleBatch::draw () const {
     glBindVertexArray(this->vertex_array_object);
     glDrawElements(
         GL_TRIANGLES,
-        this->length[this->buf_index::faces] * 3,
+        this->length[Batch::buf_index::faces] * 3,
         GL_UNSIGNED_SHORT,
         0
     );

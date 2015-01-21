@@ -26,6 +26,15 @@ class Batch {
 public:
 
     /**
+     *  Generic buffer index names.
+     */
+    enum buf_index : GLushort {
+        verts = 0,
+        faces = 1
+    };
+
+
+    /**
      *  Draw batch contents.
      */
     virtual void draw () const = 0;
@@ -53,7 +62,7 @@ protected:
 
 
     /**
-     *  ...
+     *  VAO, VBOs and VBOs' length.
      */
     GLuint
         vertex_array_object,
@@ -107,12 +116,14 @@ class TriangleBatch : public Batch {
 
 protected:
 
-    // number of allocated VBOs
+    /**
+     * Number of allocated VBOs.
+     */
     static const GLushort buff_amount = 2;
 
 
     /**
-     *  ...
+     *  VAO, VBOs and VBO's lengths.
      */
     GLuint
         vertex_array_object,
@@ -121,10 +132,6 @@ protected:
 
 
 public:
-
-    // ...
-    enum buf_index : GLushort { verts = 0, faces = 1 };
-
 
     /**
      *  TriangleBatch initialization.

@@ -13,48 +13,14 @@
 #include "shader.hpp"
 
 namespace machina {
-    namespace shader {
 
 
 
-// basic vertex shader -- care about vertex position
-const std::string vs_basic = GLSL(130,
-    uniform mat4 mvp_matrix;
-    in vec4 vertex_position;
-    void main (void) {
-        gl_Position = mvp_matrix * vertex_position;
-    }
-);
 
-// basic fragment shader -- care about fragment color (from uniform)
-const std::string fs_basic_color_uniform = GLSL(130,
-    uniform vec4 uniform_color;
-    out vec4 fragment_color;
-    void main (void) {
-        fragment_color = uniform_color;
-    }
-);
-
-// basic vertex shader -- care about vertex position and color
-const std::string vs_basic_attribute_color = GLSL(130,
-    uniform mat4 mvp_matrix;
-    in vec4 vertex_position;
-    in vec4 vertex_color;
-    smooth out vec4 vertex_fragment_color;
-    void main (void) {
-        vertex_fragment_color = vertex_color;
-        gl_Position = mvp_matrix * vertex_position;
-    }
-);
-
-// basic fragment shader -- care about fragment color (from vs)
-const std::string fs_basic_color_in = GLSL(130,
-    smooth in vec4 vertex_fragment_color;
-    out vec4 fragment_color;
-    void main (void) {
-        fragment_color = vertex_fragment_color;
-    }
-);
+/**
+ *  Shader source helper macro.
+ */
+#define GLSL(version, src) "#version " #version "\n" #src
 
 
 
@@ -68,19 +34,69 @@ GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
 
 
 /**
+ *  Some shader sources.
+ */
+// basic vertex shader -- care about vertex position
+const std::string Shader::vs_basic = GLSL(130,
+    uniform mat4 mvp_matrix;
+    in vec4 vertex_position;
+    void main (void) {
+        gl_Position = mvp_matrix * vertex_position;
+    }
+);
+
+
+// basic fragment shader -- care about fragment color (from uniform)
+const std::string Shader::fs_basic_color_uniform = GLSL(130,
+    uniform vec4 uniform_color;
+    out vec4 fragment_color;
+    void main (void) {
+        fragment_color = uniform_color;
+    }
+);
+
+
+// basic vertex shader -- care about vertex position and color
+const std::string Shader::vs_basic_attribute_color = GLSL(130,
+    uniform mat4 mvp_matrix;
+    in vec4 vertex_position;
+    in vec4 vertex_color;
+    smooth out vec4 vertex_fragment_color;
+    void main (void) {
+        vertex_fragment_color = vertex_color;
+        gl_Position = mvp_matrix * vertex_position;
+    }
+);
+
+
+// basic fragment shader -- care about fragment color (from vs)
+const std::string Shader::fs_basic_color_in = GLSL(130,
+    smooth in vec4 vertex_fragment_color;
+    out vec4 fragment_color;
+    void main (void) {
+        fragment_color = vertex_fragment_color;
+    }
+);
+
+
+
+
+/**
  *  Initialization with attribute binding.
  *  Example invocation:
  *      Shader some_shader(
  *          shader::vs_basic,
  *          shader::fs_basic, {
  *              std::make_tuple(
- *                  "vertex_position", shader::attrib_index::vertex
+ *                  "vertex_position", Shader::attrib_index::vertex
  *              )
  *      });
  */
 Shader::Shader (
     const std::string &vs, const std::string &fs,
-    const std::initializer_list<std::tuple<std::string, attrib_index>> binding
+    const std::initializer_list<
+        std::tuple<std::string, Shader::attrib_index>
+    > binding
 ) throw (std::runtime_error) {
     // temporary shader objects (load and compile from sources)
     GLuint
@@ -91,7 +107,9 @@ Shader::Shader (
     GLint status;
 
     // binding iterator
-    std::initializer_list<std::tuple<std::string, attrib_index>>::iterator it;
+    std::initializer_list<
+        std::tuple<std::string, Shader::attrib_index>
+    >::iterator it;
 
     // attach shaders to gl program
     this->program = glCreateProgram();
@@ -127,7 +145,7 @@ Shader::Shader (
 
 
 /**
- *  ...
+ *  Clean-up.
  */
 Shader::~Shader () {
     if (this->program != 0) {
@@ -223,7 +241,6 @@ std::string Shader::get_program_info_log (GLuint program) {
 
 
 
-    } // namespace shader
 } // namespace machina
 
 #endif

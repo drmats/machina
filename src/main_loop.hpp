@@ -90,7 +90,7 @@ private:
 
 
     // shaders
-    shader::Shader
+    Shader
         vertex_color_attrib_shader,
         vertex_color_uniform_shader;
 

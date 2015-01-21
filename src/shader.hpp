@@ -19,38 +19,6 @@
 #include <functional>
 
 namespace machina {
-    namespace shader {
-
-
-
-
-/**
- *  Shader source helper macro.
- */
-#define GLSL(version, src) "#version " #version "\n" #src
-
-
-
-
-/**
- *  Generic attribute index names.
- */
-enum attrib_index {
-    vertex = 0,
-    color = 1,
-    normal = 2
-};
-
-
-
-
-/**
- *  Shader sources.
- */
-extern const std::string vs_basic;
-extern const std::string fs_basic_color_uniform;
-extern const std::string vs_basic_attribute_color;
-extern const std::string fs_basic_color_in;
 
 
 
@@ -83,19 +51,40 @@ protected:
 public:
 
     /**
+     *  Generic attribute index names.
+     */
+    enum attrib_index : GLushort {
+        vertex = 0,
+        color = 1,
+        normal = 2
+    };
+
+
+    /**
+     *  Some shader sources.
+     */
+    static const std::string vs_basic;
+    static const std::string fs_basic_color_uniform;
+    static const std::string vs_basic_attribute_color;
+    static const std::string fs_basic_color_in;
+
+
+    /**
      *  Initialization with attribute binding.
      *  Example invocation:
      *      Shader some_shader(
      *          shader::vs_basic,
      *          shader::fs_basic, {
      *              std::make_tuple(
-     *                  "vertex_position", shader::attrib_index::vertex
+     *                  "vertex_position", Shader::attrib_index::vertex
      *              )
      *      });
      */
     Shader (
         const std::string &, const std::string &,
-        const std::initializer_list<std::tuple<std::string, attrib_index>>
+        const std::initializer_list<
+            std::tuple<std::string, Shader::attrib_index>
+        >
     ) throw (std::runtime_error);
 
 
@@ -146,7 +135,6 @@ public:
 
 
 
-    } // namespace shader
 } // namespace machina
 
 #endif

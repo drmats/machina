@@ -308,17 +308,17 @@ MainLoop::MainLoop (Machina *root):
 
     // some shader ...
     vertex_color_attrib_shader{
-        shader::vs_basic_attribute_color,
-        shader::fs_basic_color_in, {
-            std::make_tuple("vertex_position", shader::attrib_index::vertex),
-            std::make_tuple("vertex_color", shader::attrib_index::color)
+        Shader::vs_basic_attribute_color,
+        Shader::fs_basic_color_in, {
+            std::make_tuple("vertex_position", Shader::attrib_index::vertex),
+            std::make_tuple("vertex_color", Shader::attrib_index::color)
     }},
 
     // some shader ...
     vertex_color_uniform_shader{
-        shader::vs_basic,
-        shader::fs_basic_color_uniform, {
-            std::make_tuple("vertex_position", shader::attrib_index::vertex)
+        Shader::vs_basic,
+        Shader::fs_basic_color_uniform, {
+            std::make_tuple("vertex_position", Shader::attrib_index::vertex)
     }}
 {
     this->assign_default_handlers();
@@ -461,6 +461,36 @@ inline void MainLoop::draw () const {
     mat4
         vp_matrix(this->camera.get_vp_matrix()),
         m_matrix;
+
+    // drawing helper
+    auto draw_wire_stuff = [this] (
+        const std::vector<std::shared_ptr<Batch>> &scene,
+        const mat4 &mvp_matrix
+    ) {
+        // load first shader and ...
+        this->vertex_color_attrib_shader.use({
+            std::make_tuple("mvp_matrix", [&] (GLint location) {
+                glUniformMatrix4fv(location, 1, GL_FALSE, *mvp_matrix);
+            })
+        });
+
+        // ... draw things with it
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        glLineWidth(2.2f);
+        scene[0]->draw();
+        glLineWidth(1.4f);
+        scene[1]->draw();
+        glPointSize(1.0f);
+        scene[2]->draw();
+        scene[3]->draw();
+        glLineWidth(1.0f);
+        scene[4]->draw();
+        glLineWidth(1.4f);
+        scene[2]->draw();
+    };
+
+    // drawing helper
     auto draw_test_mesh = [this] (
         const std::shared_ptr<Batch> &batch,
         const mat4 &mvp_matrix,
@@ -502,32 +532,11 @@ inline void MainLoop::draw () const {
         glDisable(GL_POLYGON_OFFSET_LINE);
     };
 
-    glClear(
-        GL_COLOR_BUFFER_BIT |
-        GL_DEPTH_BUFFER_BIT
-    );
+    // clear color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // load first shader and ...
-    this->vertex_color_attrib_shader.use({
-        std::make_tuple("mvp_matrix", [&] (GLint location) {
-            glUniformMatrix4fv(location, 1, GL_FALSE, *vp_matrix);
-        })
-    });
-
-    // ... draw things with it
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    glLineWidth(2.2f);
-    this->scene[0]->draw();
-    glLineWidth(1.4f);
-    this->scene[1]->draw();
-    glPointSize(1.0f);
-    this->scene[2]->draw();
-    this->scene[3]->draw();
-    glLineWidth(1.0f);
-    this->scene[4]->draw();
-    glLineWidth(1.4f);
-    this->scene[2]->draw();
+    // draw some stuff
+    draw_wire_stuff(this->scene, vp_matrix);
 
     // draw test meshes in a circle around world origin
     for (int i = 0;  i < 12;  i++) {
@@ -563,8 +572,6 @@ inline void MainLoop::draw () const {
  *  Main application loop.
  */
 void MainLoop::run () {
-    this->running = true;
-
     // prepare "scene"
     this->scene.push_back(primitives::axes(160.0f, 10.0f));
     this->scene.push_back(primitives::grid(160.0f, 10.0f, vec4(0.15f, 0.15f, 0.25f, 1)));
@@ -574,6 +581,7 @@ void MainLoop::run () {
     this->scene.push_back(primitives::grid(1100.0f, 5.0f, vec4(0.35f, 0.35f, 0.45f, 0.05)));
     this->scene.push_back(primitives::test_mesh());
 
+    this->running = true;
     while (this->running) {
         this->process_events();
         this->draw();
