@@ -39,9 +39,9 @@ GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
 // basic vertex shader -- care about vertex position
 const std::string Shader::vs_basic = GLSL(130,
     uniform mat4 mvp_matrix;
-    in vec4 vertex_position;
+    in vec3 vertex_position;
     void main (void) {
-        gl_Position = mvp_matrix * vertex_position;
+        gl_Position = mvp_matrix * vec4(vertex_position, 1);
     }
 );
 
@@ -59,12 +59,12 @@ const std::string Shader::fs_basic_color_uniform = GLSL(130,
 // basic vertex shader -- care about vertex position and color
 const std::string Shader::vs_basic_attribute_color = GLSL(130,
     uniform mat4 mvp_matrix;
-    in vec4 vertex_position;
+    in vec3 vertex_position;
     in vec4 vertex_color;
     smooth out vec4 vertex_fragment_color;
     void main (void) {
         vertex_fragment_color = vertex_color;
-        gl_Position = mvp_matrix * vertex_position;
+        gl_Position = mvp_matrix * vec4(vertex_position, 1);
     }
 );
 
