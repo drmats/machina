@@ -16,6 +16,7 @@
 #include <string>
 #include <tuple>
 #include <initializer_list>
+#include <functional>
 
 namespace machina {
     namespace shader {
@@ -55,7 +56,7 @@ extern const std::string fs_basic_color_in;
 
 
 /**
- *  ...
+ *  Shader loader.
  */
 class Shader {
 
@@ -73,18 +74,28 @@ private:
 
 protected:
 
-    // ...
+    /**
+     *  Shader program handle.
+     */
     GLuint program = 0;
 
 
 public:
 
     /**
-     *  Initialization.
+     *  Initialization with attribute binding.
+     *  Example invocation:
+     *      Shader some_shader(
+     *          shader::vs_basic,
+     *          shader::fs_basic, {
+     *              std::make_tuple(
+     *                  "vertex_position", shader::attrib_index::vertex
+     *              )
+     *      });
      */
     Shader (
         const std::string &, const std::string &,
-        const std::initializer_list<std::tuple<attrib_index, std::string>>
+        const std::initializer_list<std::tuple<std::string, attrib_index>>
     ) throw (std::runtime_error);
 
 
@@ -95,15 +106,19 @@ public:
 
 
     /**
-     *  ...
+     *  Assign uniforms and use shader.
+     *  Example invocation:
+     *      some_shader.use({
+     *          std::make_tuple("mvp_matrix", [&] (GLuint location) {
+     *              glUniformMatrix4fv(location, 1, GL_FALSE, *mvp_matrix);
+     *          })
+     *      });
      */
-    void use (const mat4 &) const;
-
-
-    /**
-     *  ...
-     */
-    void use_with_uniform_color (const mat4 &, const vec4 &) const;
+    const Shader& use (
+        std::initializer_list<
+            std::tuple<std::string, std::function<void (GLint)>>
+        >
+    ) const;
 
 
     /**
@@ -111,7 +126,7 @@ public:
      */
     GLuint load_shader (
         GLenum,
-        const GLchar *
+        const std::string &
     ) throw (std::runtime_error);
 
 

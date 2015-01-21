@@ -310,15 +310,15 @@ MainLoop::MainLoop (Machina *root):
     vertex_color_attrib_shader{
         shader::vs_basic_attribute_color,
         shader::fs_basic_color_in, {
-            std::make_tuple(shader::attrib_index::vertex, "vertex_position"),
-            std::make_tuple(shader::attrib_index::color, "vertex_color")
+            std::make_tuple("vertex_position", shader::attrib_index::vertex),
+            std::make_tuple("vertex_color", shader::attrib_index::color)
     }},
 
     // some shader ...
     vertex_color_uniform_shader{
         shader::vs_basic,
         shader::fs_basic_color_uniform, {
-            std::make_tuple(shader::attrib_index::vertex, "vertex_position")
+            std::make_tuple("vertex_position", shader::attrib_index::vertex)
     }}
 {
     this->assign_default_handlers();
@@ -468,17 +468,30 @@ inline void MainLoop::draw () const {
     ) {
         color *= 0.25f;  color[3] = 1.0;
         // load shader and ... draw things with it
-        this->vertex_color_uniform_shader.use_with_uniform_color(
-            mvp_matrix, color
-        );
+        this->vertex_color_uniform_shader.use({
+            std::make_tuple("mvp_matrix", [&] (GLint location) {
+                glUniformMatrix4fv(location, 1, GL_FALSE, *mvp_matrix);
+            }),
+            std::make_tuple("uniform_color", [&] (GLint location) {
+                glUniform4fv(location, 1, *color);
+            })
+        });
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         batch->draw();
 
         color *= 4.0f;  color[3] = 1.0;
         // wireframe ...
-        this->vertex_color_uniform_shader.use_with_uniform_color(
-            mvp_matrix*mat4().load_scale(1.003, 1.003, 1.003), color
-        );
+        this->vertex_color_uniform_shader.use({
+            std::make_tuple("mvp_matrix", [&] (GLint location) {
+                glUniformMatrix4fv(
+                    location, 1, GL_FALSE,
+                    *(mvp_matrix*mat4().load_scale(1.003, 1.003, 1.003))
+                );
+            }),
+            std::make_tuple("uniform_color", [&] (GLint location) {
+                glUniform4fv(location, 1, *color);
+            })
+        });
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glLineWidth(1.0f);
         glPolygonOffset(-0.05, -0.05f);
@@ -495,7 +508,11 @@ inline void MainLoop::draw () const {
     );
 
     // load first shader and ...
-    this->vertex_color_attrib_shader.use(vp_matrix);
+    this->vertex_color_attrib_shader.use({
+        std::make_tuple("mvp_matrix", [&] (GLint location) {
+            glUniformMatrix4fv(location, 1, GL_FALSE, *vp_matrix);
+        })
+    });
 
     // ... draw things with it
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -512,6 +529,7 @@ inline void MainLoop::draw () const {
     glLineWidth(1.4f);
     this->scene[2]->draw();
 
+    // draw test meshes in a circle around world origin
     for (int i = 0;  i < 12;  i++) {
         m_matrix =
             mat4().load_rotation(i * 30, 0, 1, 0) *
@@ -527,6 +545,7 @@ inline void MainLoop::draw () const {
         );
     }
 
+    // draw test mesh in the center
     draw_test_mesh(
         this->scene[6],
         vp_matrix * (

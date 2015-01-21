@@ -68,22 +68,30 @@ GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
 
 
 /**
- *  Initialization.
+ *  Initialization with attribute binding.
+ *  Example invocation:
+ *      Shader some_shader(
+ *          shader::vs_basic,
+ *          shader::fs_basic, {
+ *              std::make_tuple(
+ *                  "vertex_position", shader::attrib_index::vertex
+ *              )
+ *      });
  */
 Shader::Shader (
     const std::string &vs, const std::string &fs,
-    const std::initializer_list<std::tuple<attrib_index, std::string>> binding
+    const std::initializer_list<std::tuple<std::string, attrib_index>> binding
 ) throw (std::runtime_error) {
     // temporary shader objects (load and compile from sources)
     GLuint
-        vertex_shader = this->load_shader(GL_VERTEX_SHADER, (GLchar*)vs.data()),
-        fragment_shader = this->load_shader(GL_FRAGMENT_SHADER, (GLchar*)fs.data());
+        vertex_shader = this->load_shader(GL_VERTEX_SHADER, vs),
+        fragment_shader = this->load_shader(GL_FRAGMENT_SHADER, fs);
 
     // status variable (for testing errors)
     GLint status;
 
     // binding iterator
-    std::initializer_list<std::tuple<attrib_index, std::string>>::iterator it;
+    std::initializer_list<std::tuple<std::string, attrib_index>>::iterator it;
 
     // attach shaders to gl program
     this->program = glCreateProgram();
@@ -94,8 +102,8 @@ Shader::Shader (
     for (it = binding.begin();  it != binding.end();  it++) {
         glBindAttribLocation(
             this->program,
-            std::get<0>(*it),
-            std::get<1>(*it).data()
+            std::get<1>(*it),
+            std::get<0>(*it).data()
         );
     }
 
@@ -132,32 +140,32 @@ Shader::~Shader () {
 
 
 /**
- *  ...
+ *  Assign uniforms and use shader.
+ *  Example invocation:
+ *      some_shader.use({
+ *          std::make_tuple("mvp_matrix", [&] (GLuint location) {
+ *              glUniformMatrix4fv(location, 1, GL_FALSE, *mvp_matrix);
+ *          })
+ *      });
  */
-void Shader::use (const mat4 &mvp) const {
+const Shader& Shader::use (
+    std::initializer_list<
+        std::tuple<std::string, std::function<void (GLint)>>
+    > uniforms
+) const {
+    std::initializer_list<
+        std::tuple<std::string, std::function<void (GLint)>>
+    >::iterator it;
+
     glUseProgram(this->program);
-    glUniformMatrix4fv(
-        glGetUniformLocation(this->program, "mvp_matrix"),
-        1, GL_FALSE, *mvp
-    );
-}
 
+    for (it = uniforms.begin();  it != uniforms.end();  it++) {
+        std::get<1>(*it)(
+            glGetUniformLocation(this->program, std::get<0>(*it).data())
+        );
+    }
 
-
-
-/**
- *  ...
- */
-void Shader::use_with_uniform_color (const mat4 &mvp, const vec4 &color) const {
-    glUseProgram(this->program);
-    glUniformMatrix4fv(
-        glGetUniformLocation(this->program, "mvp_matrix"),
-        1, GL_FALSE, *mvp
-    );
-    glUniform4fv(
-        glGetUniformLocation(this->program, "uniform_color"),
-        1, *color
-    );
+    return *this;
 }
 
 
@@ -168,12 +176,13 @@ void Shader::use_with_uniform_color (const mat4 &mvp, const vec4 &color) const {
  */
 GLuint Shader::load_shader (
     GLenum shader_type,
-    const GLchar *shader_src
+    const std::string &shader_src
 ) throw (std::runtime_error) {
     GLuint shader = glCreateShader(shader_type);
+    const GLchar *src = (GLchar*)shader_src.data();
     GLint status;
 
-    glShaderSource(shader, 1, &shader_src, NULL);
+    glShaderSource(shader, 1, &src, NULL);
     glCompileShader(shader);
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
@@ -192,7 +201,9 @@ GLuint Shader::load_shader (
  *  Get shader compilation log message.
  */
 std::string Shader::get_shader_info_log (GLuint shader) {
-    glGetShaderInfoLog(shader, GL_INFO_LOG_LENGTH, NULL, Shader::message_buffer);
+    glGetShaderInfoLog(
+        shader, GL_INFO_LOG_LENGTH, NULL, Shader::message_buffer
+    );
     return "GLSL shader: " + std::string(Shader::message_buffer);
 }
 
@@ -203,7 +214,9 @@ std::string Shader::get_shader_info_log (GLuint shader) {
  *  Get program linking log.
  */
 std::string Shader::get_program_info_log (GLuint program) {
-    glGetProgramInfoLog(program, GL_INFO_LOG_LENGTH, NULL, Shader::message_buffer);
+    glGetProgramInfoLog(
+        program, GL_INFO_LOG_LENGTH, NULL, Shader::message_buffer
+    );
     return "GLSL program: " + std::string(Shader::message_buffer);
 }
 
