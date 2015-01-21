@@ -466,7 +466,7 @@ inline void MainLoop::draw () const {
         );
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glLineWidth(1.0f);
-        glPolygonOffset(-1.0f, -1.0f);
+        glPolygonOffset(-0.05, -0.05f);
         glEnable(GL_POLYGON_OFFSET_LINE);
         glDisable(GL_LINE_SMOOTH);
         batch->draw();
