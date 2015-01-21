@@ -18,7 +18,7 @@ namespace machina {
 
 
 // basic vertex shader -- care about vertex position
-const GLchar *vs_basic = GLSL(130,
+const std::string vs_basic = GLSL(130,
     uniform mat4 mvp_matrix;
     in vec4 vertex_position;
     void main (void) {
@@ -27,7 +27,7 @@ const GLchar *vs_basic = GLSL(130,
 );
 
 // basic fragment shader -- care about fragment color (from uniform)
-const GLchar *fs_basic_color_uniform = GLSL(130,
+const std::string fs_basic_color_uniform = GLSL(130,
     uniform vec4 uniform_color;
     out vec4 fragment_color;
     void main (void) {
@@ -36,7 +36,7 @@ const GLchar *fs_basic_color_uniform = GLSL(130,
 );
 
 // basic vertex shader -- care about vertex position and color
-const GLchar *vs_basic_attribute_color = GLSL(130,
+const std::string vs_basic_attribute_color = GLSL(130,
     uniform mat4 mvp_matrix;
     in vec4 vertex_position;
     in vec4 vertex_color;
@@ -48,39 +48,13 @@ const GLchar *vs_basic_attribute_color = GLSL(130,
 );
 
 // basic fragment shader -- care about fragment color (from vs)
-const GLchar *fs_basic_color_in = GLSL(130,
+const std::string fs_basic_color_in = GLSL(130,
     smooth in vec4 vertex_fragment_color;
     out vec4 fragment_color;
     void main (void) {
         fragment_color = vertex_fragment_color;
     }
 );
-
-
-
-// // basic vertex shader -- care about vertex position and color (color from uniform)
-// const GLchar *vs_basic_uniform_color = GLSL(130,
-//     uniform mat4 mvp_matrix;
-//     uniform vec4 vertex_uniform_color;
-//     in vec4 vertex_position;
-//     smooth out vec4 vertex_fragment_color;
-
-//     float linear_interpolation (
-//         float x1, float x2, float x3,
-//         float y1, float y3
-//     ) {
-//         return (((x2 - x1) * (y3 - y1)) / (x3 - x1)) + y1;
-//     }
-
-//     void main (void) {
-//         // vertex_fragment_color = vertex_uniform_color;
-//         vertex_fragment_color.r = linear_interpolation(-10, vertex_position.x, 10, 0, 1);
-//         vertex_fragment_color.g = linear_interpolation(-10, vertex_position.y, 10, 0, 1);
-//         vertex_fragment_color.b = linear_interpolation(-10, vertex_position.z, 10, 0, 1);
-//         gl_Position = mvp_matrix * vertex_position;
-//     }
-// );
-
 
 
 
@@ -96,12 +70,12 @@ GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
 /**
  *  ...
  */
-Shader::Shader (const GLchar *vs, const GLchar *fs) throw (std::runtime_error) {
+Shader::Shader (const std::string &vs, const std::string &fs) throw (std::runtime_error) {
 
     // temporary shader objects (load and compile from sources)
     GLuint
-        vertex_shader = this->load_shader(GL_VERTEX_SHADER, vs),
-        fragment_shader = this->load_shader(GL_FRAGMENT_SHADER, fs);
+        vertex_shader = this->load_shader(GL_VERTEX_SHADER, (GLchar*)vs.data()),
+        fragment_shader = this->load_shader(GL_FRAGMENT_SHADER, (GLchar*)fs.data());
 
     // status variable (for testing errors)
     GLint status;

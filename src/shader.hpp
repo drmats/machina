@@ -42,12 +42,12 @@ enum attrib_index {
 
 
 /**
- *  Shader sources (C strings).
+ *  Shader sources.
  */
-extern const GLchar *vs_basic;
-extern const GLchar *fs_basic_color_uniform;
-extern const GLchar *vs_basic_attribute_color;
-extern const GLchar *fs_basic_color_in;
+extern const std::string vs_basic;
+extern const std::string fs_basic_color_uniform;
+extern const std::string vs_basic_attribute_color;
+extern const std::string fs_basic_color_in;
 
 
 
@@ -80,7 +80,7 @@ public:
     /**
      *  Initialization.
      */
-    Shader (const GLchar *, const GLchar *) throw (std::runtime_error);
+    Shader (const std::string &, const std::string &) throw (std::runtime_error);
 
 
     /**
