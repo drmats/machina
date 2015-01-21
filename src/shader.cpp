@@ -179,7 +179,9 @@ const Shader& Shader::use (
 
     for (it = uniforms.begin();  it != uniforms.end();  it++) {
         std::get<1>(*it)(
-            glGetUniformLocation(this->program, std::get<0>(*it).data())
+            glGetUniformLocation(
+                this->program, (GLchar*)std::get<0>(*it).data()
+            )
         );
     }
 
