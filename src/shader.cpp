@@ -68,10 +68,12 @@ GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
 
 
 /**
- *  ...
+ *  Initialization.
  */
-Shader::Shader (const std::string &vs, const std::string &fs) throw (std::runtime_error) {
-
+Shader::Shader (
+    const std::string &vs, const std::string &fs,
+    const std::initializer_list<std::tuple<attrib_index, std::string>> binding
+) throw (std::runtime_error) {
     // temporary shader objects (load and compile from sources)
     GLuint
         vertex_shader = this->load_shader(GL_VERTEX_SHADER, (GLchar*)vs.data()),
@@ -80,14 +82,22 @@ Shader::Shader (const std::string &vs, const std::string &fs) throw (std::runtim
     // status variable (for testing errors)
     GLint status;
 
+    // binding iterator
+    std::initializer_list<std::tuple<attrib_index, std::string>>::iterator it;
+
     // attach shaders to gl program
     this->program = glCreateProgram();
     glAttachShader(this->program, vertex_shader);
     glAttachShader(this->program, fragment_shader);
 
     // bind attributes to the gl program
-    glBindAttribLocation(this->program, attrib_index::vertex, "vertex_position");
-    glBindAttribLocation(this->program, attrib_index::color, "vertex_color");
+    for (it = binding.begin();  it != binding.end();  it++) {
+        glBindAttribLocation(
+            this->program,
+            std::get<0>(*it),
+            std::get<1>(*it).data()
+        );
+    }
 
     // link gl program
     glLinkProgram(this->program);

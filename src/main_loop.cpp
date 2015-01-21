@@ -14,6 +14,7 @@
 #include "machina.hpp"
 #include "primitives.hpp"
 #include "test_mesh.hpp"
+#include <tuple>
 
 namespace machina {
 
@@ -302,9 +303,23 @@ void MainLoop::default_handler_t::window (
  *  Initialize vital components.
  */
 MainLoop::MainLoop (Machina *root):
+    // pointer to program "root"
     root{root},
-    vertex_color_attrib_shader{shader::vs_basic_attribute_color, shader::fs_basic_color_in},
-    vertex_color_uniform_shader{shader::vs_basic, shader::fs_basic_color_uniform}
+
+    // some shader ...
+    vertex_color_attrib_shader{
+        shader::vs_basic_attribute_color,
+        shader::fs_basic_color_in, {
+            std::make_tuple(shader::attrib_index::vertex, "vertex_position"),
+            std::make_tuple(shader::attrib_index::color, "vertex_color")
+    }},
+
+    // some shader ...
+    vertex_color_uniform_shader{
+        shader::vs_basic,
+        shader::fs_basic_color_uniform, {
+            std::make_tuple(shader::attrib_index::vertex, "vertex_position")
+    }}
 {
     this->assign_default_handlers();
     this->setup_opengl();

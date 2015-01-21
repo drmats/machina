@@ -14,6 +14,8 @@
 #include "m3d.hpp"
 #include <stdexcept>
 #include <string>
+#include <tuple>
+#include <initializer_list>
 
 namespace machina {
     namespace shader {
@@ -80,7 +82,10 @@ public:
     /**
      *  Initialization.
      */
-    Shader (const std::string &, const std::string &) throw (std::runtime_error);
+    Shader (
+        const std::string &, const std::string &,
+        const std::initializer_list<std::tuple<attrib_index, std::string>>
+    ) throw (std::runtime_error);
 
 
     /**
