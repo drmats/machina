@@ -33,7 +33,7 @@ std::shared_ptr<VertexColorBatch> axes (GLfloat dim, GLfloat s) {
     std::vector<vec3> v;
     std::vector<vec4> c;
     auto batch = std::make_shared<VertexColorBatch>();
-    const GLfloat i = 0.7;
+    const GLfloat i { 0.7 };
 
     dim = dim * 0.5;
 
@@ -104,8 +104,8 @@ std::shared_ptr<VertexColorBatch> point_cube (GLfloat dim, GLfloat s, GLfloat a)
     std::vector<vec3> v;
     std::vector<vec4> c;
     auto batch = std::make_shared<VertexColorBatch>();
-    const GLfloat cstep = (1.0/(2.0f*dim));
-    const GLfloat cshift = 0.5f;
+    const GLfloat cstep { 1.0f / (2.0f*dim) };
+    const GLfloat cshift { 0.5f };
 
     dim = dim * 0.5f;
 
@@ -145,8 +145,8 @@ std::shared_ptr<VertexColorBatch> this_thing (
     std::vector<vec3> verts;
     std::vector<vec4> colors;
     auto batch = std::make_shared<VertexColorBatch>();
-    const GLfloat cstep = (cfull/(2.0f*dim));
-    const GLfloat cshift = cfull/2.0f;
+    const GLfloat cstep { cfull / (2.0f*dim) };
+    const GLfloat cshift { cfull / 2.0f };
 
     dim = dim * 0.5f;
 

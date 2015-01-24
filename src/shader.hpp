@@ -45,7 +45,7 @@ protected:
     /**
      *  Shader program handle.
      */
-    GLuint program = 0;
+    GLuint program { 0 };
 
 
 public:
@@ -72,13 +72,13 @@ public:
     /**
      *  Initialization with attribute binding.
      *  Example invocation:
-     *      Shader some_shader(
+     *      Shader some_shader {
      *          shader::vs_basic,
      *          shader::fs_basic, {
      *              std::make_tuple(
      *                  "vertex_position", Shader::attrib_index::vertex
      *              )
-     *      });
+     *      } };
      */
     Shader (
         const std::string &, const std::string &,

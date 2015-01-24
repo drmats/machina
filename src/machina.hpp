@@ -24,7 +24,7 @@ namespace machina {
 /**
  *  "Defines".
  */
-const std::string PROGRAM_NAME = "machina";
+const std::string PROGRAM_NAME { "machina" };
 
 
 
@@ -42,7 +42,7 @@ protected:
             int const& argc,
             char** const& argv
         ):
-            argc{argc}, argv{argv}
+            argc { argc }, argv { argv }
             {}
         int const& argc;
         char** const& argv;
@@ -50,7 +50,7 @@ protected:
 
 
     // ...
-    static const int init_delay = 100;
+    static const int init_delay { 100 };
 
 
     // SDL library versions
@@ -88,8 +88,8 @@ protected:
 
     // viewport parameters
     struct {
-        int width = 960;
-        int height = 540;
+        int width { 960 };
+        int height { 540 };
     } viewport;
 
 

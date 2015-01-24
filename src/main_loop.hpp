@@ -96,7 +96,7 @@ private:
 
 
     // loop sustaining variable
-    bool running = false;
+    bool running { false };
 
 
 

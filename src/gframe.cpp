@@ -64,7 +64,7 @@ GFrame<T>& GFrame<T>::normalize () {
  */
 template <typename T>
 typename GFrame<T>::mat4 GFrame<T>::get_transformation_matrix () const {
-    vec3 right(vec3().cross(this->up, this->forward));
+    vec3 right { vec3().cross(this->up, this->forward) };
     mat4 m;
 
     #define set(i, val) m[i] = val
@@ -94,9 +94,9 @@ typename GFrame<T>::mat4 GFrame<T>::get_transformation_matrix () const {
 template <typename T>
 typename GFrame<T>::mat4 GFrame<T>::get_view_matrix () const {
     vec3
-        forward(vec3(this->forward).flip()),
-        right(vec3().cross(this->up, forward)),
-        origin(vec3(this->origin).flip());
+        forward { vec3(this->forward).flip() },
+        right { vec3().cross(this->up, forward) },
+        origin { vec3(this->origin).flip() };
     mat4 rotation;
 
     #define set(i, val) rotation[i] = val

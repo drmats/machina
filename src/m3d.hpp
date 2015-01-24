@@ -28,7 +28,7 @@ namespace m3d {
  */
 namespace msg {
 
-    const std::string out_of_range = "Index out of range.";
+    const std::string out_of_range { "Index out of range." };
 
 }
 
@@ -114,7 +114,7 @@ class GArray {
 
 protected:
 
-    T data[N] = { 0 };
+    T data[N] { 0 };
 
 
 public:
@@ -303,7 +303,7 @@ inline bool operator!= (const GArray<T, N> &l, const GArray<T, N> &r) {
 
 
 /**
- *  GArray to string serialization.
+ *  GArray to Ostream serialization.
  */
 template <typename T, std::size_t N>
 std::ostream& operator<< (std::ostream &os, const GArray<T, N> &gv) {
@@ -331,7 +331,7 @@ public:
      *  Compute square length of the current vector.
      */
     inline T sqr_length () const {
-        T result = static_cast<T>(0);
+        T result { static_cast<T>(0) };
         for (std::size_t i = 0;  i < N;  i++) {
             result += sqr((*this)[i]);
         }
@@ -351,7 +351,7 @@ public:
      *  Perform a vector normalization.
      */
     GVector<T, N>& normalize () {
-        const T l = this->length();
+        const T l { this->length() };
         if (close_to(l, static_cast<T>(0))) {
             this->reset();
         } else {
@@ -389,10 +389,11 @@ public:
 
 
     /**
-     *  Compute dot product based on the current vector and one passed in parameter.
+     *  Compute dot product based on the current vector
+     *  and one passed in parameter.
      */
     T dot (const GArray<T, N> &v) const {
-        T result = static_cast<T>(0);
+        T result { static_cast<T>(0) };
         for (std::size_t i = 0;  i < N;  i++) {
             result += this->data[i] * v[i];
         }
@@ -401,7 +402,8 @@ public:
 
 
     /**
-     *  Transform given vector by a matrix and store the result in the current vector.
+     *  Transform given vector by a matrix and store the result
+     *  in the current vector.
      */
     GVector<T, N>& transform (const GArray<T, N*N> &m, const GArray<T, N> &v) {
         T val;

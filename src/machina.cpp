@@ -21,7 +21,7 @@ namespace machina {
  *  Initialize vital application components.
  */
 Machina::Machina (int argc, char **argv):
-    command_line_params{argc, argv}
+    command_line_params { argc, argv }
 {
     std::cout << "Hi!" << std::endl;
 
@@ -219,7 +219,7 @@ void Machina::list_gl_extensions () {
     std::cout
         << "------ available OpenGL extension names ------"
         << std::endl;
-    for (int i = 0;  i < this->opengl_num_extensions;  i++) {
+    for (GLint i = 0;  i < this->opengl_num_extensions;  i++) {
         std::cout
             << reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i))
             << std::endl;

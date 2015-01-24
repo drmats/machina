@@ -127,7 +127,7 @@ public:
      *  Rotate this frame of reference in the world coordinates.
      */
     inline GFrame<T>& rotate_world (T angle, T x, T y, T z) {
-        mat4 rotation(mat4().load_rotation(angle, x, y, z));
+        mat4 rotation { mat4().load_rotation(angle, x, y, z) };
         this->up = rotation * vec4(this->up, 0);
         this->forward = rotation * vec4(this->forward, 0);
         return *this;
@@ -158,9 +158,9 @@ public:
      *  Rotate this frame of reference in the local coordinates.
      */
     inline GFrame<T>& rotate_local_x (T angle) {
-        mat4 rotation(mat4().load_rotation(
+        mat4 rotation { mat4().load_rotation(
             angle, vec3().cross(this->up, this->forward)
-        ));
+        ) };
         this->up = rotation * vec4(this->up, 0);
         this->forward = rotation * vec4(this->forward, 0);
         return *this;

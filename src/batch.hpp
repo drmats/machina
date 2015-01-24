@@ -117,9 +117,9 @@ class TriangleBatch : public Batch {
 protected:
 
     /**
-     * Number of allocated VBOs.
+     *  Number of allocated VBOs.
      */
-    static const GLushort buff_amount = 2;
+    static const GLushort buff_amount { 2 };
 
 
     /**

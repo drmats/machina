@@ -70,7 +70,7 @@ void MainLoop::default_handler_t::look_around_camera (
 void MainLoop::default_handler_t::move_around_camera (
     MainLoop *ml, const SDL_Event &e
 ) {
-    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    const Uint8 *keystate { SDL_GetKeyboardState(NULL) };
 
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
         ml->camera.move_on_xy(
@@ -94,7 +94,7 @@ void MainLoop::default_handler_t::move_around_camera (
 void MainLoop::default_handler_t::mouse_wheel (
     MainLoop *ml, const SDL_Event &e
 ) {
-    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    const Uint8 *keystate { SDL_GetKeyboardState(NULL) };
 
     if (keystate[SDL_SCANCODE_LCTRL] == 1) {
 
@@ -108,10 +108,10 @@ void MainLoop::default_handler_t::mouse_wheel (
     } else if (keystate[SDL_SCANCODE_LSHIFT] == 1) {
 
         // move camera on a x-z plane (forward/backward)
-        vec2 dir(vec2(
+        vec2 dir { vec2(
             ml->camera.transform.forward[0],
             ml->camera.transform.forward[2]
-        ).normalize());
+        ).normalize() };
         auto delta = e.wheel.y * 0.1 * ml->camera.dist;
         ml->camera.target[0] += delta*dir[0];
         ml->camera.target[2] += delta*dir[1];
@@ -138,7 +138,7 @@ void MainLoop::default_handler_t::mouse_wheel (
 void MainLoop::default_handler_t::mouse_buttons (
     MainLoop *ml, const SDL_Event &e
 ) {
-    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    const Uint8 *keystate { SDL_GetKeyboardState(NULL) };
 
     switch (e.button.button) {
 
@@ -210,7 +210,7 @@ void MainLoop::default_handler_t::mouse_buttons (
 void MainLoop::default_handler_t::keyboard (
     MainLoop *ml, const SDL_Event &e
 ) {
-    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    const Uint8 *keystate { SDL_GetKeyboardState(NULL) };
 
     // quit program on ESC
     if (keystate[SDL_SCANCODE_ESCAPE] == 1) {
@@ -303,23 +303,23 @@ void MainLoop::default_handler_t::window (
  *  Initialize vital components.
  */
 MainLoop::MainLoop (Machina *root):
-    // pointer to program "root"
-    root{root},
+    // pointer to program's "root"
+    root { root },
 
     // some shader ...
-    vertex_color_attrib_shader{
+    vertex_color_attrib_shader {
         Shader::vs_basic_attribute_color,
         Shader::fs_basic_color_in, {
             std::make_tuple("vertex_position", Shader::attrib_index::vertex),
             std::make_tuple("vertex_color", Shader::attrib_index::color)
-    }},
+    } },
 
     // some shader ...
-    vertex_color_uniform_shader{
+    vertex_color_uniform_shader {
         Shader::vs_basic,
         Shader::fs_basic_color_uniform, {
             std::make_tuple("vertex_position", Shader::attrib_index::vertex)
-    }}
+    } }
 {
     this->assign_default_handlers();
     this->setup_opengl();
@@ -459,7 +459,7 @@ inline void MainLoop::process_events () {
  */
 inline void MainLoop::draw () const {
     mat4
-        vp_matrix(this->camera.get_vp_matrix()),
+        vp_matrix { this->camera.get_vp_matrix() },
         m_matrix;
 
     // drawing helper

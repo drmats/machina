@@ -28,7 +28,7 @@ namespace machina {
 /**
  *  OpenGL messages buffer.
  */
-GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] = { 0 };
+GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] { 0 };
 
 
 
@@ -84,13 +84,13 @@ const std::string Shader::fs_basic_color_in = GLSL(130,
 /**
  *  Initialization with attribute binding.
  *  Example invocation:
- *      Shader some_shader(
+ *      Shader some_shader {
  *          shader::vs_basic,
  *          shader::fs_basic, {
  *              std::make_tuple(
  *                  "vertex_position", Shader::attrib_index::vertex
  *              )
- *      });
+ *      } };
  */
 Shader::Shader (
     const std::string &vs, const std::string &fs,
@@ -100,16 +100,11 @@ Shader::Shader (
 ) throw (std::runtime_error) {
     // temporary shader objects (load and compile from sources)
     GLuint
-        vertex_shader = this->load_shader(GL_VERTEX_SHADER, vs),
-        fragment_shader = this->load_shader(GL_FRAGMENT_SHADER, fs);
+        vertex_shader { this->load_shader(GL_VERTEX_SHADER, vs) },
+        fragment_shader { this->load_shader(GL_FRAGMENT_SHADER, fs) };
 
     // status variable (for testing errors)
     GLint status;
-
-    // binding iterator
-    std::initializer_list<
-        std::tuple<std::string, Shader::attrib_index>
-    >::iterator it;
 
     // attach shaders to gl program
     this->program = glCreateProgram();
@@ -117,7 +112,7 @@ Shader::Shader (
     glAttachShader(this->program, fragment_shader);
 
     // bind attributes to the gl program
-    for (it = binding.begin();  it != binding.end();  it++) {
+    for (auto it = binding.begin();  it != binding.end();  it++) {
         glBindAttribLocation(
             this->program,
             std::get<1>(*it),
@@ -135,7 +130,9 @@ Shader::Shader (
     // check for link errors
     glGetProgramiv(this->program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE) {
-        std::string error_message(this->get_program_info_log(this->program));
+        std::string error_message {
+            this->get_program_info_log(this->program)
+        };
         glDeleteProgram(this->program);
         throw std::runtime_error(error_message);
     }
@@ -171,13 +168,9 @@ const Shader& Shader::use (
         std::tuple<std::string, std::function<void (GLint)>>
     > uniforms
 ) const {
-    std::initializer_list<
-        std::tuple<std::string, std::function<void (GLint)>>
-    >::iterator it;
-
     glUseProgram(this->program);
 
-    for (it = uniforms.begin();  it != uniforms.end();  it++) {
+    for (auto it = uniforms.begin();  it != uniforms.end();  it++) {
         std::get<1>(*it)(
             glGetUniformLocation(
                 this->program, (GLchar*)std::get<0>(*it).data()
@@ -198,15 +191,17 @@ GLuint Shader::load_shader (
     GLenum shader_type,
     const std::string &shader_src
 ) throw (std::runtime_error) {
-    GLuint shader = glCreateShader(shader_type);
-    const GLchar *src = (GLchar*)shader_src.data();
+    GLuint shader { glCreateShader(shader_type) };
+    const GLchar *src { (GLchar*)shader_src.data() };
     GLint status;
 
     glShaderSource(shader, 1, &src, NULL);
     glCompileShader(shader);
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
-        std::string error_message(this->get_shader_info_log(shader));
+        std::string error_message {
+            this->get_shader_info_log(shader)
+        };
         glDeleteShader(shader);
         throw std::runtime_error(error_message);
     }

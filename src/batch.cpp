@@ -22,10 +22,10 @@ namespace machina {
  *  VertexColorBatch initialization.
  */
 VertexColorBatch::VertexColorBatch ():
-    vertex_array_object{0},
-    vertex_buffer{0},
-    color_buffer{0},
-    verts_length{0}
+    vertex_array_object { 0 },
+    vertex_buffer { 0 },
+    color_buffer { 0 },
+    verts_length { 0 }
     {}
 
 
@@ -117,8 +117,9 @@ void VertexColorBatch::draw () const {
  *  TriangleBatch initialization.
  */
 TriangleBatch::TriangleBatch ():
-    vertex_array_object{0},
-    buffer{0}, length{0}
+    vertex_array_object { 0 },
+    buffer { 0 },
+    length { 0 }
     {}
 
 
