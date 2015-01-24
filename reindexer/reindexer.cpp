@@ -17,7 +17,6 @@
 #include <string>
 #include <array>
 #include <regex>
-#include <string>
 #include <vector>
 #include <cstdlib>
 
@@ -172,7 +171,7 @@ std::string array_to_string (
 
 
 /**
- *  Vector of Arrays to string serialization.
+ *  Vector of arrays to string serialization.
  */
 template <typename T, std::size_t N>
 std::string vector_arrays_to_string (
@@ -193,7 +192,7 @@ std::string vector_arrays_to_string (
 
 
 /**
- *  Vector of Faces to string serialization.
+ *  Vector of faces to string serialization.
  */
 std::string vector_faces_to_string (
     const std::string &prefix,
@@ -222,17 +221,20 @@ int main (int argc, char *argv[]) {
     std::smatch match;
     geometry input, output;
 
+    // check for input file ...
     if (argc < 2) {
         std::cerr << "No input file." << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
+    // ... and try to open it
     file_input.open(argv[1]);
     if (!file_input) {
         std::cerr << "Cannot open input file: " << argv[1] << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
+    // parse input file line-by-line
     while (!file_input.eof()) {
         file_input.getline(buffer.data(), max_line_size);
         strbuf = buffer.data();
@@ -247,12 +249,20 @@ int main (int argc, char *argv[]) {
                 } else if (match[1].str() == "f") {
                     try_parse_face(input.faces, match[2].str());
                 } else {
-                    // ...
+                    std::cerr
+                        << "Ignoring line starting with "
+                        << "\"" << match[1].str() << "\"."
+                        << std::endl;
                 }
             }
+        } else {
+            std::cerr
+                << "Ignoring comment (or some garbage) line."
+                << std::endl;
         }
     }
 
+    // print-out what you've found
     std::cout
         << vector_arrays_to_string("v ", input.verts, " ", "\n")
         << vector_arrays_to_string("vn ", input.normals, " ", "\n")
