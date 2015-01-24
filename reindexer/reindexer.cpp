@@ -13,6 +13,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
+#include <string>
 #include <array>
 #include <regex>
 #include <string>
@@ -151,60 +153,58 @@ std::size_t try_parse_face (
 
 
 /**
- *  Array to Ostream serialization.
+ *  Array to string serialization.
  */
 template <typename T, std::size_t N>
-std::ostream& print_array (
-    std::ostream &os,
+std::string array_to_string (
     const std::string &sep,
     const std::array<T, N> &a
 ) {
+    std::stringstream ss;
+    ss << std::setprecision(6) << std::fixed;
     for (std::size_t i = 0;  i < N;  i++) {
-        os << a[i];
-        if (i < N-1) { os << sep; }
+        ss << a[i];
+        if (i < N-1) { ss << sep; }
     }
-    return os;
+    return ss.str();
 }
 
 
 
-
 /**
- *  Vector of Arrays to Ostream serialization.
+ *  Vector of Arrays to string serialization.
  */
 template <typename T, std::size_t N>
-std::ostream& print_vector_arrays (
-    std::ostream &os,
+std::string vector_arrays_to_string (
     const std::string &prefix,
     const std::vector<std::array<T, N>> &v,
     const std::string &array_sep,
     const std::string &suffix
 ) {
+    std::stringstream ss;
+    ss << std::setprecision(6) << std::fixed;
     for (auto it = v.begin();  it != v.end();  it++) {
-        os << prefix;
-        print_array(os, array_sep, *it);
-        os << suffix;
+        ss << prefix << array_to_string(array_sep, *it) << suffix;
     }
-    return os;
+    return ss.str();
 }
 
 
 
 
 /**
- *  Vector of Faces to Ostream serialization.
+ *  Vector of Faces to string serialization.
  */
-std::ostream& print_vector_faces (
-    std::ostream &os,
+std::string vector_faces_to_string (
     const std::string &prefix,
     const std::vector<face> &v
 ) {
+    std::stringstream ss;
+    ss << std::setprecision(6) << std::fixed;
     for (auto it = v.begin();  it != v.end();  it++) {
-        os << prefix;
-        print_vector_arrays(os, " ", *it, "/", "");
-        os << "\n";
+        ss << prefix << vector_arrays_to_string(" ", *it, "/", "") << "\n";
     }
-    return os;
+    return ss.str();
 }
 
 
@@ -214,7 +214,7 @@ std::ostream& print_vector_faces (
  *  Reindex obj file -- multiple indexes to one index.
  */
 int main (int argc, char *argv[]) {
-    const unsigned int max_line_size = 8192;
+    const unsigned int max_line_size { 8192 };
     std::ifstream file_input;
     std::array<char, max_line_size> buffer;
     std::string strbuf;
@@ -253,11 +253,11 @@ int main (int argc, char *argv[]) {
         }
     }
 
-    std::cout << std::setprecision(6) << std::fixed;
-    print_vector_arrays(std::cout, "v ", input.verts, " ", "\n");
-    print_vector_arrays(std::cout, "vn ", input.normals, " ", "\n");
-    print_vector_arrays(std::cout, "vt ", input.uvs, " ", "\n");
-    print_vector_faces(std::cout, "f", input.faces);
+    std::cout
+        << vector_arrays_to_string("v ", input.verts, " ", "\n")
+        << vector_arrays_to_string("vn ", input.normals, " ", "\n")
+        << vector_arrays_to_string("vt ", input.uvs, " ", "\n")
+        << vector_faces_to_string("f", input.faces);
 
     std::exit(EXIT_SUCCESS);
 }
