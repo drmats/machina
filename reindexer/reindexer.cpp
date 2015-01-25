@@ -131,7 +131,7 @@ std::size_t try_parse_face (
     face current_face;
 
     for (auto it = vecs_begin;  it != vecs_end;  it++) {
-        if ((*it).size() == 7) {
+        if (it->size() == 7) {
             try {
                 for (std::size_t i = 1;  i < 7;  i += 2) {
                     iv[(i-1)/2] = std::stod((*it)[i].str());
@@ -146,6 +146,23 @@ std::size_t try_parse_face (
     }
 
     return 0;
+}
+
+
+
+
+/**
+ *  "Flatten" faces to indices vector.
+ */
+void faces_to_multi_indices (
+    const std::vector<face> &faces,
+    std::vector<vec3i> &multi_indices
+) {
+    for (auto fit = faces.begin();  fit != faces.end();  fit++) {
+        for (auto iit = fit->begin();  iit != fit->end();  iit++) {
+            multi_indices.push_back(*iit);
+        }
+    }
 }
 
 
@@ -167,6 +184,7 @@ std::string array_to_string (
     }
     return ss.str();
 }
+
 
 
 
@@ -203,6 +221,26 @@ std::string vector_faces_to_string (
     for (auto it = v.begin();  it != v.end();  it++) {
         ss << prefix << vector_arrays_to_string(" ", *it, "/", "") << "\n";
     }
+    return ss.str();
+}
+
+
+
+
+/**
+ *  Vector of multi_indices (vec3i) to string serialization.
+ */
+std::string vector_multi_indices_to_string (
+    const std::string &prefix,
+    const std::vector<vec3i> &mi
+) {
+    std::stringstream ss;
+    ss << prefix;
+    for (std::size_t i = 0;  i < mi.size();  i++) {
+        ss << array_to_string("/", mi[i]);
+        if (i < mi.size() - 1) { ss << " "; }
+    }
+    ss << "\n";
     return ss.str();
 }
 
@@ -262,12 +300,16 @@ int main (int argc, char *argv[]) {
         }
     }
 
+    // ...
+    faces_to_multi_indices(input.faces, input.multi_indices);
+
     // print-out what you've found
     std::cout
         << vector_arrays_to_string("v ", input.verts, " ", "\n")
         << vector_arrays_to_string("vn ", input.normals, " ", "\n")
         << vector_arrays_to_string("vt ", input.uvs, " ", "\n")
-        << vector_faces_to_string("f", input.faces);
+        << vector_faces_to_string("f", input.faces)
+        << vector_multi_indices_to_string("mi ", input.multi_indices);
 
     std::exit(EXIT_SUCCESS);
 }
