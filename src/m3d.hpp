@@ -130,7 +130,9 @@ public:
     }
 
 
-    inline const T& operator[] (std::size_t i) const throw (std::out_of_range) {
+    inline const T& operator[] (
+        std::size_t i
+    ) const throw (std::out_of_range) {
         if (i >= N) {
             throw std::out_of_range(msg::out_of_range);
         }
@@ -405,7 +407,9 @@ public:
      *  Transform given vector by a matrix and store the result
      *  in the current vector.
      */
-    GVector<T, N>& transform (const GArray<T, N*N> &m, const GArray<T, N> &v) {
+    GVector<T, N>& transform (
+        const GArray<T, N*N> &m, const GArray<T, N> &v
+    ) {
         T val;
         for (std::size_t i = 0;  i < N;  i++) {
             val = static_cast<T>(0);
@@ -421,10 +425,13 @@ public:
 
 
 /**
- *  Transform given vector by a matrix and store the result in the new vector.
+ *  Transform given vector by a matrix and store the result
+ *  in the new vector.
  */
 template <typename T, std::size_t N>
-inline GVector<T, N> operator* (const GArray<T, N*N> &m, const GArray<T, N> &v) {
+inline GVector<T, N> operator* (
+    const GArray<T, N*N> &m, const GArray<T, N> &v
+) {
     return GVector<T, N>().transform(m, v);
 }
 
@@ -581,7 +588,9 @@ public:
     /**
      *  Multiply two matrices and store the result in the current matrix.
      */
-    GMatrix<T, N>& multiply (const GArray<T, N*N> &a, const GArray<T, N*N> &b) {
+    GMatrix<T, N>& multiply (
+        const GArray<T, N*N> &a, const GArray<T, N*N> &b
+    ) {
         T val;
         std::size_t row, column;
         for (std::size_t i = 0;  i < N*N;  i++) {
@@ -602,7 +611,9 @@ public:
  *  Multiply two matrices yielding the new one.
  */
 template <typename T, std::size_t N = 4>
-inline GMatrix<T, N> operator* (const GArray<T, N*N> &a, const GArray<T, N*N> &b) {
+inline GMatrix<T, N> operator* (
+    const GArray<T, N*N> &a, const GArray<T, N*N> &b
+) {
     return GMatrix<T, N>().multiply(a, b);
 }
 
@@ -652,7 +663,8 @@ public:
 
 
     /**
-     *  Replaces current matrix with the translation matrix (built from vector).
+     *  Replaces current matrix with the translation matrix
+     *  (built from vector).
      */
     GMatrix4<T>& load_translation (const GArray<T, 3> &v) {
         return this->load_translation(v[0], v[1], v[2]);
@@ -685,21 +697,25 @@ public:
     inline GMatrix4<T>& load_rotation (T angle, T x, T y, T z) {
         angle = radians(angle);
 
-        GVector3<T> v(x, y, z); v.normalize();
+        GVector3<T> v { x, y, z };  v.normalize();
         const T
-             X = v[0], Y = v[1], Z = v[2],
-             c = std::cos(angle),
-            nc = static_cast<T>(1)-c,
-             s = std::sin(angle),
-            xs = X*s,       ys = Y*s,       zs = Z*s,
-          xync = X*Y*nc,  xznc = X*Z*nc,  yznc = Y*Z*nc;
+             c { std::cos(angle) },
+            nc { static_cast<T>(1) - c },
+             s { std::sin(angle) },
+            xs { v[0]*s },         ys { v[1]*s },         zs { v[2]*s },
+          xync { v[0]*v[1]*nc }, xznc { v[0]*v[2]*nc }, yznc { v[1]*v[2]*nc };
 
         #define set(i, val) this->data[i] = static_cast<T>(val)
 
-        set(0, sqr(X)*nc+c);  set(4,     xync-zs);  set( 8,     xznc+ys);  set(12, 0);
-        set(1,     xync+zs);  set(5, sqr(Y)*nc+c);  set( 9,     yznc-xs);  set(13, 0);
-        set(2,     xznc-ys);  set(6,     yznc+xs);  set(10, sqr(Z)*nc+c);  set(14, 0);
-        set(3,           0);  set(7,           0);  set(11,           0);  set(15, 1);
+        set(0,  sqr(v[0])*nc+c);  set(4,        xync-zs);
+        set(1,         xync+zs);  set(5, sqr(v[1])*nc+c);
+        set(2,         xznc-ys);  set(6,        yznc+xs);
+        set(3,               0);  set(7,              0);
+
+        set( 8,        xznc+ys);  set(12,             0);
+        set( 9,        yznc-xs);  set(13,             0);
+        set(10, sqr(v[2])*nc+c);  set(14,             0);
+        set(11,              0);  set(15,             1);
 
         #undef set
 
@@ -708,7 +724,8 @@ public:
 
 
     /**
-     *  Replaces current matrix with the rotation matrix (built from angle and vector).
+     *  Replaces current matrix with the rotation matrix
+     *  (built from angle and vector).
      */
     GMatrix4<T>& load_rotation (T angle, const GArray<T, 3> &v) {
         return this->load_rotation(angle, v[0], v[1], v[2]);
@@ -719,13 +736,13 @@ public:
      *  Replaces current matrix with the perspective projection matrix.
      */
     GMatrix4<T>& load_perspective (T fovy, T aspect, T z_near, T z_far) {
-        this->reset();
         fovy = radians(fovy);
 
         const T
-            f = static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))),
-            nf = z_near - z_far;
+            f { static_cast<T>(1) / (std::tan(fovy * static_cast<T>(0.5))) },
+            nf { z_near - z_far };
 
+        this->reset();
         this->data[0] = f / aspect;
         this->data[5] = f;
         this->data[10] = (z_near + z_far) / nf;
@@ -739,14 +756,15 @@ public:
     /**
      *  Replaces current matrix with the perspective projection matrix.
      */
-    GMatrix4<T>& load_ortho (T left, T right, T bottom, T top, T z_near, T z_far) {
-        this->reset();
-
+    GMatrix4<T>& load_ortho (
+        T left, T right, T bottom, T top, T z_near, T z_far
+    ) {
         const T
-            rl = right - left,
-            tb = top - bottom,
-            fn = z_far - z_near;
+            rl { right - left },
+            tb { top - bottom },
+            fn { z_far - z_near };
 
+        this->reset();
         this->data[0] = static_cast<T>(2) / rl;
         this->data[5] = static_cast<T>(2) / tb;
         this->data[10] = static_cast<T>(-2) / fn;
