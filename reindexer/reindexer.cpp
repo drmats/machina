@@ -18,12 +18,14 @@
 #include <array>
 #include <regex>
 #include <vector>
+#include <map>
 #include <cstdlib>
 
 using vec2 = std::array<float, 2>;
 using vec3 = std::array<float, 3>;
 using vec3i = std::array<ushort, 3>;
 using face = std::vector<vec3i>;
+using vun = std::array<float, 8>;
 
 
 
@@ -33,8 +35,8 @@ using face = std::vector<vec3i>;
  */
 typedef struct {
     std::vector<vec3> verts;
-    std::vector<vec3> normals;
     std::vector<vec2> uvs;
+    std::vector<vec3> normals;
     std::vector<face> faces;
     std::vector<vec3i> multi_indices;
     std::vector<ushort> indices;
@@ -169,6 +171,55 @@ void faces_to_multi_indices (
 
 
 /**
+ *  (vertex, uv, normal) -> vun
+ */
+inline vun make_vun (const vec3 &v, const vec2 &u, const vec3 &n) {
+    return {
+        v[0], v[1], v[2],
+        u[0], u[1],
+        n[0], n[1], n[2]
+    };
+}
+
+
+
+
+/**
+ *  ...
+ */
+void reindex (const geometry &in, geometry &out) {
+    std::map<vun, ushort> dict;
+    ushort current_index { 0 };
+    vun current_vun;
+    std::map<vun, ushort>::iterator current;
+    for (
+        auto multi_index = in.multi_indices.begin();
+        multi_index != in.multi_indices.end();
+        multi_index++
+    ) {
+        current_vun = make_vun(
+            in.verts[(*multi_index)[0] - 1],
+            in.uvs[(*multi_index)[1] - 1],
+            in.normals[(*multi_index)[2] - 1]
+        );
+        current = dict.find(current_vun);
+        if (current == dict.end()) {
+            dict.insert({current_vun, current_index});
+            out.verts.push_back(in.verts[(*multi_index)[0] - 1]);
+            out.uvs.push_back(in.uvs[(*multi_index)[1] - 1]);
+            out.normals.push_back(in.normals[(*multi_index)[2] - 1]);
+            out.indices.push_back(current_index);
+            current_index += 1;
+        } else {
+            out.indices.push_back(std::get<1>(*current));
+        }
+    }
+}
+
+
+
+
+/**
  *  Array to string serialization.
  */
 template <typename T, std::size_t N>
@@ -248,6 +299,27 @@ std::string vector_multi_indices_to_string (
 
 
 /**
+ *  Vector of indices (T) to string serialization.
+ */
+template <typename T>
+std::string vector_indices_to_string (
+    const std::string &prefix,
+    const std::vector<T> &ind
+) {
+    std::stringstream ss;
+    ss << prefix;
+    for (std::size_t i = 0;  i < ind.size();  i++) {
+        ss << ind[i];
+        if (i < ind.size() - 1) { ss << " "; }
+    }
+    ss << "\n";
+    return ss.str();
+}
+
+
+
+
+/**
  *  Reindex obj file -- multiple indexes to one index.
  */
 int main (int argc, char *argv[]) {
@@ -303,13 +375,17 @@ int main (int argc, char *argv[]) {
     // ...
     faces_to_multi_indices(input.faces, input.multi_indices);
 
-    // print-out what you've found
+    // ...
+    reindex(input, output);
+
+    // print-out converted stuff
     std::cout
-        << vector_arrays_to_string("v ", input.verts, " ", "\n")
-        << vector_arrays_to_string("vn ", input.normals, " ", "\n")
-        << vector_arrays_to_string("vt ", input.uvs, " ", "\n")
-        << vector_faces_to_string("f", input.faces)
-        << vector_multi_indices_to_string("mi ", input.multi_indices);
+        << vector_arrays_to_string("v ", output.verts, " ", "\n")
+        << vector_arrays_to_string("vt ", output.uvs, " ", "\n")
+        << vector_arrays_to_string("vn ", output.normals, " ", "\n")
+        << vector_indices_to_string("indices ", output.indices);
+        // << vector_faces_to_string("f", input.faces)
+        // << vector_multi_indices_to_string("mi ", input.multi_indices);
 
     std::exit(EXIT_SUCCESS);
 }
