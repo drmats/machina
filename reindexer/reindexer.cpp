@@ -15,16 +15,19 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <array>
 #include <regex>
 #include <vector>
 #include <map>
+#include <functional>
 #include <cstdlib>
 
 using vec2 = std::array<float, 2>;
 using vec3 = std::array<float, 3>;
-using vec3i = std::array<ushort, 3>;
-using face = std::vector<vec3i>;
+using flat = std::vector<float>;
+using multi_index = std::vector<ushort>;
+using face = std::vector<multi_index>;
 using vun = std::array<float, 8>;
 
 
@@ -38,7 +41,7 @@ typedef struct {
     std::vector<vec2> uvs;
     std::vector<vec3> normals;
     std::vector<face> faces;
-    std::vector<vec3i> multi_indices;
+    std::vector<multi_index> multi_indices;
     std::vector<ushort> indices;
 } geometry;
 
@@ -87,7 +90,9 @@ std::size_t try_parse_vec (
     std::vector<std::array<T, N>> &vecs,
     const std::string &strbuf
 ) {
-    std::regex vec_regex { construct_number_regex_string(N, "\\s*", ".*") };
+    static const std::regex vec_regex {
+        construct_number_regex_string(N, "\\s*", ".*")
+    };
     std::smatch match;
     std::array<T, N> out;
 
@@ -117,29 +122,36 @@ std::size_t try_parse_vec (
 
 
 /**
- *  Try to parse line with any number of index-vectors (a/b/c a/b/c ...).
+ *  Try to parse line with any number of index-vectors
+ *  (a/b/c a/b/c ... or a//c a//c ...).
  */
+template <const char sep1, const char sep2 = '\0'>
 std::size_t try_parse_face (
     std::vector<face> &faces,
     const std::string &strbuf
 ) {
-    std::regex vec_regex { construct_number_regex_string(3, "/", "") };
+    static const char sep[] { sep1, sep2 };
+    static const size_t n { 4 - std::strlen(sep) };
+    static const std::regex vec_regex {
+        construct_number_regex_string(n, sep, "")
+    };
     auto
         vecs_begin = std::sregex_iterator(
             strbuf.begin(), strbuf.end(), vec_regex
         ),
         vecs_end = std::sregex_iterator();
-    vec3i iv;
+    multi_index mi;
     face current_face;
 
     for (auto it = vecs_begin;  it != vecs_end;  it++) {
-        if (it->size() == 7) {
+        if (it->size() == 1+2*n) {
             try {
-                for (std::size_t i = 1;  i < 7;  i += 2) {
-                    iv[(i-1)/2] = std::stod((*it)[i].str());
+                mi.clear();
+                for (std::size_t i = 1;  i < 1+2*n;  i += 2) {
+                    mi.push_back(std::stod((*it)[i].str()));
                 }
             } catch (...) { continue; }
-            current_face.push_back(iv);
+            current_face.push_back(mi);
         }
     }
     if (current_face.size() != 0) {
@@ -158,7 +170,7 @@ std::size_t try_parse_face (
  */
 void faces_to_multi_indices (
     const std::vector<face> &faces,
-    std::vector<vec3i> &multi_indices
+    std::vector<multi_index> &multi_indices
 ) {
     for (auto fit = faces.begin();  fit != faces.end();  fit++) {
         for (auto iit = fit->begin();  iit != fit->end();  iit++) {
@@ -192,22 +204,30 @@ void reindex (const geometry &in, geometry &out) {
     ushort current_index { 0 };
     vun current_vun;
     std::map<vun, ushort>::iterator current;
+    static const vec2 empty_uv { 0.0, 0.0 };
+    vec3 const *current_vertex;
+    vec3 const *current_normal;
+    vec2 const *current_uv;
     for (
         auto multi_index = in.multi_indices.begin();
         multi_index != in.multi_indices.end();
         multi_index++
     ) {
-        current_vun = make_vun(
-            in.verts[(*multi_index)[0] - 1],
-            in.uvs[(*multi_index)[1] - 1],
-            in.normals[(*multi_index)[2] - 1]
-        );
+        current_vertex = &in.verts[(*multi_index)[0] - 1];
+        if (multi_index->size() == 3) {
+            current_uv = &in.uvs[(*multi_index)[1] - 1];
+            current_normal = &in.normals[(*multi_index)[2] - 1];
+        } else {
+            current_uv = &empty_uv;
+            current_normal = &in.normals[(*multi_index)[1] - 1];
+        }
+        current_vun = make_vun(*current_vertex, *current_uv, *current_normal);
         current = dict.find(current_vun);
         if (current == dict.end()) {
             dict.insert({current_vun, current_index});
-            out.verts.push_back(in.verts[(*multi_index)[0] - 1]);
-            out.uvs.push_back(in.uvs[(*multi_index)[1] - 1]);
-            out.normals.push_back(in.normals[(*multi_index)[2] - 1]);
+            out.verts.push_back(*current_vertex);
+            out.uvs.push_back(*current_uv);
+            out.normals.push_back(*current_normal);
             out.indices.push_back(current_index);
             current_index += 1;
         } else {
@@ -220,100 +240,99 @@ void reindex (const geometry &in, geometry &out) {
 
 
 /**
- *  Array to string serialization.
- */
-template <typename T, std::size_t N>
-std::string array_to_string (
-    const std::string &sep,
-    const std::array<T, N> &a
-) {
-    std::stringstream ss;
-    ss << std::setprecision(6) << std::fixed;
-    for (std::size_t i = 0;  i < N;  i++) {
-        ss << a[i];
-        if (i < N-1) { ss << sep; }
-    }
-    return ss.str();
-}
-
-
-
-
-/**
- *  Vector of arrays to string serialization.
- */
-template <typename T, std::size_t N>
-std::string vector_arrays_to_string (
-    const std::string &prefix,
-    const std::vector<std::array<T, N>> &v,
-    const std::string &array_sep,
-    const std::string &suffix
-) {
-    std::stringstream ss;
-    ss << std::setprecision(6) << std::fixed;
-    for (auto it = v.begin();  it != v.end();  it++) {
-        ss << prefix << array_to_string(array_sep, *it) << suffix;
-    }
-    return ss.str();
-}
-
-
-
-
-/**
- *  Vector of faces to string serialization.
- */
-std::string vector_faces_to_string (
-    const std::string &prefix,
-    const std::vector<face> &v
-) {
-    std::stringstream ss;
-    ss << std::setprecision(6) << std::fixed;
-    for (auto it = v.begin();  it != v.end();  it++) {
-        ss << prefix << vector_arrays_to_string(" ", *it, "/", "") << "\n";
-    }
-    return ss.str();
-}
-
-
-
-
-/**
- *  Vector of multi_indices (vec3i) to string serialization.
- */
-std::string vector_multi_indices_to_string (
-    const std::string &prefix,
-    const std::vector<vec3i> &mi
-) {
-    std::stringstream ss;
-    ss << prefix;
-    for (std::size_t i = 0;  i < mi.size();  i++) {
-        ss << array_to_string("/", mi[i]);
-        if (i < mi.size() - 1) { ss << " "; }
-    }
-    ss << "\n";
-    return ss.str();
-}
-
-
-
-
-/**
- *  Vector of indices (T) to string serialization.
+ *  Enumerable to string serialization.
  */
 template <typename T>
-std::string vector_indices_to_string (
-    const std::string &prefix,
-    const std::vector<T> &ind
+std::string enumerable_to_string (
+    const T &e,
+    const std::string &px,
+    const std::string &p,
+    const std::string &s,
+    const std::string &sx
 ) {
     std::stringstream ss;
-    ss << prefix;
-    for (std::size_t i = 0;  i < ind.size();  i++) {
-        ss << ind[i];
-        if (i < ind.size() - 1) { ss << " "; }
+    if (e.size() > 0) {
+        ss << std::setprecision(6) << std::fixed << px;
+        for (std::size_t i = 0;  i < e.size();  i++) {
+            ss << p << e[i];
+            if (i < e.size() - 1) { ss << s; }
+        }
+        ss << sx;
+        return ss.str();
     }
-    ss << "\n";
-    return ss.str();
+    return "";
+}
+
+
+
+
+/**
+ *  Enumerable of enumerables to string serialization.
+ */
+template <typename T>
+std::string higher_enumerable_to_string (
+    const std::vector<T> &ee,
+    const std::string &px,
+    const std::string &p,
+    std::function<std::string (const T &)> to_str,
+    const std::string &s,
+    const std::string &sx
+) {
+    std::stringstream ss;
+    if (ee.size() > 0) {
+        ss << std::setprecision(6) << std::fixed << px;
+        for (std::size_t i = 0;  i < ee.size();  i++) {
+            ss << p << to_str(ee[i]);
+            if (i < ee.size() - 1) { ss << s; }
+        }
+        ss << sx;
+        return ss.str();
+    }
+    return "";
+}
+
+
+
+
+/**
+ *  Geometry serializer.
+ */
+std::ostream& operator<< (std::ostream &os, const geometry &g) {
+    auto vec3_to_string = [] (const vec3 &v) -> std::string {
+        return enumerable_to_string(v, "", "", " ", "");
+    };
+    auto vec2_to_string = [] (const vec2 &v) -> std::string {
+        return enumerable_to_string(v, "", "", " ", "");
+    };
+    auto multi_index_to_string = [] (const multi_index &mi) -> std::string {
+        if (mi.size() == 2) {
+            return enumerable_to_string(mi, "", "", "//", "");
+        }
+        return enumerable_to_string(mi, "", "", "/", "");
+    };
+
+    return os
+        << higher_enumerable_to_string<vec3>(
+            g.verts, "", "v ", vec3_to_string, "\n", "\n"
+        )
+        << higher_enumerable_to_string<vec2>(
+            g.uvs, "", "vt ", vec2_to_string, "\n", "\n"
+        )
+        << higher_enumerable_to_string<vec3>(
+            g.normals, "", "vn ", vec3_to_string, "\n", "\n"
+        )
+        << higher_enumerable_to_string<face>(
+            g.faces, "", "f ",
+            [&] (const face &f) -> std::string {
+                return higher_enumerable_to_string<multi_index>(
+                    f, "", "", multi_index_to_string, " ", ""
+                );
+            }, "\n", "\n"
+        )
+        << higher_enumerable_to_string<multi_index>(
+            g.multi_indices, "mi ", "", multi_index_to_string, " ", "\n"
+        )
+        << enumerable_to_string(g.indices, "indices ", "", " ", "\n");
 }
 
 
@@ -357,7 +376,17 @@ int main (int argc, char *argv[]) {
                 } else if (match[1].str() == "vt") {
                     try_parse_vec(input.uvs, match[2].str());
                 } else if (match[1].str() == "f") {
-                    try_parse_face(input.faces, match[2].str());
+                    if (
+                        // try to parse face with vertex/uv/normal structure
+                        try_parse_face<'/'>(
+                            input.faces, match[2].str()
+                        ) == 0
+                    ) {
+                        // or try to parse face with vertex//normal structure
+                        try_parse_face<'/', '/'>(
+                            input.faces, match[2].str()
+                        );
+                    }
                 } else {
                     std::cerr
                         << "Ignoring line starting with "
@@ -378,14 +407,12 @@ int main (int argc, char *argv[]) {
     // ...
     reindex(input, output);
 
-    // print-out converted stuff
+    // print-out this stuff
     std::cout
-        << vector_arrays_to_string("v ", output.verts, " ", "\n")
-        << vector_arrays_to_string("vt ", output.uvs, " ", "\n")
-        << vector_arrays_to_string("vn ", output.normals, " ", "\n")
-        << vector_indices_to_string("indices ", output.indices);
-        // << vector_faces_to_string("f", input.faces)
-        // << vector_multi_indices_to_string("mi ", input.multi_indices);
+        << "-------------- Parsed input: --------------\n"
+        << input
+        << "-------------- Parsed output: -------------\n"
+        << output;
 
     std::exit(EXIT_SUCCESS);
 }
