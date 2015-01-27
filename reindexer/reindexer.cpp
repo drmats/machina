@@ -21,6 +21,7 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <numeric>
 #include <cstdlib>
 
 using vec2 = std::array<float, 2>;
@@ -54,6 +55,34 @@ typedef struct {
 template <typename T>
 inline bool close_to (T a, T b) {
     return std::fabs(a - b) <= static_cast<T>(1e-5);
+}
+
+
+
+
+/**
+ *  Vector concatenator ( vector<T>  <-  vector<vector<T>> ).
+ */
+template <typename T>
+void vector_flatten (
+    std::vector<T> &out,
+    const std::vector<std::vector<T>> &in
+) {
+    out.clear();
+    out.reserve(std::accumulate(
+        in.begin(), in.end(), 0,
+        [] (
+            const typename std::vector<T>::size_type &acc,
+            const std::vector<T> &el
+        ) -> typename std::vector<T>::size_type {
+            return acc + el.size();
+        }
+    ));
+    for (auto in_it = in.begin();  in_it != in.end();  in_it++) {
+        for (auto el_it = in_it->begin();  el_it != in_it->end();  el_it++) {
+            out.push_back(*el_it);
+        }
+    }
 }
 
 
@@ -213,11 +242,7 @@ void parse (geometry &g, std::ifstream &file_input) {
     }
 
     // "Flatten" faces to indices vector.
-    for (auto fit = g.faces.begin();  fit != g.faces.end();  fit++) {
-        for (auto iit = fit->begin();  iit != fit->end();  iit++) {
-            g.multi_indices.push_back(*iit);
-        }
-    }
+    vector_flatten(g.multi_indices, g.faces);
 }
 
 
