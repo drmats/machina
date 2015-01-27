@@ -166,15 +166,56 @@ std::size_t try_parse_face (
 
 
 /**
- *  "Flatten" faces to indices vector.
+ *  Parse input file line-by-line.
  */
-void faces_to_multi_indices (
-    const std::vector<face> &faces,
-    std::vector<multi_index> &multi_indices
-) {
-    for (auto fit = faces.begin();  fit != faces.end();  fit++) {
+void parse (geometry &g, std::ifstream &file_input) {
+    const unsigned int max_line_size { 8192 };
+    std::array<char, max_line_size> buffer;
+    std::string strbuf;
+    std::regex line_regex { "^\\s*(\\w+)\\s*(.*)$" };
+    std::smatch match;
+
+    while (!file_input.eof()) {
+        file_input.getline(buffer.data(), max_line_size);
+        strbuf = buffer.data();
+        if (std::regex_match(strbuf, match, line_regex)) {
+            if (match.size() == 3) {
+                if (match[1].str() == "v") {
+                    try_parse_vec(g.verts, match[2].str());
+                } else if (match[1].str() == "vn") {
+                    try_parse_vec(g.normals, match[2].str());
+                } else if (match[1].str() == "vt") {
+                    try_parse_vec(g.uvs, match[2].str());
+                } else if (match[1].str() == "f") {
+                    if (
+                        // try to parse face with vertex/uv/normal structure
+                        try_parse_face<'/'>(
+                            g.faces, match[2].str()
+                        ) == 0
+                    ) {
+                        // or try to parse face with vertex//normal structure
+                        try_parse_face<'/', '/'>(
+                            g.faces, match[2].str()
+                        );
+                    }
+                } else {
+                    std::cerr
+                        << "Ignoring line starting with "
+                        << "\"" << match[1].str() << "\"."
+                        << std::endl;
+                }
+            }
+        } else {
+            std::cerr
+                << "Ignoring comment (or some garbage) line."
+                << std::endl;
+        }
+    }
+
+    // "Flatten" faces to indices vector.
+    for (auto fit = g.faces.begin();  fit != g.faces.end();  fit++) {
         for (auto iit = fit->begin();  iit != fit->end();  iit++) {
-            multi_indices.push_back(*iit);
+            g.multi_indices.push_back(*iit);
         }
     }
 }
@@ -199,7 +240,7 @@ inline vun make_vun (const vec3 &v, const vec2 &u, const vec3 &n) {
 /**
  *  ...
  */
-void reindex (const geometry &in, geometry &out) {
+void reindex (geometry &out, const geometry &in) {
     std::map<vun, ushort> dict;
     ushort current_index { 0 };
     vun current_vun;
@@ -332,7 +373,7 @@ std::ostream& operator<< (std::ostream &os, const geometry &g) {
         << higher_enumerable_to_string<multi_index>(
             g.multi_indices, "mi ", "", multi_index_to_string, " ", "\n"
         )
-        << enumerable_to_string(g.indices, "indices ", "", " ", "\n");
+        << enumerable_to_string(g.indices, "i ", "", " ", "\n");
 }
 
 
@@ -342,12 +383,7 @@ std::ostream& operator<< (std::ostream &os, const geometry &g) {
  *  Reindex obj file -- multiple indexes to one index.
  */
 int main (int argc, char *argv[]) {
-    const unsigned int max_line_size { 8192 };
     std::ifstream file_input;
-    std::array<char, max_line_size> buffer;
-    std::string strbuf;
-    std::regex line_regex { "^\\s*(\\w+)\\s*(.*)$" };
-    std::smatch match;
     geometry input, output;
 
     // check for input file ...
@@ -363,55 +399,19 @@ int main (int argc, char *argv[]) {
         std::exit(EXIT_FAILURE);
     }
 
-    // parse input file line-by-line
-    while (!file_input.eof()) {
-        file_input.getline(buffer.data(), max_line_size);
-        strbuf = buffer.data();
-        if (std::regex_match(strbuf, match, line_regex)) {
-            if (match.size() == 3) {
-                if (match[1].str() == "v") {
-                    try_parse_vec(input.verts, match[2].str());
-                } else if (match[1].str() == "vn") {
-                    try_parse_vec(input.normals, match[2].str());
-                } else if (match[1].str() == "vt") {
-                    try_parse_vec(input.uvs, match[2].str());
-                } else if (match[1].str() == "f") {
-                    if (
-                        // try to parse face with vertex/uv/normal structure
-                        try_parse_face<'/'>(
-                            input.faces, match[2].str()
-                        ) == 0
-                    ) {
-                        // or try to parse face with vertex//normal structure
-                        try_parse_face<'/', '/'>(
-                            input.faces, match[2].str()
-                        );
-                    }
-                } else {
-                    std::cerr
-                        << "Ignoring line starting with "
-                        << "\"" << match[1].str() << "\"."
-                        << std::endl;
-                }
-            }
-        } else {
-            std::cerr
-                << "Ignoring comment (or some garbage) line."
-                << std::endl;
-        }
-    }
+    // parse input file
+    parse(input, file_input);
+
+    file_input.close();
 
     // ...
-    faces_to_multi_indices(input.faces, input.multi_indices);
-
-    // ...
-    reindex(input, output);
+    reindex(output, input);
 
     // print-out this stuff
     std::cout
-        << "-------------- Parsed input: --------------\n"
+        << "# -------------- Parsed input: --------------\n"
         << input
-        << "-------------- Parsed output: -------------\n"
+        << "# -------------- Parsed output: -------------\n"
         << output;
 
     std::exit(EXIT_SUCCESS);
