@@ -30,7 +30,6 @@ using vec3 = std::array<float, 3>;
 using flat = std::vector<float>;
 using multi_index = std::vector<ushort>;
 using face = std::vector<multi_index>;
-using vun = std::array<float, 8>;
 
 
 
@@ -84,6 +83,21 @@ void vector_flatten (
             out.push_back(el);
         });
     });
+}
+
+
+
+
+/**
+ *  Create std::vector from any iterable.
+ */
+template <
+    template <class, std::size_t...> class I,
+    class T,
+    std::size_t... Rest
+>
+std::vector<T> make_vector (const I<T, Rest...> &i) {
+    return std::vector<T> { i.begin(), i.end() };
 }
 
 
@@ -194,7 +208,7 @@ std::size_t try_parse_face (
 /**
  *  Parse input file line-by-line.
  */
-void parse (geometry &g, std::ifstream &file_input) {
+void parse_geometry (geometry &g, std::ifstream &file_input) {
     const unsigned int max_line_size { 8192 };
     std::array<char, max_line_size> buffer;
     std::string strbuf;
@@ -233,12 +247,12 @@ void parse (geometry &g, std::ifstream &file_input) {
             }
         } else {
             std::cerr
-                << "Ignoring comment (or some garbage) line."
+                << "Ignoring comment, empty or some garbage line."
                 << std::endl;
         }
     }
 
-    // "Flatten" faces to indices vector.
+    // "flatten" faces to indices vector.
     vector_flatten(g.multi_indices, g.faces);
 }
 
@@ -246,67 +260,65 @@ void parse (geometry &g, std::ifstream &file_input) {
 
 
 /**
- *  (vertex, uv, normal) -> vun
- */
-inline vun make_vun (const vec3 &v, const vec2 &u, const vec3 &n) {
-    return {
-        v[0], v[1], v[2],
-        u[0], u[1],
-        n[0], n[1], n[2]
-    };
-}
-
-
-
-
-/**
- *  ...
+ *  Index <- multi-index.
  */
 void reindex (geometry &out, const geometry &in) {
-    std::map<vun, ushort> dict;
+    std::map<flat, ushort> dict;
     ushort current_index { 0 };
-    vun current_vun;
-    std::map<vun, ushort>::iterator current;
-    static const vec2 empty_uv { 0.0, 0.0 };
-    vec3 const *current_vertex;
-    vec3 const *current_normal;
-    vec2 const *current_uv;
-    for (
-        auto multi_index = in.multi_indices.begin();
-        multi_index != in.multi_indices.end();
-        multi_index++
-    ) {
-        current_vertex = &in.verts[(*multi_index)[0] - 1];
-        if (multi_index->size() == 3) {
-            current_uv = &in.uvs[(*multi_index)[1] - 1];
-            current_normal = &in.normals[(*multi_index)[2] - 1];
-        } else {
-            current_uv = &empty_uv;
-            current_normal = &in.normals[(*multi_index)[1] - 1];
-        }
-        current_vun = make_vun(*current_vertex, *current_uv, *current_normal);
-        current = dict.find(current_vun);
-        if (current == dict.end()) {
-            dict.insert({current_vun, current_index});
-            out.verts.push_back(*current_vertex);
-            out.uvs.push_back(*current_uv);
-            out.normals.push_back(*current_normal);
-            out.indices.push_back(current_index);
-            current_index += 1;
-        } else {
-            out.indices.push_back(std::get<1>(*current));
-        }
-    }
+
+    std::for_each (
+        in.multi_indices.begin(),
+        in.multi_indices.end(),
+        [&] (const multi_index &mi) {
+            vec3 const *current_vertex = nullptr;
+            vec3 const *current_normal = nullptr;
+            vec2 const *current_uv = nullptr;
+            flat current_flat;
+
+            current_vertex = &in.verts[mi[0] - 1];
+            if (mi.size() == 2) {
+                current_normal = &in.normals[mi[1] - 1];
+                vector_flatten(current_flat, [&] () -> std::vector<flat> {
+                    return {
+                        make_vector(*current_vertex),
+                        make_vector(*current_normal)
+                    };
+                }());
+            } else {
+                current_uv = &in.uvs[mi[1] - 1];
+                current_normal = &in.normals[mi[2] - 1];
+                vector_flatten(current_flat, [&] () -> std::vector<flat> {
+                    return {
+                        make_vector(*current_vertex),
+                        make_vector(*current_uv),
+                        make_vector(*current_normal)
+                    };
+                }());
+            }
+
+            auto current = dict.find(current_flat);
+
+            if (current == dict.end()) {
+                dict.insert({current_flat, current_index});
+                out.verts.push_back(*current_vertex);
+                if (current_uv != nullptr) { out.uvs.push_back(*current_uv); }
+                out.normals.push_back(*current_normal);
+                out.indices.push_back(current_index);
+                current_index += 1;
+            } else {
+                out.indices.push_back(std::get<1>(*current));
+            }
+    });
 }
 
 
 
 
 /**
- *  Enumerable to string serialization.
+ *  Iterable to string serialization.
  */
 template <typename T>
-std::string enumerable_to_string (
+std::string iterable_to_string (
     const T &e,
     const std::string &px,
     const std::string &p,
@@ -330,10 +342,10 @@ std::string enumerable_to_string (
 
 
 /**
- *  Enumerable of enumerables to string serialization.
+ *  Iterable of iterables to string serialization.
  */
 template <typename T>
-std::string higher_enumerable_to_string (
+std::string higher_iterable_to_string (
     const std::vector<T> &ee,
     const std::string &px,
     const std::string &p,
@@ -362,40 +374,40 @@ std::string higher_enumerable_to_string (
  */
 std::ostream& operator<< (std::ostream &os, const geometry &g) {
     auto vec3_to_string = [] (const vec3 &v) -> std::string {
-        return enumerable_to_string(v, "", "", " ", "");
+        return iterable_to_string(v, "", "", " ", "");
     };
     auto vec2_to_string = [] (const vec2 &v) -> std::string {
-        return enumerable_to_string(v, "", "", " ", "");
+        return iterable_to_string(v, "", "", " ", "");
     };
     auto multi_index_to_string = [] (const multi_index &mi) -> std::string {
         if (mi.size() == 2) {
-            return enumerable_to_string(mi, "", "", "//", "");
+            return iterable_to_string(mi, "", "", "//", "");
         }
-        return enumerable_to_string(mi, "", "", "/", "");
+        return iterable_to_string(mi, "", "", "/", "");
     };
 
     return os
-        << higher_enumerable_to_string<vec3>(
+        << higher_iterable_to_string<vec3>(
             g.verts, "", "v ", vec3_to_string, "\n", "\n"
         )
-        << higher_enumerable_to_string<vec2>(
+        << higher_iterable_to_string<vec2>(
             g.uvs, "", "vt ", vec2_to_string, "\n", "\n"
         )
-        << higher_enumerable_to_string<vec3>(
+        << higher_iterable_to_string<vec3>(
             g.normals, "", "vn ", vec3_to_string, "\n", "\n"
         )
-        << higher_enumerable_to_string<face>(
+        << higher_iterable_to_string<face>(
             g.faces, "", "f ",
             [&] (const face &f) -> std::string {
-                return higher_enumerable_to_string<multi_index>(
+                return higher_iterable_to_string<multi_index>(
                     f, "", "", multi_index_to_string, " ", ""
                 );
             }, "\n", "\n"
         )
-        << higher_enumerable_to_string<multi_index>(
+        << higher_iterable_to_string<multi_index>(
             g.multi_indices, "mi ", "", multi_index_to_string, " ", "\n"
         )
-        << enumerable_to_string(g.indices, "i ", "", " ", "\n");
+        << iterable_to_string(g.indices, "i ", "", " ", "\n");
 }
 
 
@@ -422,7 +434,7 @@ int main (int argc, char *argv[]) {
     }
 
     // parse input file
-    parse(input, file_input);
+    parse_geometry(input, file_input);
 
     file_input.close();
 
