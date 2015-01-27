@@ -22,6 +22,7 @@
 #include <map>
 #include <functional>
 #include <numeric>
+#include <algorithm>
 #include <cstdlib>
 
 using vec2 = std::array<float, 2>;
@@ -78,11 +79,11 @@ void vector_flatten (
             return acc + el.size();
         }
     ));
-    for (auto in_it = in.begin();  in_it != in.end();  in_it++) {
-        for (auto el_it = in_it->begin();  el_it != in_it->end();  el_it++) {
-            out.push_back(*el_it);
-        }
-    }
+    std::for_each(in.begin(), in.end(), [&] (const std::vector<T> &vec_el) {
+        std::for_each(vec_el.begin(), vec_el.end(), [&] (const T &el) {
+            out.push_back(el);
+        });
+    });
 }
 
 
@@ -164,25 +165,21 @@ std::size_t try_parse_face (
     static const std::regex vec_regex {
         construct_number_regex_string(n, sep, "")
     };
-    auto
-        vecs_begin = std::sregex_iterator(
-            strbuf.begin(), strbuf.end(), vec_regex
-        ),
-        vecs_end = std::sregex_iterator();
-    multi_index mi;
     face current_face;
 
-    for (auto it = vecs_begin;  it != vecs_end;  it++) {
-        if (it->size() == 1+2*n) {
-            try {
-                mi.clear();
+    std::for_each(
+        std::sregex_iterator(strbuf.begin(), strbuf.end(), vec_regex),
+        std::sregex_iterator(),
+        [&] (const std::smatch &match) {
+            multi_index mi;
+            if (match.size() == 1+2*n) {
                 for (std::size_t i = 1;  i < 1+2*n;  i += 2) {
-                    mi.push_back(std::stod((*it)[i].str()));
+                    mi.push_back(std::stod(match[i].str()));
                 }
-            } catch (...) { continue; }
-            current_face.push_back(mi);
-        }
-    }
+                current_face.push_back(mi);
+            }
+    });
+
     if (current_face.size() != 0) {
         faces.push_back(current_face);
         return 1;
