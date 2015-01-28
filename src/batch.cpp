@@ -143,11 +143,15 @@ TriangleBatch::~TriangleBatch () {
  */
 TriangleBatch& TriangleBatch::prepare (
     const std::vector<vec3> &verts,
-    const std::vector<vec3i> &faces
+    const std::vector<vec3> &normals,
+    const std::vector<vec2> &uvs,
+    const std::vector<GLushort> &indices
 ) {
 
     this->length[Batch::buf_index::verts] = verts.size();
-    this->length[Batch::buf_index::faces] = faces.size();
+    this->length[Batch::buf_index::normals] = normals.size();
+    this->length[Batch::buf_index::uvs] = uvs.size();
+    this->length[Batch::buf_index::indices] = indices.size();
 
     // VAO -- generate and bind
     glGenVertexArrays(1, &this->vertex_array_object);
@@ -170,12 +174,40 @@ TriangleBatch& TriangleBatch::prepare (
         3, GL_FLOAT, GL_FALSE, 0, 0
     );
 
-    // faces
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffer[Batch::buf_index::faces]);
+    // vertex normals
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::normals]);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        this->length[Batch::buf_index::normals] * sizeof(vec3),
+        normals.data(),
+        GL_STATIC_DRAW
+    );
+    glEnableVertexAttribArray(Shader::attrib_index::normal);
+    glVertexAttribPointer(
+        Shader::attrib_index::normal,
+        3, GL_FLOAT, GL_FALSE, 0, 0
+    );
+
+    // vertex uvs
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::uvs]);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        this->length[Batch::buf_index::uvs] * sizeof(vec2),
+        uvs.data(),
+        GL_STATIC_DRAW
+    );
+    glEnableVertexAttribArray(Shader::attrib_index::uv);
+    glVertexAttribPointer(
+        Shader::attrib_index::normal,
+        2, GL_FLOAT, GL_FALSE, 0, 0
+    );
+
+    // indices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffer[Batch::buf_index::indices]);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        this->length[Batch::buf_index::faces] * sizeof(vec3i),
-        faces.data(),
+        this->length[Batch::buf_index::indices] * sizeof(GLushort),
+        indices.data(),
         GL_STATIC_DRAW
     );
 
@@ -195,7 +227,7 @@ void TriangleBatch::draw () const {
     glBindVertexArray(this->vertex_array_object);
     glDrawElements(
         GL_TRIANGLES,
-        this->length[Batch::buf_index::faces] * 3,
+        this->length[Batch::buf_index::indices],
         GL_UNSIGNED_SHORT,
         0
     );

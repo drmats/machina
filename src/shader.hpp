@@ -55,8 +55,9 @@ public:
      */
     enum attrib_index : GLushort {
         vertex = 0,
-        color = 1,
-        normal = 2
+        normal = 1,
+        uv = 2,
+        color = 3
     };
 
 

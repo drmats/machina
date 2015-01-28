@@ -30,7 +30,9 @@ public:
      */
     enum buf_index : GLushort {
         verts = 0,
-        faces = 1
+        normals = 1,
+        uvs = 2,
+        indices = 3
     };
 
 
@@ -110,8 +112,8 @@ public:
  */
 class TriangleBatch : public Batch {
 
+    using vec2 = m3d::GVector2<GLfloat>;
     using vec3 = m3d::GVector3<GLfloat>;
-    using vec3i = m3d::GVector3<GLushort>;
 
 
 protected:
@@ -119,7 +121,7 @@ protected:
     /**
      *  Number of allocated VBOs.
      */
-    static const GLushort buff_amount { 2 };
+    static const GLushort buff_amount { 4 };
 
 
     /**
@@ -150,7 +152,9 @@ public:
      */
     TriangleBatch& prepare (
         const std::vector<vec3> &,
-        const std::vector<vec3i> &
+        const std::vector<vec3> &,
+        const std::vector<vec2> &,
+        const std::vector<GLushort> &
     );
 
 

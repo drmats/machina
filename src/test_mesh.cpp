@@ -23,14 +23,18 @@ namespace machina {
  *  Something built with triangles...
  */
 std::shared_ptr<TriangleBatch> test_mesh () {
+    using vec2 = m3d::GVector2<GLfloat>;
     using vec3 = m3d::GVector3<GLfloat>;
-    using vec3i = m3d::GVector3<GLushort>;
-    std::vector<vec3> verts;
-    std::vector<vec3i> faces;
+    std::vector<vec3> verts, normals;
+    std::vector<vec2> uvs;
+    std::vector<GLushort> indices;
     auto batch = std::make_shared<TriangleBatch>();
 
     #define v(x, y, z) verts.push_back(vec3(x, y, z))
-    #define f(a, b, c) faces.push_back(vec3i(a-1, b-1, c-1))
+    #define f(a, b, c) \
+        indices.push_back(a-1); \
+        indices.push_back(b-1); \
+        indices.push_back(c-1)
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -1518,7 +1522,7 @@ std::shared_ptr<TriangleBatch> test_mesh () {
     #undef f
     #undef v
 
-    batch->prepare(verts, faces);
+    batch->prepare(verts, normals, uvs, indices);
 
     return batch;
 
