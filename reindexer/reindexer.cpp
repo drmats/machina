@@ -97,9 +97,23 @@ template <
     class T,
     std::size_t... Rest
 >
-std::vector<T> make_vector (const I<T, Rest...> &i) {
+inline std::vector<T> make_vector (const I<T, Rest...> &i) {
     return { i.begin(), i.end() };
 }
+
+
+
+
+/**
+ *  Allocate space in a given vector.
+ */
+template <typename V>
+V& vector_allocate (V &c, std::size_t len) {
+    c.clear(); c.reserve(len);
+    c.insert(c.end(), len, { 0 });
+    c.shrink_to_fit();
+    return c;
+};
 
 
 
@@ -371,15 +385,20 @@ std::string higher_iterable_to_string (
 
 
 /**
+ *  Vec to string helper.
+ */
+template <typename V>
+inline std::string vec_to_string (const V &v) {
+    return iterable_to_string(v, "", "", " ", "");
+}
+
+
+
+
+/**
  *  Mesh serializer.
  */
 std::ostream& operator<< (std::ostream &os, const mesh &m) {
-    auto vec3_to_string = [] (const vec3 &v) -> std::string {
-        return iterable_to_string(v, "", "", " ", "");
-    };
-    auto vec2_to_string = [] (const vec2 &v) -> std::string {
-        return iterable_to_string(v, "", "", " ", "");
-    };
     auto multi_index_to_string = [] (const multi_index &mi) -> std::string {
         if (mi.size() == 2) {
             return iterable_to_string(mi, "", "", "//", "");
@@ -389,13 +408,13 @@ std::ostream& operator<< (std::ostream &os, const mesh &m) {
 
     return os
         << higher_iterable_to_string<vec3>(
-            m.verts, "", "v ", vec3_to_string, "\n", "\n"
+            m.verts, "", "v ", vec_to_string<vec3>, "\n", "\n"
         )
         << higher_iterable_to_string<vec2>(
-            m.uvs, "", "vt ", vec2_to_string, "\n", "\n"
+            m.uvs, "", "vt ", vec_to_string<vec2>, "\n", "\n"
         )
         << higher_iterable_to_string<vec3>(
-            m.normals, "", "vn ", vec3_to_string, "\n", "\n"
+            m.normals, "", "vn ", vec_to_string<vec3>, "\n", "\n"
         )
         << higher_iterable_to_string<face>(
             m.faces, "", "f ",
@@ -415,21 +434,25 @@ std::ostream& operator<< (std::ostream &os, const mesh &m) {
 
 
 /**
- *  ...
+ *  Serialize mesh to binary format.
  */
 void write_bin_mesh (std::ofstream &file_output, mesh &m) {
-    std::size_t
+    static const char magic_string[4] { 'O', 'o', 'O', 'o' };
+    std::uint32_t
         uint32_s = sizeof(std::uint32_t),
         vec3_s = sizeof(vec3),
         vec2_s = sizeof(vec2),
-        ushort_s = sizeof(ushort);
-    std::uint32_t
+        ushort_s = sizeof(ushort),
         verts_length = static_cast<std::uint32_t>(m.verts.size()),
         uvs_length = static_cast<std::uint32_t>(m.uvs.size()),
         normals_length = static_cast<std::uint32_t>(m.normals.size()),
         indices_length = static_cast<std::uint32_t>(m.indices.size());
 
     file_output
+        .write(magic_string, 4)
+        .write(reinterpret_cast<const char*>(&vec3_s), uint32_s)
+        .write(reinterpret_cast<const char*>(&vec2_s), uint32_s)
+        .write(reinterpret_cast<const char*>(&ushort_s), uint32_s)
         .write(reinterpret_cast<const char*>(&verts_length), uint32_s)
         .write(reinterpret_cast<const char*>(&uvs_length), uint32_s)
         .write(reinterpret_cast<const char*>(&normals_length), uint32_s)
@@ -456,12 +479,68 @@ void write_bin_mesh (std::ofstream &file_output, mesh &m) {
 
 
 /**
+ *  Read mesh from binary format.
+ */
+void read_bin_mesh (mesh &m, std::ifstream &file_input) {
+    char magic_string[4] { 0 };
+    std::uint32_t
+        uint32_s = sizeof(std::uint32_t),
+        vec3_s, vec2_s, ushort_s,
+        verts_length,
+        uvs_length,
+        normals_length,
+        indices_length;
+
+    file_input.read(magic_string, 4);
+
+    if (std::strncmp("OoOo", magic_string, 4) != 0) {
+        std::cerr << "Not a .ooo format." << std::endl;
+        return;
+    }
+
+    file_input
+        .read(reinterpret_cast<char*>(&vec3_s), uint32_s)
+        .read(reinterpret_cast<char*>(&vec2_s), uint32_s)
+        .read(reinterpret_cast<char*>(&ushort_s),uint32_s)
+        .read(reinterpret_cast<char*>(&verts_length), uint32_s)
+        .read(reinterpret_cast<char*>(&uvs_length), uint32_s)
+        .read(reinterpret_cast<char*>(&normals_length), uint32_s)
+        .read(reinterpret_cast<char*>(&indices_length), uint32_s);
+
+    vector_allocate(m.verts, verts_length);
+    vector_allocate(m.uvs, uvs_length);
+    vector_allocate(m.normals, normals_length);
+    vector_allocate(m.indices, indices_length);
+
+    file_input
+        .read(
+            reinterpret_cast<char*>(m.verts.data()),
+            verts_length * vec3_s
+        )
+        .read(
+            reinterpret_cast<char*>(m.uvs.data()),
+            uvs_length * vec2_s
+        )
+        .read(
+            reinterpret_cast<char*>(m.normals.data()),
+            normals_length * vec3_s
+        )
+        .read(
+            reinterpret_cast<char*>(m.indices.data()),
+            indices_length * ushort_s
+        );
+}
+
+
+
+
+/**
  *  Reindex obj file -- multiple indexes to one index.
  */
 int main (int argc, char *argv[]) {
     std::ifstream file_input;
     std::ofstream file_output;
-    mesh input, output;
+    mesh input, output, check;
 
     // check for input file ...
     if (argc < 2) {
@@ -507,6 +586,26 @@ int main (int argc, char *argv[]) {
         write_bin_mesh(file_output, output);
 
         file_output.close();
+
+        // check what you did there...
+        file_input.open(
+            argv[2],
+            std::ios::in | std::ios::binary
+        );
+        if (!file_input) {
+            std::cerr << "Cannot check file: " << argv[2] << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+
+        // ...
+        read_bin_mesh(check, file_input);
+
+        file_input.close();
+
+        // print-out again
+        std::cout
+            << "# -------------- Checked input: -------------\n"
+            << check;
     }
 
     std::exit(EXIT_SUCCESS);
