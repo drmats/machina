@@ -182,15 +182,15 @@ std::size_t try_parse_vec (
 
 /**
  *  Try to parse line with any number of index-vectors
- *  (a/b/c a/b/c ... or a//c a//c ...).
+ *  (a/b/c a/b/c ... or a//c a//c ... or a a ...).
  */
-template <const char sep1, const char sep2 = '\0'>
+template <const char sep1 = '\0', const char sep2 = '\0'>
 std::size_t try_parse_face (
     std::vector<face> &faces,
     const std::string &strbuf
 ) {
     static const char sep[] { sep1, sep2 };
-    static const size_t n { 4 - std::strlen(sep) };
+    static const size_t n { (3 - std::strlen(sep)) % 3 + 1 };
     static const std::regex vec_regex {
         construct_number_regex_string(n, sep, "")
     };
@@ -242,16 +242,29 @@ void parse_mesh (mesh &m, std::ifstream &file_input) {
                 } else if (match[1].str() == "vt") {
                     try_parse_vec(m.uvs, match[2].str());
                 } else if (match[1].str() == "f") {
+                    // try to parse face with 'vertex/uv/normal' structure
                     if (
-                        // try to parse face with vertex/uv/normal structure
                         try_parse_face<'/'>(
                             m.faces, match[2].str()
                         ) == 0
                     ) {
-                        // or try to parse face with vertex//normal structure
-                        try_parse_face<'/', '/'>(
-                            m.faces, match[2].str()
-                        );
+                        // or try to parse face with 'vertex//normal' structure
+                        if (
+                            try_parse_face<'/', '/'>(
+                                m.faces, match[2].str()
+                            ) == 0
+                        ) {
+                            // or try to parse face with 'vertex' structure
+                            if (
+                                try_parse_face(
+                                    m.faces, match[2].str()
+                                ) == 0
+                            ) {
+                                std::cerr
+                                    << "Unrecognized face line."
+                                    << std::endl;
+                            }
+                        }
                     }
                 } else {
                     std::cerr
@@ -291,7 +304,13 @@ void reindex (mesh &out, const mesh &in) {
             flat current_flat;
 
             current_vertex = &in.verts[mi[0] - 1];
-            if (mi.size() == 2) {
+            if (mi.size() == 1) {
+                vector_flatten(current_flat, [&] () -> std::vector<flat> {
+                    return {
+                        make_vector(*current_vertex),
+                    };
+                }());
+            } else if (mi.size() == 2) {
                 current_normal = &in.normals[mi[1] - 1];
                 vector_flatten(current_flat, [&] () -> std::vector<flat> {
                     return {
@@ -316,8 +335,12 @@ void reindex (mesh &out, const mesh &in) {
             if (current == dict.end()) {
                 dict.insert({current_flat, current_index});
                 out.verts.push_back(*current_vertex);
-                if (current_uv != nullptr) { out.uvs.push_back(*current_uv); }
-                out.normals.push_back(*current_normal);
+                if (current_uv != nullptr) {
+                    out.uvs.push_back(*current_uv);
+                }
+                if (current_normal != nullptr) {
+                    out.normals.push_back(*current_normal);
+                }
                 out.indices.push_back(current_index);
                 current_index += 1;
             } else {
