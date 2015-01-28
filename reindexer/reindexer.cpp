@@ -189,7 +189,7 @@ std::size_t try_parse_face (
     std::vector<face> &faces,
     const std::string &strbuf
 ) {
-    static const char sep[] { sep1, sep2 };
+    static const char sep[3] { sep1, sep2, '\0' };
     static const size_t n { (3 - std::strlen(sep)) % 3 + 1 };
     static const std::regex vec_regex {
         construct_number_regex_string(n, sep, "")
