@@ -175,32 +175,36 @@ TriangleBatch& TriangleBatch::prepare (
     );
 
     // vertex normals
-    glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::normals]);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        this->length[Batch::buf_index::normals] * sizeof(vec3),
-        normals.data(),
-        GL_STATIC_DRAW
-    );
-    glEnableVertexAttribArray(Shader::attrib_index::normal);
-    glVertexAttribPointer(
-        Shader::attrib_index::normal,
-        3, GL_FLOAT, GL_FALSE, 0, 0
-    );
+    if (this->length[Batch::buf_index::normals] != 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::normals]);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            this->length[Batch::buf_index::normals] * sizeof(vec3),
+            normals.data(),
+            GL_STATIC_DRAW
+        );
+        glEnableVertexAttribArray(Shader::attrib_index::normal);
+        glVertexAttribPointer(
+            Shader::attrib_index::normal,
+            3, GL_FLOAT, GL_FALSE, 0, 0
+        );
+    }
 
     // vertex uvs
-    glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::uvs]);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        this->length[Batch::buf_index::uvs] * sizeof(vec2),
-        uvs.data(),
-        GL_STATIC_DRAW
-    );
-    glEnableVertexAttribArray(Shader::attrib_index::uv);
-    glVertexAttribPointer(
-        Shader::attrib_index::normal,
-        2, GL_FLOAT, GL_FALSE, 0, 0
-    );
+    if (this->length[Batch::buf_index::uvs] != 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, this->buffer[Batch::buf_index::uvs]);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            this->length[Batch::buf_index::uvs] * sizeof(vec2),
+            uvs.data(),
+            GL_STATIC_DRAW
+        );
+        glEnableVertexAttribArray(Shader::attrib_index::uv);
+        glVertexAttribPointer(
+            Shader::attrib_index::normal,
+            2, GL_FLOAT, GL_FALSE, 0, 0
+        );
+    }
 
     // indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffer[Batch::buf_index::indices]);
