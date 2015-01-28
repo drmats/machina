@@ -23,6 +23,7 @@
 #include <functional>
 #include <numeric>
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 
 using vec2 = std::array<float, 2>;
@@ -35,7 +36,7 @@ using face = std::vector<multi_index>;
 
 
 /**
- *  Geometry container.
+ *  Mesh container.
  */
 typedef struct {
     std::vector<vec3> verts;
@@ -44,7 +45,7 @@ typedef struct {
     std::vector<face> faces;
     std::vector<multi_index> multi_indices;
     std::vector<ushort> indices;
-} geometry;
+} mesh;
 
 
 
@@ -97,7 +98,7 @@ template <
     std::size_t... Rest
 >
 std::vector<T> make_vector (const I<T, Rest...> &i) {
-    return std::vector<T> { i.begin(), i.end() };
+    return { i.begin(), i.end() };
 }
 
 
@@ -208,7 +209,7 @@ std::size_t try_parse_face (
 /**
  *  Parse input file line-by-line.
  */
-void parse_geometry (geometry &g, std::ifstream &file_input) {
+void parse_mesh (mesh &m, std::ifstream &file_input) {
     const unsigned int max_line_size { 8192 };
     std::array<char, max_line_size> buffer;
     std::string strbuf;
@@ -221,21 +222,21 @@ void parse_geometry (geometry &g, std::ifstream &file_input) {
         if (std::regex_match(strbuf, match, line_regex)) {
             if (match.size() == 3) {
                 if (match[1].str() == "v") {
-                    try_parse_vec(g.verts, match[2].str());
+                    try_parse_vec(m.verts, match[2].str());
                 } else if (match[1].str() == "vn") {
-                    try_parse_vec(g.normals, match[2].str());
+                    try_parse_vec(m.normals, match[2].str());
                 } else if (match[1].str() == "vt") {
-                    try_parse_vec(g.uvs, match[2].str());
+                    try_parse_vec(m.uvs, match[2].str());
                 } else if (match[1].str() == "f") {
                     if (
                         // try to parse face with vertex/uv/normal structure
                         try_parse_face<'/'>(
-                            g.faces, match[2].str()
+                            m.faces, match[2].str()
                         ) == 0
                     ) {
                         // or try to parse face with vertex//normal structure
                         try_parse_face<'/', '/'>(
-                            g.faces, match[2].str()
+                            m.faces, match[2].str()
                         );
                     }
                 } else {
@@ -253,7 +254,7 @@ void parse_geometry (geometry &g, std::ifstream &file_input) {
     }
 
     // "flatten" faces to indices vector.
-    vector_flatten(g.multi_indices, g.faces);
+    vector_flatten(m.multi_indices, m.faces);
 }
 
 
@@ -262,7 +263,7 @@ void parse_geometry (geometry &g, std::ifstream &file_input) {
 /**
  *  Index <- multi-index.
  */
-void reindex (geometry &out, const geometry &in) {
+void reindex (mesh &out, const mesh &in) {
     std::map<flat, ushort> dict;
     ushort current_index { 0 };
 
@@ -370,9 +371,9 @@ std::string higher_iterable_to_string (
 
 
 /**
- *  Geometry serializer.
+ *  Mesh serializer.
  */
-std::ostream& operator<< (std::ostream &os, const geometry &g) {
+std::ostream& operator<< (std::ostream &os, const mesh &m) {
     auto vec3_to_string = [] (const vec3 &v) -> std::string {
         return iterable_to_string(v, "", "", " ", "");
     };
@@ -388,16 +389,16 @@ std::ostream& operator<< (std::ostream &os, const geometry &g) {
 
     return os
         << higher_iterable_to_string<vec3>(
-            g.verts, "", "v ", vec3_to_string, "\n", "\n"
+            m.verts, "", "v ", vec3_to_string, "\n", "\n"
         )
         << higher_iterable_to_string<vec2>(
-            g.uvs, "", "vt ", vec2_to_string, "\n", "\n"
+            m.uvs, "", "vt ", vec2_to_string, "\n", "\n"
         )
         << higher_iterable_to_string<vec3>(
-            g.normals, "", "vn ", vec3_to_string, "\n", "\n"
+            m.normals, "", "vn ", vec3_to_string, "\n", "\n"
         )
         << higher_iterable_to_string<face>(
-            g.faces, "", "f ",
+            m.faces, "", "f ",
             [&] (const face &f) -> std::string {
                 return higher_iterable_to_string<multi_index>(
                     f, "", "", multi_index_to_string, " ", ""
@@ -405,9 +406,50 @@ std::ostream& operator<< (std::ostream &os, const geometry &g) {
             }, "\n", "\n"
         )
         << higher_iterable_to_string<multi_index>(
-            g.multi_indices, "mi ", "", multi_index_to_string, " ", "\n"
+            m.multi_indices, "mi ", "", multi_index_to_string, " ", "\n"
         )
-        << iterable_to_string(g.indices, "i ", "", " ", "\n");
+        << iterable_to_string(m.indices, "i ", "", " ", "\n");
+}
+
+
+
+
+/**
+ *  ...
+ */
+void write_bin_mesh (std::ofstream &file_output, mesh &m) {
+    std::size_t
+        uint32_s = sizeof(std::uint32_t),
+        vec3_s = sizeof(vec3),
+        vec2_s = sizeof(vec2),
+        ushort_s = sizeof(ushort);
+    std::uint32_t
+        verts_length = static_cast<std::uint32_t>(m.verts.size()),
+        uvs_length = static_cast<std::uint32_t>(m.uvs.size()),
+        normals_length = static_cast<std::uint32_t>(m.normals.size()),
+        indices_length = static_cast<std::uint32_t>(m.indices.size());
+
+    file_output
+        .write(reinterpret_cast<const char*>(&verts_length), uint32_s)
+        .write(reinterpret_cast<const char*>(&uvs_length), uint32_s)
+        .write(reinterpret_cast<const char*>(&normals_length), uint32_s)
+        .write(reinterpret_cast<const char*>(&indices_length), uint32_s)
+        .write(
+            reinterpret_cast<const char*>(m.verts.data()),
+            verts_length * vec3_s
+        )
+        .write(
+            reinterpret_cast<const char*>(m.uvs.data()),
+            uvs_length * vec2_s
+        )
+        .write(
+            reinterpret_cast<const char*>(m.normals.data()),
+            normals_length * vec3_s
+        )
+        .write(
+            reinterpret_cast<const char*>(m.indices.data()),
+            indices_length * ushort_s
+        );
 }
 
 
@@ -418,7 +460,8 @@ std::ostream& operator<< (std::ostream &os, const geometry &g) {
  */
 int main (int argc, char *argv[]) {
     std::ifstream file_input;
-    geometry input, output;
+    std::ofstream file_output;
+    mesh input, output;
 
     // check for input file ...
     if (argc < 2) {
@@ -434,7 +477,7 @@ int main (int argc, char *argv[]) {
     }
 
     // parse input file
-    parse_geometry(input, file_input);
+    parse_mesh(input, file_input);
 
     file_input.close();
 
@@ -447,6 +490,24 @@ int main (int argc, char *argv[]) {
         << input
         << "# -------------- Parsed output: -------------\n"
         << output;
+
+    // check for output file ...
+    if (argc == 3) {
+        // ... and try to open it
+        file_output.open(
+            argv[2],
+            std::ios::out | std::ios::binary | std::ios::trunc
+        );
+        if (!file_output) {
+            std::cerr << "Cannot open output file: " << argv[2] << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+
+        // ...
+        write_bin_mesh(file_output, output);
+
+        file_output.close();
+    }
 
     std::exit(EXIT_SUCCESS);
 }
