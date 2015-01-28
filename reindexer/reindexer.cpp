@@ -29,7 +29,7 @@
 using vec2 = std::array<float, 2>;
 using vec3 = std::array<float, 3>;
 using flat = std::vector<float>;
-using multi_index = std::vector<ushort>;
+using multi_index = std::vector<std::uint16_t>;
 using face = std::vector<multi_index>;
 
 
@@ -44,7 +44,7 @@ typedef struct {
     std::vector<vec3> normals;
     std::vector<face> faces;
     std::vector<multi_index> multi_indices;
-    std::vector<ushort> indices;
+    std::vector<std::uint16_t> indices;
 } mesh;
 
 
@@ -113,7 +113,7 @@ V& vector_allocate (V &c, std::size_t len) {
     c.insert(c.end(), len, { 0 });
     c.shrink_to_fit();
     return c;
-};
+}
 
 
 
@@ -291,8 +291,8 @@ void parse_mesh (mesh &m, std::ifstream &file_input) {
  *  Index <- multi-index.
  */
 void reindex (mesh &out, const mesh &in) {
-    std::map<flat, ushort> dict;
-    ushort current_index { 0 };
+    std::map<flat, std::uint16_t> dict;
+    std::uint16_t current_index { 0 };
 
     std::for_each (
         in.multi_indices.begin(),
@@ -465,7 +465,7 @@ void write_bin_mesh (std::ofstream &file_output, mesh &m) {
         uint32_s = sizeof(std::uint32_t),
         vec3_s = sizeof(vec3),
         vec2_s = sizeof(vec2),
-        ushort_s = sizeof(ushort),
+        ushort_s = sizeof(std::uint16_t),
         verts_length = static_cast<std::uint32_t>(m.verts.size()),
         uvs_length = static_cast<std::uint32_t>(m.uvs.size()),
         normals_length = static_cast<std::uint32_t>(m.normals.size()),
