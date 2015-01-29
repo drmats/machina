@@ -120,6 +120,7 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     precision highp float;
 
     uniform vec4 color;
+    uniform vec3 light_direction;
 
     smooth in vec3 frag_position;
     smooth in vec3 frag_mv_position;
@@ -127,7 +128,8 @@ const std::string Shader::fs_all_attrib = GLSL(130,
 
     out vec4 out_color;
 
-    const vec3 light_direction = vec3(0.0, 0.0, 1.0);
+    // const vec3 light_direction = vec3(0.0, 0.0, 1.0);
+    // vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 1.0)).xyz;
 
     // void main (void) {
     //     // mix position and normal as color

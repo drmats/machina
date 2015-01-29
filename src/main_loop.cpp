@@ -493,6 +493,8 @@ inline void MainLoop::draw () const {
         const mat4 &p_matrix,
         vec4 color
     ) {
+        static const vec3 light_direction { 0, 0, 1 };
+
         color[3] = 1;
 
         // load shader and ... draw things with it
@@ -505,6 +507,9 @@ inline void MainLoop::draw () const {
             }),
             std::make_tuple("color", [&] (GLint location) {
                 glUniform4fv(location, 1, *color);
+            }),
+            std::make_tuple("light_direction", [&] (GLint location) {
+                glUniform3fv(location, 1, *light_direction);
             })
         });
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
