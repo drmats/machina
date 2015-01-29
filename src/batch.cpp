@@ -26,7 +26,7 @@ VertexColorBatch::VertexColorBatch ():
     vertex_buffer { 0 },
     color_buffer { 0 },
     verts_length { 0 }
-    {}
+{}
 
 
 
@@ -120,7 +120,7 @@ TriangleBatch::TriangleBatch ():
     vertex_array_object { 0 },
     buffer { 0 },
     length { 0 }
-    {}
+{}
 
 
 
@@ -201,7 +201,7 @@ TriangleBatch& TriangleBatch::prepare (
         );
         glEnableVertexAttribArray(Shader::attrib_index::uv);
         glVertexAttribPointer(
-            Shader::attrib_index::normal,
+            Shader::attrib_index::uv,
             2, GL_FLOAT, GL_FALSE, 0, 0
         );
     }
