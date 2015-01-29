@@ -92,7 +92,7 @@ private:
     // shaders
     Shader
         vertex_color_attrib_shader,
-        vertex_color_uniform_shader;
+        all_attrib_shader;
 
 
     // loop sustaining variable

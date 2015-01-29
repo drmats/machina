@@ -68,6 +68,8 @@ public:
     static const std::string fs_basic_color_uniform;
     static const std::string vs_basic_attribute_color;
     static const std::string fs_basic_color_in;
+    static const std::string vs_all_attrib;
+    static const std::string fs_all_attrib;
 
 
     /**

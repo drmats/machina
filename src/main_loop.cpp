@@ -13,7 +13,7 @@
 #include "main_loop.hpp"
 #include "machina.hpp"
 #include "primitives.hpp"
-#include "test_mesh.hpp"
+#include "mesh_loader.hpp"
 #include <tuple>
 
 namespace machina {
@@ -315,10 +315,12 @@ MainLoop::MainLoop (Machina *root):
     } },
 
     // some shader ...
-    vertex_color_uniform_shader {
-        Shader::vs_basic,
-        Shader::fs_basic_color_uniform, {
-            std::make_tuple("vertex_position", Shader::attrib_index::vertex)
+    all_attrib_shader {
+        Shader::vs_all_attrib,
+        Shader::fs_all_attrib, {
+            std::make_tuple("vert_position", Shader::attrib_index::vertex),
+            std::make_tuple("vert_normal", Shader::attrib_index::normal),
+            std::make_tuple("vert_uv", Shader::attrib_index::uv)
     } }
 {
     this->assign_default_handlers();
@@ -459,8 +461,9 @@ inline void MainLoop::process_events () {
  */
 inline void MainLoop::draw () const {
     mat4
-        vp_matrix { this->camera.get_vp_matrix() },
-        m_matrix;
+        v_matrix { this->camera.transform.get_view_matrix() },
+        p_matrix { this->camera.projection.get_matrix() },
+        vp_matrix { this->camera.get_vp_matrix() };
 
     // drawing helper
     auto draw_wire_stuff = [this] (
@@ -483,53 +486,25 @@ inline void MainLoop::draw () const {
         scene[1]->draw();
         glPointSize(1.0f);
         scene[2]->draw();
-        scene[3]->draw();
-        glLineWidth(1.0f);
-        scene[4]->draw();
-        glLineWidth(1.4f);
-        scene[2]->draw();
     };
 
     // drawing helper
     auto draw_test_mesh = [this] (
         const std::shared_ptr<Batch> &batch,
-        const mat4 &mvp_matrix,
-        vec4 color
+        const mat4 &mv_matrix,
+        const mat4 &p_matrix
     ) {
-        color *= 0.25f;  color[3] = 1.0;
         // load shader and ... draw things with it
-        this->vertex_color_uniform_shader.use({
-            std::make_tuple("mvp_matrix", [&] (GLint location) {
-                glUniformMatrix4fv(location, 1, GL_FALSE, *mvp_matrix);
+        this->all_attrib_shader.use({
+            std::make_tuple("mv_matrix", [&] (GLint location) {
+                glUniformMatrix4fv(location, 1, GL_FALSE, *mv_matrix);
             }),
-            std::make_tuple("uniform_color", [&] (GLint location) {
-                glUniform4fv(location, 1, *color);
+            std::make_tuple("p_matrix", [&] (GLint location) {
+                glUniformMatrix4fv(location, 1, GL_FALSE, *p_matrix);
             })
         });
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         batch->draw();
-
-        color *= 4.0f;  color[3] = 1.0;
-        // wireframe ...
-        this->vertex_color_uniform_shader.use({
-            std::make_tuple("mvp_matrix", [&] (GLint location) {
-                glUniformMatrix4fv(
-                    location, 1, GL_FALSE,
-                    *(mvp_matrix*mat4().load_scale(1.003, 1.003, 1.003))
-                );
-            }),
-            std::make_tuple("uniform_color", [&] (GLint location) {
-                glUniform4fv(location, 1, *color);
-            })
-        });
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glLineWidth(1.0f);
-        glPolygonOffset(-0.05, -0.05f);
-        glEnable(GL_POLYGON_OFFSET_LINE);
-        glDisable(GL_LINE_SMOOTH);
-        batch->draw();
-        glEnable(GL_LINE_SMOOTH);
-        glDisable(GL_POLYGON_OFFSET_LINE);
     };
 
     // clear color and depth buffers
@@ -540,28 +515,25 @@ inline void MainLoop::draw () const {
 
     // draw test meshes in a circle around world origin
     for (int i = 0;  i < 12;  i++) {
-        m_matrix =
-            mat4().load_rotation(i * 30, 0, 1, 0) *
-            mat4().load_translation(0, 5.5, 65) *
-            mat4().load_rotation(-35, 1, 0, 0);
         draw_test_mesh(
-            this->scene[6],
-            vp_matrix * m_matrix,
-            vec4(
-                (m_matrix * vec4(1, 0, 0, 0)).normalize() * 0.5f +
-                vec4(1, 1, 1, 0)
-            ).normalize()
+            this->scene[3],
+            v_matrix * (
+                mat4().load_rotation(i * 30, 0, 1, 0) *
+                mat4().load_translation(0, 5.5, 65) *
+                mat4().load_rotation(-35, 1, 0, 0)
+            ),
+            p_matrix
         );
     }
 
     // draw test mesh in the center
     draw_test_mesh(
-        this->scene[6],
-        vp_matrix * (
+        this->scene[3],
+        v_matrix * (
             mat4().load_translation(0, 40, 0) *
             mat4().load_scale(4, 4, 4)
         ),
-        vec4(0.7, 0.7, 0.9, 1.0)
+        p_matrix
     );
 }
 
@@ -576,10 +548,7 @@ void MainLoop::run () {
     this->scene.push_back(primitives::axes(160.0f, 10.0f));
     this->scene.push_back(primitives::grid(160.0f, 10.0f, vec4(0.15f, 0.15f, 0.25f, 1)));
     this->scene.push_back(primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f));
-    this->scene.push_back(primitives::this_thing(160.0f*2.0f, 10.0f, 1.0f, 1.0f, GL_POINTS));
-    this->scene.push_back(primitives::this_thing(160.0f*16.0f, 80.0f, 0.7f, 0.1f, GL_LINES));
-    this->scene.push_back(primitives::grid(1100.0f, 5.0f, vec4(0.35f, 0.35f, 0.45f, 0.05)));
-    this->scene.push_back(primitives::test_mesh());
+    this->scene.push_back(load_mesh("../models/monkey.ooo"));
 
     this->running = true;
     while (this->running) {

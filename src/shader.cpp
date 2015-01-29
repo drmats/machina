@@ -40,6 +40,7 @@ GLchar Shader::message_buffer[GL_INFO_LOG_LENGTH] { 0 };
 const std::string Shader::vs_basic = GLSL(130,
     uniform mat4 mvp_matrix;
     in vec3 vertex_position;
+
     void main (void) {
         gl_Position = mvp_matrix * vec4(vertex_position, 1);
     }
@@ -50,6 +51,7 @@ const std::string Shader::vs_basic = GLSL(130,
 const std::string Shader::fs_basic_color_uniform = GLSL(130,
     uniform vec4 uniform_color;
     out vec4 fragment_color;
+
     void main (void) {
         fragment_color = uniform_color;
     }
@@ -62,6 +64,7 @@ const std::string Shader::vs_basic_attribute_color = GLSL(130,
     in vec3 vertex_position;
     in vec4 vertex_color;
     smooth out vec4 vertex_fragment_color;
+
     void main (void) {
         vertex_fragment_color = vertex_color;
         gl_Position = mvp_matrix * vec4(vertex_position, 1);
@@ -73,8 +76,51 @@ const std::string Shader::vs_basic_attribute_color = GLSL(130,
 const std::string Shader::fs_basic_color_in = GLSL(130,
     smooth in vec4 vertex_fragment_color;
     out vec4 fragment_color;
+
     void main (void) {
         fragment_color = vertex_fragment_color;
+    }
+);
+
+
+// all attrib vertex shader
+const std::string Shader::vs_all_attrib = GLSL(130,
+    precision highp float;
+    in vec3 vert_position;
+    in vec3 vert_normal;
+    in vec2 vert_uv;
+    uniform mat4 mv_matrix;
+    uniform mat4 p_matrix;
+    smooth out vec3 frag_normal;
+    smooth out vec3 frag_position;
+    smooth out vec3 frag_mv_position;
+
+    void main (void) {
+        vec4 mv_position = mv_matrix * vec4(vert_position, 1);
+        mat3 normal_matrix;
+
+        normal_matrix[0] = mv_matrix[0].xyz;
+        normal_matrix[1] = mv_matrix[1].xyz;
+        normal_matrix[2] = mv_matrix[2].xyz;
+
+        frag_position = vert_position;
+        frag_mv_position = mv_position.xyz;
+        frag_normal = normalize(normal_matrix * vert_normal);
+
+        gl_Position = p_matrix * mv_position;
+    }
+);
+
+
+// all attrib fragment shader
+const std::string Shader::fs_all_attrib = GLSL(130,
+    precision highp float;
+    smooth in vec3 frag_position;
+    smooth in vec3 frag_mv_position;
+    smooth in vec3 frag_normal;
+
+    void main (void) {
+        gl_FragColor = vec4(frag_normal, 1);
     }
 );
 
