@@ -83,7 +83,9 @@ private:
 
     // necessary time variables
     std::chrono::steady_clock::time_point time_mark;
-    std::chrono::milliseconds elapsed_time;
+    GLulong
+        elapsed_time,
+        total_time;
 
 
     // main camera

@@ -310,6 +310,7 @@ MainLoop::MainLoop (Machina *root):
     // time
     time_mark { std::chrono::steady_clock::now() },
     elapsed_time { 0 },
+    total_time { 0 },
 
     // some shader ...
     vertex_color_attrib_shader {
@@ -467,14 +468,15 @@ inline void MainLoop::draw () const {
         p_matrix { this->camera.projection.get_matrix() },
         vp_matrix { this->camera.get_vp_matrix() },
         m_matrix;
-
-    static mat4 test_mesh_m_matrix {
+    static mat4
+        big_mesh_m_matrix {
             mat4().load_translation(0, 40, 0) *
             mat4().load_scale(4, 4, 4)
-    };
-    test_mesh_m_matrix =
-        test_mesh_m_matrix *
-        mat4().load_rotation(this->elapsed_time.count()*0.1, 0, 1, 0);
+        };
+
+    big_mesh_m_matrix =
+        mat4().load_rotation(this->elapsed_time*0.1, 0, 1, 0) *
+        big_mesh_m_matrix;
 
     // drawing helper
     auto draw_wire_stuff = [this] (
@@ -538,9 +540,23 @@ inline void MainLoop::draw () const {
     // draw test meshes in a circle around world origin
     for (int i = 0;  i < 12;  i++) {
         m_matrix =
-            mat4().load_rotation(i * 30, 0, 1, 0) *
-            mat4().load_translation(0, 5.5, 65) *
-            mat4().load_rotation(-35, 1, 0, 0);
+            mat4().load_rotation(
+                i * 30 + std::sin(this->total_time*0.008+i)*3,
+                0, 1, 0
+            ) *
+            mat4().load_translation(
+                0,
+                5.5 + std::sin(this->total_time*0.006+i)*8+8,
+                65 + std::sin(this->total_time*0.004+i)*12+12
+            ) *
+            mat4().load_rotation(
+                -35 - (std::sin(this->total_time*0.010+i)*16+16),
+                1, 0, 0
+            ) *
+            mat4().load_rotation(
+                std::sin(this->total_time*0.012+i)*22,
+                0, 1, 0
+            );
         draw_test_mesh(
             this->scene[3],
             v_matrix * m_matrix,
@@ -555,7 +571,7 @@ inline void MainLoop::draw () const {
     // draw test mesh in the center
     draw_test_mesh(
         this->scene[3],
-        v_matrix * test_mesh_m_matrix,
+        v_matrix * big_mesh_m_matrix,
         p_matrix,
         vec4(0.2, 0.6, 0.8, 1.0)
     );
@@ -587,7 +603,8 @@ void MainLoop::run () {
         this->elapsed_time =
             std::chrono::duration_cast<std::chrono::milliseconds>(
                 time_mark - this->time_mark
-            );
+            ).count();
+        this->total_time += this->elapsed_time;
     }
 }
 
