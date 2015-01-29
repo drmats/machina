@@ -555,6 +555,16 @@ public:
         return *this;
     }
 
+
+    inline GVector3<T> xyz () {
+        return GVector3<T> { this->data[0], this->data[1], this->data[1] };
+    }
+
+
+    inline GVector3<T> rgb () {
+        return this->xyz();
+    }
+
 };
 
 
