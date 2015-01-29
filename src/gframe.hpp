@@ -43,7 +43,7 @@ public:
      *  GFrame initialization.
      */
     GFrame ();
-    GFrame (const mat4);
+    GFrame (const mat4 &);
 
 
     /**

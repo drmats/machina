@@ -33,7 +33,7 @@ GFrame<T>::GFrame ():
  *  GFrame initialization (build from matrix).
  */
 template <typename T>
-GFrame<T>::GFrame (const mat4 m) {
+GFrame<T>::GFrame (const mat4 &m) {
     this->rebuild_from_matrix(m);
 }
 
