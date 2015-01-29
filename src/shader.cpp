@@ -125,11 +125,13 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     smooth in vec3 frag_mv_position;
     smooth in vec3 frag_normal;
 
+    out vec4 out_color;
+
     const vec3 light_direction = vec3(0.0, 0.0, 1.0);
 
     // void main (void) {
     //     // mix position and normal as color
-    //     // gl_FragColor = vec4(
+    //     // out_color = vec4(
     //     //     mix(
     //     //         normalize(abs(frag_position)),
     //     //         frag_normal,
@@ -138,9 +140,9 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     //     // );
 
     //     // simple directional light
-    //     gl_FragColor.rgb =
+    //     out_color.rgb =
     //         color.rgb * max(0.0, dot(frag_normal, light_direction));
-    //     gl_FragColor.a = color.a;
+    //     out_color.a = color.a;
     // }
 
     vec2 phong_blinn_directional (
@@ -149,21 +151,28 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     ) {
         vec3 s = normalize(direction);
         vec3 v = normalize(-frag_mv_position);
-        vec3 n = normalize(frag_normal);
+        vec3 normal = normalize(frag_normal);
         vec3 h = normalize(v + s);
         return vec2(
-            ambient + diffuse * intensity * max(0.0, dot(n, s)),
-            specular * pow(max(0.0, dot(n, h)), shininess)
+            ambient + diffuse * intensity * max(0.0, dot(normal, s)),
+            specular * pow(max(0.0, dot(normal, h)), shininess)
         );
     }
+
+    // vec3 rim_light (vec3 color, float start, float end, float coef) {
+    //   vec3 normal = normalize(frag_normal);
+    //   vec3 eye = normalize(-frag_mv_position.xyz);
+    //   float rim = smoothstep(start, end, 1.0 - dot(normal, eye));
+    //   return clamp(rim, 0.0, 1.0) * coef * color;
+    // }
 
     void main () {
         vec2 params = phong_blinn_directional(
             light_direction, 16.0,
             0.1, 0.2, 0.8, 256.0
         );
-        gl_FragColor = mix(params.x * color,  params.y * color, 0.8);
-        gl_FragColor.a = color.a;
+        out_color.rgb = mix(params.x * color.rgb,  params.y * color.rgb, 0.8);
+        out_color.a = color.a;
     }
 );
 
