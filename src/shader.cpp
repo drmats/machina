@@ -127,19 +127,42 @@ const std::string Shader::fs_all_attrib = GLSL(130,
 
     const vec3 light_direction = vec3(0.0, 0.0, 1.0);
 
-    void main (void) {
-        // mix position and normal as color
-        // gl_FragColor = vec4(
-        //     mix(
-        //         normalize(abs(frag_position)),
-        //         frag_normal,
-        //         0.5
-        //     ), 1
-        // );
+    // void main (void) {
+    //     // mix position and normal as color
+    //     // gl_FragColor = vec4(
+    //     //     mix(
+    //     //         normalize(abs(frag_position)),
+    //     //         frag_normal,
+    //     //         0.5
+    //     //     ), 1
+    //     // );
 
-        // simple directional light
-        gl_FragColor.rgb =
-            color.rgb * max(0.0, dot(frag_normal, light_direction));
+    //     // simple directional light
+    //     gl_FragColor.rgb =
+    //         color.rgb * max(0.0, dot(frag_normal, light_direction));
+    //     gl_FragColor.a = color.a;
+    // }
+
+    vec2 phong_blinn_directional (
+        vec3 direction, float intensity,
+        float ambient, float diffuse, float specular, float shininess
+    ) {
+        vec3 s = normalize(direction);
+        vec3 v = normalize(-frag_mv_position);
+        vec3 n = normalize(frag_normal);
+        vec3 h = normalize(v + s);
+        return vec2(
+            ambient + diffuse * intensity * max(0.0, dot(n, s)),
+            specular * pow(max(0.0, dot(n, h)), shininess)
+        );
+    }
+
+    void main () {
+        vec2 params = phong_blinn_directional(
+            light_direction, 16.0,
+            0.1, 0.2, 0.8, 256.0
+        );
+        gl_FragColor = mix(params.x * color,  params.y * color, 0.8);
         gl_FragColor.a = color.a;
     }
 );
