@@ -11,6 +11,7 @@
 #define __MACHINA_CPP_ 1
 
 #include "machina.hpp"
+#include <iostream>
 
 namespace machina {
 

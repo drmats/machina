@@ -11,7 +11,6 @@
 #define __MACHINA_HPP_ 1
 
 #include "sdl_opengl.hpp"
-#include <iostream>
 #include <cstdlib>
 #include <memory>
 #include "main_loop.hpp"
