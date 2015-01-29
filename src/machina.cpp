@@ -109,6 +109,12 @@ void Machina::initialize_sdl () {
  *  Initialize viewport/drawing surface.
  */
 void Machina::initialize_surface () {
+
+    // SDL GL-related attributes
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
     // main window
     this->main_window = SDL_CreateWindow(
         PROGRAM_NAME.c_str(),
