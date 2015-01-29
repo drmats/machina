@@ -463,7 +463,8 @@ inline void MainLoop::draw () const {
     mat4
         v_matrix { this->camera.transform.get_view_matrix() },
         p_matrix { this->camera.projection.get_matrix() },
-        vp_matrix { this->camera.get_vp_matrix() };
+        vp_matrix { this->camera.get_vp_matrix() },
+        m_matrix;
 
     // drawing helper
     auto draw_wire_stuff = [this] (
@@ -492,8 +493,11 @@ inline void MainLoop::draw () const {
     auto draw_test_mesh = [this] (
         const std::shared_ptr<Batch> &batch,
         const mat4 &mv_matrix,
-        const mat4 &p_matrix
+        const mat4 &p_matrix,
+        vec4 color
     ) {
+        color[3] = 1;
+
         // load shader and ... draw things with it
         this->all_attrib_shader.use({
             std::make_tuple("mv_matrix", [&] (GLint location) {
@@ -501,6 +505,9 @@ inline void MainLoop::draw () const {
             }),
             std::make_tuple("p_matrix", [&] (GLint location) {
                 glUniformMatrix4fv(location, 1, GL_FALSE, *p_matrix);
+            }),
+            std::make_tuple("color", [&] (GLint location) {
+                glUniform4fv(location, 1, *color);
             })
         });
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -515,14 +522,18 @@ inline void MainLoop::draw () const {
 
     // draw test meshes in a circle around world origin
     for (int i = 0;  i < 12;  i++) {
+        m_matrix =
+            mat4().load_rotation(i * 30, 0, 1, 0) *
+            mat4().load_translation(0, 5.5, 65) *
+            mat4().load_rotation(-35, 1, 0, 0);
         draw_test_mesh(
             this->scene[3],
-            v_matrix * (
-                mat4().load_rotation(i * 30, 0, 1, 0) *
-                mat4().load_translation(0, 5.5, 65) *
-                mat4().load_rotation(-35, 1, 0, 0)
-            ),
-            p_matrix
+            v_matrix * m_matrix,
+            p_matrix,
+            vec4(
+                (m_matrix * vec4(1, 0, 0, 0)).normalize() * 0.5f +
+                vec4(1, 1, 1, 0)
+            ).normalize()
         );
     }
 
@@ -533,7 +544,8 @@ inline void MainLoop::draw () const {
             mat4().load_translation(0, 40, 0) *
             mat4().load_scale(4, 4, 4)
         ),
-        p_matrix
+        p_matrix,
+        vec4(0.2, 0.6, 0.8, 1.0)
     );
 }
 

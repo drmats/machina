@@ -86,19 +86,22 @@ const std::string Shader::fs_basic_color_in = GLSL(130,
 // all attrib vertex shader
 const std::string Shader::vs_all_attrib = GLSL(130,
     precision highp float;
+
     in vec3 vert_position;
     in vec3 vert_normal;
     in vec2 vert_uv;
+
     uniform mat4 mv_matrix;
     uniform mat4 p_matrix;
+
     smooth out vec3 frag_normal;
     smooth out vec3 frag_position;
     smooth out vec3 frag_mv_position;
 
-    void main (void) {
-        vec4 mv_position = mv_matrix * vec4(vert_position, 1);
-        mat3 normal_matrix;
+    vec4 mv_position = mv_matrix * vec4(vert_position, 1);
+    mat3 normal_matrix;
 
+    void main (void) {
         normal_matrix[0] = mv_matrix[0].xyz;
         normal_matrix[1] = mv_matrix[1].xyz;
         normal_matrix[2] = mv_matrix[2].xyz;
@@ -115,18 +118,29 @@ const std::string Shader::vs_all_attrib = GLSL(130,
 // all attrib fragment shader
 const std::string Shader::fs_all_attrib = GLSL(130,
     precision highp float;
+
+    uniform vec4 color;
+
     smooth in vec3 frag_position;
     smooth in vec3 frag_mv_position;
     smooth in vec3 frag_normal;
 
+    const vec3 light_direction = vec3(0.0, 0.0, 1.0);
+
     void main (void) {
-        gl_FragColor = vec4(
-            mix(
-                normalize(abs(frag_position)),
-                frag_normal,
-                0.5
-            ), 1
-        );
+        // mix position and normal as color
+        // gl_FragColor = vec4(
+        //     mix(
+        //         normalize(abs(frag_position)),
+        //         frag_normal,
+        //         0.5
+        //     ), 1
+        // );
+
+        // simple directional light
+        gl_FragColor.rgb =
+            color.rgb * max(0.0, dot(frag_normal, light_direction));
+        gl_FragColor.a = color.a;
     }
 );
 
