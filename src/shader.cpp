@@ -120,7 +120,13 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     smooth in vec3 frag_normal;
 
     void main (void) {
-        gl_FragColor = vec4(frag_normal, 1);
+        gl_FragColor = vec4(
+            mix(
+                normalize(abs(frag_position)),
+                frag_normal,
+                0.5
+            ), 1
+        );
     }
 );
 
