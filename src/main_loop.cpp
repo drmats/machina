@@ -15,6 +15,7 @@
 #include "primitives.hpp"
 #include "mesh_loader.hpp"
 #include <tuple>
+#include <iostream>
 
 namespace machina {
 
@@ -306,6 +307,10 @@ MainLoop::MainLoop (Machina *root):
     // pointer to program's "root"
     root { root },
 
+    // time
+    time_mark { std::chrono::steady_clock::now() },
+    elapsed_time { 0 },
+
     // some shader ...
     vertex_color_attrib_shader {
         Shader::vs_basic_attribute_color,
@@ -463,6 +468,14 @@ inline void MainLoop::draw () const {
         vp_matrix { this->camera.get_vp_matrix() },
         m_matrix;
 
+    static mat4 test_mesh_m_matrix {
+            mat4().load_translation(0, 40, 0) *
+            mat4().load_scale(4, 4, 4)
+    };
+    test_mesh_m_matrix =
+        test_mesh_m_matrix *
+        mat4().load_rotation(this->elapsed_time.count()*0.1, 0, 1, 0);
+
     // drawing helper
     auto draw_wire_stuff = [this] (
         const std::vector<std::shared_ptr<Batch>> &scene,
@@ -542,10 +555,7 @@ inline void MainLoop::draw () const {
     // draw test mesh in the center
     draw_test_mesh(
         this->scene[3],
-        v_matrix * (
-            mat4().load_translation(0, 40, 0) *
-            mat4().load_scale(4, 4, 4)
-        ),
+        v_matrix * test_mesh_m_matrix,
         p_matrix,
         vec4(0.2, 0.6, 0.8, 1.0)
     );
@@ -558,17 +568,26 @@ inline void MainLoop::draw () const {
  *  Main application loop.
  */
 void MainLoop::run () {
+    std::chrono::steady_clock::time_point time_mark;
+
     // prepare "scene"
     this->scene.push_back(primitives::axes(160.0f, 10.0f));
     this->scene.push_back(primitives::grid(160.0f, 10.0f, vec4(0.15f, 0.15f, 0.25f, 1)));
     this->scene.push_back(primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f));
     this->scene.push_back(load_mesh("../models/monkey.ooo"));
 
+    time_mark = std::chrono::steady_clock::now();
     this->running = true;
     while (this->running) {
+        this->time_mark = time_mark;
         this->process_events();
         this->draw();
         SDL_GL_SwapWindow(this->root->main_window);
+        time_mark = std::chrono::steady_clock::now();
+        this->elapsed_time =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                time_mark - this->time_mark
+            );
     }
 }
 

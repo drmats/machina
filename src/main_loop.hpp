@@ -11,10 +11,10 @@
 #define __MAIN_LOOP_HPP_ 1
 
 #include "sdl_opengl.hpp"
-#include <iostream>
 #include <functional>
 #include <vector>
 #include <memory>
+#include <chrono>
 #include "camera.hpp"
 #include "batch.hpp"
 #include "shader.hpp"
@@ -79,6 +79,11 @@ private:
         void keyboard (MainLoop *, const SDL_Event &);
         void window (MainLoop *, const SDL_Event &);
     } default_handler;
+
+
+    // necessary time variables
+    std::chrono::steady_clock::time_point time_mark;
+    std::chrono::milliseconds elapsed_time;
 
 
     // main camera
