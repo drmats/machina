@@ -128,9 +128,6 @@ const std::string Shader::fs_all_attrib = GLSL(130,
 
     out vec4 out_color;
 
-    // const vec3 light_direction = vec3(0.0, 0.0, 1.0);
-    // vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 1.0)).xyz;
-
     // void main (void) {
     //     // mix position and normal as color
     //     // out_color = vec4(
@@ -147,7 +144,7 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     //     out_color.a = color.a;
     // }
 
-    vec2 phong_blinn_directional (
+    vec3 phong_blinn_edge_directional (
         vec3 direction, float intensity,
         float ambient, float diffuse, float specular, float shininess
     ) {
@@ -155,9 +152,11 @@ const std::string Shader::fs_all_attrib = GLSL(130,
         vec3 v = normalize(-frag_mv_position);
         vec3 normal = normalize(frag_normal);
         vec3 h = normalize(v + s);
-        return vec2(
+        float edge = 1.0 - abs(dot(v, normal));
+        return vec3(
             ambient + diffuse * intensity * max(0.0, dot(normal, s)),
-            specular * pow(max(0.0, dot(normal, h)), shininess)
+            specular * pow(max(0.0, dot(normal, h)), shininess),
+            edge*edge
         );
     }
 
@@ -169,11 +168,14 @@ const std::string Shader::fs_all_attrib = GLSL(130,
     // }
 
     void main () {
-        vec2 params = phong_blinn_directional(
-            light_direction, 16.0,
+        vec3 params = phong_blinn_edge_directional(
+            light_direction, 4.0,
             0.1, 0.2, 0.8, 256.0
         );
-        out_color.rgb = mix(params.x * color.rgb,  params.y * color.rgb, 0.8);
+        out_color.rgb = clamp(
+            params.x * color.rgb + params.y * color.rgb - vec3(params.z*0.1),
+            0, 1
+        );
         out_color.a = color.a;
     }
 );
