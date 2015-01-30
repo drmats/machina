@@ -416,6 +416,8 @@ void MainLoop::setup_opengl () {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 
@@ -498,8 +500,6 @@ inline void MainLoop::draw () const {
         });
 
         // ... draw things with it
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
         glLineWidth(2.2f);
         scene[0]->draw();
         glLineWidth(1.4f);
@@ -534,7 +534,6 @@ inline void MainLoop::draw () const {
                 glUniform3fv(location, 1, *light_direction);
             })
         });
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         batch->draw();
     };
 
