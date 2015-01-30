@@ -82,6 +82,7 @@ private:
 
 
     // necessary time variables
+    bool update_time { true };
     std::chrono::steady_clock::time_point time_mark;
     GLulong
         elapsed_time,

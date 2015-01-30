@@ -266,6 +266,13 @@ void MainLoop::default_handler_t::keyboard (
             }
             break;
 
+        // stop/start time update
+        case SDLK_1:
+            if (e.key.state == SDL_PRESSED) {
+                ml->update_time = !ml->update_time;
+            }
+            break;
+
         default:
             break;
     }
@@ -599,12 +606,16 @@ void MainLoop::run () {
         this->process_events();
         this->draw();
         SDL_GL_SwapWindow(this->root->main_window);
-        time_mark = std::chrono::steady_clock::now();
-        this->elapsed_time =
-            std::chrono::duration_cast<std::chrono::milliseconds>(
-                time_mark - this->time_mark
-            ).count();
-        this->total_time += this->elapsed_time;
+        if (this->update_time) {
+            time_mark = std::chrono::steady_clock::now();
+            this->elapsed_time =
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    time_mark - this->time_mark
+                ).count();
+            this->total_time += this->elapsed_time;
+        } else {
+            this->elapsed_time = 0;
+        }
     }
 }
 
