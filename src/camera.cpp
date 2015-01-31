@@ -45,7 +45,7 @@ void Camera<T>::recompute_transform () {
 
 
 /**
- *  Rotate camera around target using local-x axis.
+ *  Rotate camera using it's local-x axis.
  */
 template <typename T>
 void Camera<T>::relative_rotate_x (T angle) {
@@ -60,7 +60,7 @@ void Camera<T>::relative_rotate_x (T angle) {
 
 
 /**
- *  Rotate camera around target using global-y axis.
+ *  Rotate camera using global-y axis.
  */
 template <typename T>
 void Camera<T>::relative_rotate_y (T angle) {
@@ -77,9 +77,8 @@ void Camera<T>::relative_rotate_y (T angle) {
  */
 template <typename T>
 void Camera<T>::move_on_xz (T strafe, T forward) {
-    vec3 right =
-        vec3()
-            .cross(this->transform.up, this->transform.forward);
+    vec3 right = vec3()
+        .cross(this->transform.up, this->transform.forward);
     vec2
         right_flat =
             vec2(right[0], right[2])
@@ -111,12 +110,10 @@ void Camera<T>::move_on_xz (T strafe, T forward) {
  */
 template <typename T>
 void Camera<T>::move_on_xy (T strafe, T up) {
-    vec3 right =
-        vec3()
-            .cross(this->transform.up, this->transform.forward);
-    vec2 right_flat =
-            vec2(right[0], right[2])
-                .normalize();
+    vec3 right = vec3()
+        .cross(this->transform.up, this->transform.forward);
+    vec2 right_flat = vec2(right[0], right[2])
+        .normalize();
 
     right_flat.scale(strafe);
 
@@ -128,6 +125,36 @@ void Camera<T>::move_on_xy (T strafe, T up) {
 }
 
 
+/**
+ *  Move camera target along camera's local z axis.
+ */
+template <typename T>
+void Camera<T>::forward (T delta) {
+    this->target += this->transform.forward * delta;
+    this->recompute_transform();
+}
+
+
+/**
+ *  Move camera target along camera's local x axis.
+ */
+template <typename T>
+void Camera<T>::strafe (T delta) {
+    vec3 right = vec3()
+        .cross(this->transform.forward, this->transform.up);
+    this->target += right * delta;
+    this->recompute_transform();
+}
+
+
+/**
+ *  Move camera target alongs camera's local y axis.
+ */
+template <typename T>
+void Camera<T>::up (T delta) {
+    this->target += this->transform.up * delta;
+    this->recompute_transform();
+}
 
 
 /**

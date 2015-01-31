@@ -159,13 +159,13 @@ public:
 
 
     /**
-     *  Rotate camera around target using local-x axis.
+     *  Rotate camera using it's local-x axis.
      */
     void relative_rotate_x (T);
 
 
     /**
-     *  Rotate camera around target using global-y axis.
+     *  Rotate camera using global-y axis.
      */
     void relative_rotate_y (T);
 
@@ -173,13 +173,31 @@ public:
     /**
      *  Move camera relatively to it's direction on (local-x, local-z) surface.
      */
-     void move_on_xz (T, T);
+    void move_on_xz (T, T);
 
 
     /**
      *  Move camera relatively to it's direction on (local-x,global-y) surface.
      */
-     void move_on_xy (T, T);
+    void move_on_xy (T, T);
+
+
+    /**
+     *  Move camera target along camera's local z axis.
+     */
+    void forward (T);
+
+
+    /**
+     *  Move camera target along camera's local x axis.
+     */
+    void strafe (T);
+
+
+    /**
+     *  Move camera target alongs camera's local y axis.
+     */
+    void up (T);
 
 
     /**
