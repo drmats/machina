@@ -106,18 +106,6 @@ void MainLoop::default_handler_t::mouse_wheel (
             return all;
         }());
 
-    } else if (keystate[SDL_SCANCODE_LSHIFT] == 1) {
-
-        // move camera on a x-z plane (forward/backward)
-        vec2 dir { vec2(
-            ml->camera.transform.forward[0],
-            ml->camera.transform.forward[2]
-        ).normalize() };
-        auto delta = e.wheel.y * 0.1 * ml->camera.dist;
-        ml->camera.target[0] += delta*dir[0];
-        ml->camera.target[2] += delta*dir[1];
-        ml->camera.recompute_transform();
-
     } else {
 
         // set camera distance-to-target
