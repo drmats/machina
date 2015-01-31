@@ -222,7 +222,7 @@ protected:
 
     T
         acceleration_factor = 0.35f,
-        decceleration_factor = 0.25f,
+        decceleration_factor = 0.20f,
         max_factor = 0.015,
         factor[6] = {
             0.0f, 0.0f,
@@ -264,7 +264,7 @@ public:
     inline void stop_moving_down () { this->movement[5] = false; }
 
 
-    void update (GLulong elapsed_time) {
+    void update (GLulong elapsed_time, GLulong total_time) {
         for (int i = 0;  i < 6;  i++) {
             if (this->movement[i]) {
                 this->clamp(
@@ -280,32 +280,33 @@ public:
                 );
             }
         }
+
         this->camera->forward(elapsed_time * (
-                m3d::linear_interpolation(
-                    0.0f, this->factor[0], 100.0f,
-                    0.0f, this->max_factor
-                ) - m3d::linear_interpolation(
-                    0.0f, this->factor[1], 100.0f,
-                    0.0f, this->max_factor
-                )
+            m3d::linear_interpolation(
+                0.0f, this->factor[0], 100.0f,
+                0.0f, this->max_factor
+            ) - m3d::linear_interpolation(
+                0.0f, this->factor[1], 100.0f,
+                0.0f, this->max_factor
+            ) + std::cos(total_time*0.004f)*0.0004f
         ) * std::sqrt(this->camera->dist));
         this->camera->strafe(elapsed_time * (
-                m3d::linear_interpolation(
-                    0.0f, this->factor[3], 100.0f,
-                    0.0f, this->max_factor
-                ) - m3d::linear_interpolation(
-                    0.0f, this->factor[2], 100.0f,
-                    0.0f, this->max_factor
-                )
+            m3d::linear_interpolation(
+                0.0f, this->factor[3], 100.0f,
+                0.0f, this->max_factor
+            ) - m3d::linear_interpolation(
+                0.0f, this->factor[2], 100.0f,
+                0.0f, this->max_factor
+            ) + std::sin(total_time*0.006f)*0.0004f
         ) * std::sqrt(this->camera->dist));
         this->camera->up(elapsed_time * (
-                m3d::linear_interpolation(
-                    0.0f, this->factor[4], 100.0f,
-                    0.0f, this->max_factor
-                ) - m3d::linear_interpolation(
-                    0.0f, this->factor[5], 100.0f,
-                    0.0f, this->max_factor
-                )
+            m3d::linear_interpolation(
+                0.0f, this->factor[4], 100.0f,
+                0.0f, this->max_factor
+            ) - m3d::linear_interpolation(
+                0.0f, this->factor[5], 100.0f,
+                0.0f, this->max_factor
+            ) + std::cos(total_time*0.005f)*0.0004f
         ) * std::sqrt(this->camera->dist));
     }
 

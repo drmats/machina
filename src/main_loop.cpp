@@ -652,7 +652,7 @@ void MainLoop::run () {
     while (this->running) {
         this->time_mark = time_mark;
         this->process_events();
-        this->camera_transformer.update(this->elapsed_time);
+        this->camera_transformer.update(this->elapsed_time, this->total_time);
         this->draw();
         SDL_GL_SwapWindow(this->root->main_window);
         if (this->update_time) {
