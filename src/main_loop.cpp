@@ -138,9 +138,10 @@ void MainLoop::default_handler_t::mouse_buttons (
                 if (keystate[SDL_SCANCODE_LCTRL] == 1) {
                     ml->handle.mouse_motion =
                         [ml] (const SDL_Event &e) -> void {
-                            return ml->default_handler.look_around_camera(
-                                ml, e
-                            );
+                            return ml->default_handler
+                                .look_around_camera(
+                                    ml, e
+                                );
                         };
                 } else {
                     if (
@@ -149,23 +150,26 @@ void MainLoop::default_handler_t::mouse_buttons (
                     ) {
                         ml->handle.mouse_motion =
                             [ml] (const SDL_Event &e) -> void {
-                                return ml->default_handler.look_around_target_camera(
-                                    ml, e, 1.0f
-                                );
+                                return ml->default_handler
+                                    .look_around_target_camera(
+                                        ml, e, 1.0f
+                                    );
                             };
                     } else {
                         ml->handle.mouse_motion =
                             [ml] (const SDL_Event &e) -> void {
-                                return ml->default_handler.look_around_target_camera(
-                                    ml, e, -1.0f
-                                );
+                                return ml->default_handler
+                                    .look_around_target_camera(
+                                        ml, e, -1.0f
+                                    );
                             };
                     }
                 }
             } else if (e.type == SDL_MOUSEBUTTONUP) {
                 ml->handle.mouse_motion =
                     [ml] (const SDL_Event &e) -> void {
-                        return ml->default_handler.empty_mouse_motion(ml, e);
+                        return ml->default_handler
+                            .empty_mouse_motion(ml, e);
                     };
             }
             break;
@@ -175,12 +179,14 @@ void MainLoop::default_handler_t::mouse_buttons (
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 ml->handle.mouse_motion =
                     [ml] (const SDL_Event &e) -> void {
-                        return ml->default_handler.move_around_camera(ml, e);
+                        return ml->default_handler
+                            .move_around_camera(ml, e);
                     };
             } else if (e.type == SDL_MOUSEBUTTONUP) {
                 ml->handle.mouse_motion =
                     [ml] (const SDL_Event &e) -> void {
-                        return ml->default_handler.empty_mouse_motion(ml, e);
+                        return ml->default_handler
+                            .empty_mouse_motion(ml, e);
                     };
             }
             break;
@@ -212,6 +218,60 @@ void MainLoop::default_handler_t::keyboard (
         case SDLK_q:
             if (e.key.state == SDL_PRESSED) {
                 ml->terminate();
+            }
+            break;
+
+        // move camera forward
+        case SDLK_w:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera_transformer.start_moving_forward();
+            } else {
+                ml->camera_transformer.stop_moving_forward();
+            }
+            break;
+
+        // move camera backward
+        case SDLK_s:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera_transformer.start_moving_backward();
+            } else {
+                ml->camera_transformer.stop_moving_backward();
+            }
+            break;
+
+        // move camera left (strafe-left)
+        case SDLK_a:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera_transformer.start_moving_left();
+            } else {
+                ml->camera_transformer.stop_moving_left();
+            }
+            break;
+
+        // move camera right (strafe-right)
+        case SDLK_d:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera_transformer.start_moving_right();
+            } else {
+                ml->camera_transformer.stop_moving_right();
+            }
+            break;
+
+        // move camera up
+        case SDLK_r:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera_transformer.start_moving_up();
+            } else {
+                ml->camera_transformer.stop_moving_up();
+            }
+            break;
+
+        // move camera down
+        case SDLK_f:
+            if (e.key.state == SDL_PRESSED) {
+                ml->camera_transformer.start_moving_down();
+            } else {
+                ml->camera_transformer.stop_moving_down();
             }
             break;
 
@@ -326,6 +386,7 @@ MainLoop::MainLoop (Machina *root):
 {
     this->assign_default_handlers();
     this->setup_opengl();
+    this->camera_transformer.assign_camera(&this->camera);
 }
 
 
@@ -591,6 +652,7 @@ void MainLoop::run () {
     while (this->running) {
         this->time_mark = time_mark;
         this->process_events();
+        this->camera_transformer.update(this->elapsed_time);
         this->draw();
         SDL_GL_SwapWindow(this->root->main_window);
         if (this->update_time) {

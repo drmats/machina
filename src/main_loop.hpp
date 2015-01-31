@@ -91,6 +91,7 @@ private:
 
     // main camera
     Camera<GLfloat> camera;
+    CameraTransformer<GLfloat> camera_transformer;
 
 
     // simple "scene"

@@ -210,6 +210,110 @@ public:
 
 
 
+/**
+ *  Camera transformer (for smooth translations).
+ */
+template <typename T>
+class CameraTransformer {
+
+protected:
+
+    Camera<T> *camera = nullptr;
+
+    T
+        acceleration_factor = 0.35f,
+        decceleration_factor = 0.25f,
+        max_factor = 0.015,
+        factor[6] = {
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f
+        };
+
+    bool movement[6] = {
+        false, false,
+        false, false,
+        false, false
+    };
+
+
+public:
+
+    inline void clamp (T &val, T min, T max) {
+        if (val < min) { val = min; }
+        if (val > max) { val = max; }
+    }
+
+
+    void assign_camera (Camera<T> *camera) {
+        this->camera = camera;
+    }
+
+
+    inline void start_moving_forward () { this->movement[0] = true; }
+    inline void stop_moving_forward () { this->movement[0] = false; }
+    inline void start_moving_backward () { this->movement[1] = true; }
+    inline void stop_moving_backward () { this->movement[1] = false; }
+    inline void start_moving_left () { this->movement[2] = true; }
+    inline void stop_moving_left () { this->movement[2] = false; }
+    inline void start_moving_right () { this->movement[3] = true; }
+    inline void stop_moving_right () { this->movement[3] = false; }
+    inline void start_moving_up () { this->movement[4] = true; }
+    inline void stop_moving_up () { this->movement[4] = false; }
+    inline void start_moving_down () { this->movement[5] = true; }
+    inline void stop_moving_down () { this->movement[5] = false; }
+
+
+    void update (GLulong elapsed_time) {
+        for (int i = 0;  i < 6;  i++) {
+            if (this->movement[i]) {
+                this->clamp(
+                    this->factor[i] +=
+                        elapsed_time * this->acceleration_factor,
+                    0.0f, 100.0f
+                );
+            } else {
+                this->clamp(
+                    this->factor[i] -=
+                        elapsed_time * decceleration_factor,
+                    0.0f, 100.0f
+                );
+            }
+        }
+        this->camera->forward(elapsed_time * (
+                m3d::linear_interpolation(
+                    0.0f, this->factor[0], 100.0f,
+                    0.0f, this->max_factor
+                ) - m3d::linear_interpolation(
+                    0.0f, this->factor[1], 100.0f,
+                    0.0f, this->max_factor
+                )
+        ) * std::sqrt(this->camera->dist));
+        this->camera->strafe(elapsed_time * (
+                m3d::linear_interpolation(
+                    0.0f, this->factor[3], 100.0f,
+                    0.0f, this->max_factor
+                ) - m3d::linear_interpolation(
+                    0.0f, this->factor[2], 100.0f,
+                    0.0f, this->max_factor
+                )
+        ) * std::sqrt(this->camera->dist));
+        this->camera->up(elapsed_time * (
+                m3d::linear_interpolation(
+                    0.0f, this->factor[4], 100.0f,
+                    0.0f, this->max_factor
+                ) - m3d::linear_interpolation(
+                    0.0f, this->factor[5], 100.0f,
+                    0.0f, this->max_factor
+                )
+        ) * std::sqrt(this->camera->dist));
+    }
+
+};
+
+
+
+
 } // namespace machina
 
 #endif
