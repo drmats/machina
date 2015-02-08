@@ -40,7 +40,7 @@ private:
      */
     T fovy = static_cast<T>(60.0f);
     T aspect = static_cast<T>(16.0f / 9.0f);
-    T z_near = static_cast<T>(0.1f);
+    T z_near = static_cast<T>(1.0f);
     T z_far = static_cast<T>(50000.0f);
 
 
