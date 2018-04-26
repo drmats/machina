@@ -61,6 +61,8 @@ inline bool close_to (T a, T b) {
 }
 
 
+
+
 /**
  *  Square root.
  */
@@ -68,6 +70,8 @@ template <typename T>
 inline T sqr (T x) {
     return x * x;
 }
+
+
 
 
 /**
@@ -79,6 +83,8 @@ inline T radians (T x) {
 }
 
 
+
+
 /**
  *  Angle conversion (radians to degrees).
  */
@@ -86,6 +92,8 @@ template <typename T>
 inline T degrees (T x) {
     return x * static_cast<T>(m3d_invpi180);
 }
+
+
 
 
 /**
@@ -97,6 +105,8 @@ inline T linear_interpolation (T x1, T x2, T x3, T y1, T y3) {
 }
 
 
+
+
 /**
  *  Computes the positive remainder of the division operation val/denom.
  */
@@ -104,6 +114,8 @@ template <typename T>
 inline T positive_fmod (T val, T denom) {
     return std::fmod(std::fmod(val, denom) + denom, denom);
 }
+
+
 
 
 /**
@@ -114,15 +126,18 @@ class GArray {
 
 protected:
 
+    /**
+     *  ...
+     */
     T data[N] { 0 };
 
 
 public:
 
     /**
-     *  Array indexers.
+     *  Array indexer.
      */
-    inline T& operator[] (std::size_t i) throw (std::out_of_range) {
+    inline T& operator[] (std::size_t i) noexcept(false) {
         if (i >= N) {
             throw std::out_of_range(msg::out_of_range);
         }
@@ -130,9 +145,10 @@ public:
     }
 
 
-    inline const T& operator[] (
-        std::size_t i
-    ) const throw (std::out_of_range) {
+    /**
+     *  Array const indexer.
+     */
+    inline const T& operator[] (std::size_t i) const noexcept(false) {
         if (i >= N) {
             throw std::out_of_range(msg::out_of_range);
         }
@@ -170,17 +186,26 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     inline GArray<T, N>& assign (const T d[]) {
         std::memcpy(this->data, d, N*sizeof(T));
         return *this;
     }
 
 
+    /**
+     *  ...
+     */
     inline GArray<T, N>& operator= (const GArray<T, N> &a) {
         return this->assign(a);
     }
 
 
+    /**
+     *  ...
+     */
     inline GArray<T, N>& operator= (const T d[]) {
         return this->assign(d);
     }
@@ -208,6 +233,9 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     inline GArray<T, N>& operator+= (const GArray<T, N> &a) {
         return this->add(a);
     }
@@ -224,6 +252,9 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     inline GArray<T, N>& operator-= (const GArray<T, N> &a) {
         return this->sub(a);
     }
@@ -240,11 +271,16 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     inline GArray<T, N>& operator*= (const T s) {
         return this->scale(s);
     }
 
 };
+
+
 
 
 /**
@@ -256,6 +292,8 @@ inline GArray<T, N> operator+ (const GArray<T, N> &a, const GArray<T, N> &b) {
 }
 
 
+
+
 /**
  *  Subtract two arrays yielding the new one.
  */
@@ -263,6 +301,8 @@ template <typename T, std::size_t N>
 inline GArray<T, N> operator- (const GArray<T, N> &a, const GArray<T, N> &b) {
     return GArray<T, N>(a).sub(b);
 }
+
+
 
 
 /**
@@ -274,6 +314,8 @@ inline GArray<T, N> operator* (const GArray<T, N> &a, const T s) {
 }
 
 
+
+
 /**
  *  Scale array by a scalar yielding the new array (Scalar * Array).
  */
@@ -281,6 +323,8 @@ template <typename T, std::size_t N>
 inline GArray<T, N> operator* (const T s, const GArray<T, N> &a) {
     return GArray<T, N>(a).scale(s);
 }
+
+
 
 
 /**
@@ -295,6 +339,8 @@ inline bool operator== (const GArray<T, N> &a, const GArray<T, N> &b) {
 }
 
 
+
+
 /**
  *  GArray deep comparision "!=".
  */
@@ -302,6 +348,8 @@ template <typename T, std::size_t N>
 inline bool operator!= (const GArray<T, N> &l, const GArray<T, N> &r) {
     return !(l == r);
 }
+
+
 
 
 /**
@@ -424,6 +472,8 @@ public:
 };
 
 
+
+
 /**
  *  Transform given vector by a matrix and store the result
  *  in the new vector.
@@ -446,18 +496,30 @@ class GVector2 : public GVector<T, 2> {
 
 public:
 
+    /**
+     *  ...
+     */
     GVector2 () {}
     GVector2 (T x0, T x1) { this->assign(x0, x1); }
     GVector2 (const GArray<T, 2> &a) { GArray<T, 2>::assign(a); }
     GVector2 (const T d[]) { GArray<T, 2>::assign(d); }
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 2>::operator=;
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 2>::assign;
 
 
+    /**
+     *  ...
+     */
     GVector2<T>& assign (T x0, T x1) {
         #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1);
@@ -478,6 +540,9 @@ class GVector3 : public GVector<T, 3> {
 
 public:
 
+    /**
+     *  ...
+     */
     GVector3 () {}
     GVector3 (T x0, T x1, T x2) { this->assign(x0, x1, x2); }
     GVector3 (const GArray<T, 3> &a) { GArray<T, 3>::assign(a); }
@@ -485,17 +550,29 @@ public:
     GVector3 (const T d[]) { GArray<T, 3>::assign(d); }
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 3>::operator=;
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 3>::assign;
 
 
+    /**
+     *  ...
+     */
     inline GVector3<T>& assign (const GArray<T, 4> &a) {
         return static_cast<GVector3<T>&>(this->assign(*a));
     }
 
 
+    /**
+     *  ...
+     */
     inline GVector3<T>& assign (T x0, T x1, T x2) {
         #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1); set(2, x2);
@@ -527,6 +604,9 @@ class GVector4 : public GVector<T, 4> {
 
 public:
 
+    /**
+     *  ...
+     */
     GVector4 () {}
     GVector4 (T x0, T x1, T x2, T x3) { this->assign(x0, x1, x2, x3); }
     GVector4 (const GArray<T, 3> &a, T w) { this->assign(a, w); }
@@ -534,12 +614,21 @@ public:
     GVector4 (const T d[]) { GArray<T, 4>::assign(d); }
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 4>::operator=;
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 4>::assign;
 
 
+    /**
+     *  ...
+     */
     inline GVector4<T>& assign (T x0, T x1, T x2, T x3) {
         #define set(i, v) this->data[i] = v
         set(0, x0); set(1, x1); set(2, x2); set(3, x3);
@@ -548,6 +637,9 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     inline GVector4<T>& assign (const GArray<T, 3> &a, T w) {
         #define set(i, v) this->data[i] = v
         set(0, a[0]); set(1, a[1]); set(2, a[2]); set(3, w);
@@ -556,11 +648,17 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     inline GVector3<T> xyz () {
         return GVector3<T> { this->data[0], this->data[1], this->data[1] };
     }
 
 
+    /**
+     *  ...
+     */
     inline GVector3<T> rgb () {
         return this->xyz();
     }
@@ -578,6 +676,9 @@ class GMatrix : public GArray<T, N*N> {
 
 public:
 
+    /**
+     *  ...
+     */
     GMatrix () {}
     GMatrix (const GArray<T, N*N> &a) { GArray<T, N*N>::assign(a); }
     using GArray<T, N*N>::operator=;
@@ -617,6 +718,8 @@ public:
 };
 
 
+
+
 /**
  *  Multiply two matrices yielding the new one.
  */
@@ -638,9 +741,15 @@ class GMatrix4 : public GMatrix<T, 4> {
 
 public:
 
+    /**
+     *  ...
+     */
     GMatrix4 () {}
 
 
+    /**
+     *  ...
+     */
     GMatrix4 (std::initializer_list<T> init_list) {
         typename std::initializer_list<T>::iterator it;
         std::size_t i;
@@ -654,9 +763,15 @@ public:
     }
 
 
+    /**
+     *  ...
+     */
     GMatrix4 (const GArray<T, 4*4> &a) { GArray<T, 4*4>::assign(a); }
 
 
+    /**
+     *  ...
+     */
     using GArray<T, 4*4>::operator=;
 
 
