@@ -199,7 +199,7 @@ Shader::Shader (
     const std::initializer_list<
         std::tuple<std::string, Shader::attrib_index>
     > binding
-) throw (std::runtime_error) {
+) noexcept(false) {
     // temporary shader objects (load and compile from sources)
     GLuint
         vertex_shader { this->load_shader(GL_VERTEX_SHADER, vs) },
@@ -292,7 +292,7 @@ const Shader& Shader::use (
 GLuint Shader::load_shader (
     GLenum shader_type,
     const std::string &shader_src
-) throw (std::runtime_error) {
+) noexcept(false) {
     GLuint shader { glCreateShader(shader_type) };
     const GLchar *src { (GLchar*)shader_src.data() };
     GLint status;

@@ -25,7 +25,7 @@ namespace machina {
  */
 std::shared_ptr<TriangleBatch> load_mesh (
     const std::string &path
-) throw (std::runtime_error);
+) noexcept(false);
 
 
 

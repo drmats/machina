@@ -88,7 +88,7 @@ public:
         const std::initializer_list<
             std::tuple<std::string, Shader::attrib_index>
         >
-    ) throw (std::runtime_error);
+    ) noexcept(false);
 
 
     /**
@@ -119,7 +119,7 @@ public:
     GLuint load_shader (
         GLenum,
         const std::string &
-    ) throw (std::runtime_error);
+    ) noexcept(false);
 
 
     /**

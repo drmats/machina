@@ -57,7 +57,7 @@ V& vector_allocate (V &v, std::size_t len) {
 void read_bin_mesh (
     mesh &m,
     std::ifstream &file_input
-) throw (std::runtime_error) {
+) noexcept(false) {
     char magic_string[4] { 0 };
     std::uint32_t
         uint32_s = sizeof(std::uint32_t),
@@ -114,7 +114,7 @@ void read_bin_mesh (
  */
 std::shared_ptr<TriangleBatch> load_mesh (
     const std::string &path
-) throw (std::runtime_error) {
+) noexcept(false) {
     std::ifstream file_input;
     mesh geometry;
     auto batch = std::make_shared<TriangleBatch>();
