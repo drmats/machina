@@ -10,21 +10,22 @@
 #ifndef __REINDEXER_CPP_
 #define __REINDEXER_CPP_ 1
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <cstring>
-#include <array>
-#include <regex>
-#include <vector>
-#include <map>
-#include <functional>
-#include <numeric>
 #include <algorithm>
+#include <array>
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <regex>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using vec2 = std::array<float, 2>;
 using vec3 = std::array<float, 3>;
