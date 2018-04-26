@@ -645,7 +645,15 @@ void MainLoop::run () {
     this->scene.push_back(primitives::axes(160.0f, 10.0f));
     this->scene.push_back(primitives::grid(160.0f, 10.0f, vec4(0.15f, 0.15f, 0.25f, 1)));
     this->scene.push_back(primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f));
-    this->scene.push_back(load_mesh("../models/monkey.ooo"));
+    try {
+        this->scene.push_back(load_mesh("../models/monkey.ooo"));
+    } catch (std::runtime_error &e) {
+        std::cout
+                << "MainLoop::run: "
+                << e.what()
+                << std::endl;
+        return;
+    }
 
     time_mark = std::chrono::steady_clock::now();
     this->running = true;
