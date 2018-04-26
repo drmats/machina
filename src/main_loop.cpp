@@ -592,44 +592,48 @@ inline void MainLoop::draw () const {
     // draw some stuff
     draw_wire_stuff(this->scene, vp_matrix);
 
-    // draw test meshes in a circle around world origin
-    for (int i = 0;  i < 12;  i++) {
-        m_matrix =
-            mat4().load_rotation(
-                i * 30 + std::sin(this->total_time*0.008+i)*3,
-                0, 1, 0
-            ) *
-            mat4().load_translation(
-                0,
-                5.5 + std::sin(this->total_time*0.006+i)*8+8,
-                65 + std::sin(this->total_time*0.004+i)*12+12
-            ) *
-            mat4().load_rotation(
-                -35 - (std::sin(this->total_time*0.010+i)*16+16),
-                1, 0, 0
-            ) *
-            mat4().load_rotation(
-                std::sin(this->total_time*0.012+i)*22,
-                0, 1, 0
+    // (fourth element in the scene should be loaded model)
+    if (this->scene.size() == 4) {
+
+        // draw test meshes in a circle around world origin
+        for (int i = 0;  i < 12;  i++) {
+            m_matrix =
+                mat4().load_rotation(
+                    i * 30 + std::sin(this->total_time*0.008+i)*3,
+                    0, 1, 0
+                ) *
+                mat4().load_translation(
+                    0,
+                    5.5 + std::sin(this->total_time*0.006+i)*8+8,
+                    65 + std::sin(this->total_time*0.004+i)*12+12
+                ) *
+                mat4().load_rotation(
+                    -35 - (std::sin(this->total_time*0.010+i)*16+16),
+                    1, 0, 0
+                ) *
+                mat4().load_rotation(
+                    std::sin(this->total_time*0.012+i)*22,
+                    0, 1, 0
+                );
+            draw_test_mesh(
+                this->scene[3],
+                v_matrix * m_matrix,
+                p_matrix,
+                vec4(
+                    (m_matrix * vec4(1, 0, 0, 0)).normalize() * 0.5f +
+                    vec4(1, 1, 1, 0)
+                ).normalize()
             );
+        }
+
+        // draw test mesh in the center
         draw_test_mesh(
             this->scene[3],
-            v_matrix * m_matrix,
+            v_matrix * big_mesh_m_matrix,
             p_matrix,
-            vec4(
-                (m_matrix * vec4(1, 0, 0, 0)).normalize() * 0.5f +
-                vec4(1, 1, 1, 0)
-            ).normalize()
+            vec4(0.2, 0.6, 0.8, 1.0)
         );
     }
-
-    // draw test mesh in the center
-    draw_test_mesh(
-        this->scene[3],
-        v_matrix * big_mesh_m_matrix,
-        p_matrix,
-        vec4(0.2, 0.6, 0.8, 1.0)
-    );
 }
 
 
@@ -641,18 +645,20 @@ inline void MainLoop::draw () const {
 void MainLoop::run () {
     std::chrono::steady_clock::time_point time_mark;
 
-    // prepare "scene"
+    // prepare "stage"
     this->scene.push_back(primitives::axes(160.0f, 10.0f));
     this->scene.push_back(primitives::grid(160.0f, 10.0f, vec4(0.15f, 0.15f, 0.25f, 1)));
     this->scene.push_back(primitives::point_cube(160.0f*64.0f, 640.0f, 0.6f));
+
+    // load model
     try {
-        this->scene.push_back(load_mesh("../models/monkey.ooo"));
+        auto monkey = load_mesh("../models/monkey.ooo");
+        this->scene.push_back(monkey);
     } catch (std::runtime_error &e) {
         std::cout
-                << "MainLoop::run: "
-                << e.what()
-                << std::endl;
-        return;
+            << "MainLoop::run: "
+            << e.what()
+            << std::endl;
     }
 
     time_mark = std::chrono::steady_clock::now();
