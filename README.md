@@ -15,17 +15,23 @@ Dot Products, Cross Products, Translations, Rotations, Scales and more.
 
 Parts of code written in 2011.
 
+<br />
+
 
 
 
 ## compilation
 
-    $ make help
-    Available targets:
-        linux  -  build using "gcc/g++" (GNU C/C++ Compiler) [default]
-        win32  -  build using "i686-w64-mingw32-g++" (32bit Windows target)
-        win64  -  build using "x86_64-w64-mingw32-g++" (64bit Windows target)
-        clean  -  remove compiled objects and main program
+```bash
+$ make help
+Available targets:
+    linux  -  build using "gcc/g++" (GNU C/C++ Compiler) [default]
+    win32  -  build using "i686-w64-mingw32-g++" (32bit Windows target)
+    win64  -  build using "x86_64-w64-mingw32-g++" (64bit Windows target)
+    clean  -  remove compiled objects and main program
+```
+
+<br />
 
 
 
@@ -37,6 +43,8 @@ Parts of code written in 2011.
 * [**Mingw-w64**](http://mingw-w64.sourceforge.net/) for windows cross-compilation
 * [**Simple Directmedia Layer**](https://www.libsdl.org/)
 * [**OpenGL Extension Wrangler Library**](http://glew.sourceforge.net/)
+
+<br />
 
 
 
